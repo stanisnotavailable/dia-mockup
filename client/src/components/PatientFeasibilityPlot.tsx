@@ -66,19 +66,24 @@ export default function PatientFeasibilityPlot() {
       Object.values(trialData.complexityItems).some(items => items && items.length > 0);
   }, [trialData.complexityItems]);
   
+  // Get total items count for categories with data
+  const getActiveCategoryCount = (category: string) => {
+    return trialData.complexityItems[category as CategoryType]?.length || 0;
+  };
+  
   // Legend items for the radar chart
   const renderLegend = (props: any) => {
     const { payload } = props;
     
     return (
-      <div className="flex flex-wrap gap-4 justify-center mt-6">
+      <div className="flex flex-wrap gap-3 justify-center mt-4">
         {payload.map((entry: any, index: number) => (
-          <div key={`item-${index}`} className="flex items-center">
+          <div key={`item-${index}`} className="flex items-center bg-white px-2 py-1 rounded-md shadow-sm border">
             <span 
-              className="w-3 h-3 rounded-full mr-2" 
+              className="w-3 h-3 rounded-full mr-1" 
               style={{ backgroundColor: entry.color }}
             />
-            <span className="text-sm text-gray-700">{entry.value}</span>
+            <span className="text-xs text-gray-700">{entry.value}</span>
           </div>
         ))}
       </div>
@@ -86,32 +91,60 @@ export default function PatientFeasibilityPlot() {
   };
   
   return (
-    <Card className="border border-gray-100 shadow-sm lg:col-span-2">
-      <CardContent className="p-6">
-        <div className="flex justify-between items-start mb-4">
+    <Card className="border border-gray-100 shadow-sm lg:col-span-2 h-full">
+      <CardContent className="p-4">
+        <div className="flex justify-between items-start mb-2">
           <div>
-            <h2 className="text-xl font-medium text-gray-800 mb-2">Patient Feasibility Plot</h2>
-            <p className="text-sm text-gray-500">
-              Visual representation of the interaction between the elements of the Patient Experience
+            <h2 className="text-lg font-medium text-gray-800">Patient Feasibility Plot</h2>
+            <p className="text-xs text-gray-500">
+              Visual representation of how categorized elements affect patient experience
             </p>
-          </div>
-          <div className="bg-blue-100 px-3 py-1 rounded-md text-blue-800 font-semibold">
-            Disease Burden: {currentProfile.diseaseBurdenScore}
           </div>
         </div>
         
-        <div className="w-full h-80 flex justify-center items-center">
+        {/* Category stats */}
+        <div className="flex gap-2 mb-3 justify-between flex-wrap">
+          {Object.entries(CATEGORIES).map(([key, category]) => (
+            <div 
+              key={category} 
+              className="flex items-center gap-1 text-xs px-2 py-1 rounded-full"
+              style={{ 
+                backgroundColor: `${categoryColors[category as CategoryType]}20`,
+                color: categoryColors[category as CategoryType]
+              }}
+            >
+              <span className="font-medium">{category.split(' ')[0]}</span>
+              <span className="bg-white px-1.5 py-0.5 rounded-full text-xs">
+                {getActiveCategoryCount(category)}
+              </span>
+            </div>
+          ))}
+        </div>
+        
+        <div className="w-full" style={{ height: "350px" }}>
           {hasDataToDisplay ? (
             <ResponsiveContainer width="100%" height="100%">
               <RadarChart 
                 cx="50%" 
                 cy="50%" 
-                outerRadius="80%" 
+                outerRadius="70%" 
                 data={getRadarData()}
+                margin={{ top: 15, right: 15, bottom: 15, left: 15 }}
               >
-                <PolarGrid />
-                <PolarAngleAxis dataKey="axis" tick={{ fill: '#6b7280', fontSize: 12 }} />
-                <PolarRadiusAxis angle={30} domain={[0, 125]} />
+                <PolarGrid stroke="#e5e7eb" />
+                <PolarAngleAxis 
+                  dataKey="axis" 
+                  tick={{ fill: '#6b7280', fontSize: 11 }}
+                  tickLine={false}
+                />
+                <PolarRadiusAxis 
+                  angle={30} 
+                  domain={[0, 125]} 
+                  tick={{ fill: '#9ca3af', fontSize: 10 }}
+                  stroke="#e5e7eb"
+                  tickCount={5}
+                  axisLine={false}
+                />
                 
                 {/* Render a radar for each category that has items */}
                 {Object.entries(trialData.complexityItems).map(([category, items]) => {
@@ -124,17 +157,26 @@ export default function PatientFeasibilityPlot() {
                       dataKey={category}
                       stroke={categoryColors[category as CategoryType]}
                       fill={categoryColors[category as CategoryType]}
-                      fillOpacity={0.2}
+                      fillOpacity={0.3}
+                      dot={true}
+                      activeDot={{ r: 4 }}
                     />
                   );
                 })}
                 
-                <Legend content={renderLegend} />
+                <Legend 
+                  content={renderLegend} 
+                  verticalAlign="bottom"
+                  height={36}
+                />
               </RadarChart>
             </ResponsiveContainer>
           ) : (
-            <div className="text-center text-gray-500">
-              <p>Drag items into categories to see the patient feasibility plot</p>
+            <div className="flex items-center justify-center h-full bg-gray-50 rounded-lg border border-dashed">
+              <div className="text-center text-gray-500 px-4">
+                <p className="mb-2 font-medium">No data to display</p>
+                <p className="text-xs">Drag elements into categories to see how they affect patient experience</p>
+              </div>
             </div>
           )}
         </div>

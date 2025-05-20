@@ -1,8 +1,8 @@
 import { useTitle } from "react-use";
-import StandardOfCareCard from "@/components/StandardOfCareCard";
 import TrialComplexityCard from "@/components/TrialComplexityCard";
 import PatientFeasibilityPlot from "@/components/PatientFeasibilityPlot";
 import ProfileTabs from "@/components/ProfileTabs";
+import ElementsPanel from "@/components/ElementsPanel";
 
 export default function Dashboard() {
   useTitle("Clinical Trial Dashboard");
@@ -17,7 +17,9 @@ export default function Dashboard() {
       <ProfileTabs />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <StandardOfCareCard />
+        <div>
+          <ElementsPanel />
+        </div>
         <div className="lg:col-span-2">
           <PatientFeasibilityPlot />
         </div>

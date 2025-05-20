@@ -35,8 +35,9 @@ interface TrialDataContextType {
 }
 
 // Initial data setup
-const createInitialItemsData = (): TrialData => {
-  const availableItems: ComplexityItem[] = [
+const createInitialItemsData = (includeDemo = true): TrialData => {
+  // All items available for the trial
+  const allItems: ComplexityItem[] = [
     { id: '1', name: 'Frequent clinic visits', category: '', complexity: 65 },
     { id: '2', name: 'Protocol complexity', category: '', complexity: 70 },
     { id: '3', name: 'Travel requirements', category: '', complexity: 55 },
@@ -51,8 +52,42 @@ const createInitialItemsData = (): TrialData => {
     { id: '12', name: 'Monitoring complexity', category: '', complexity: 55 },
   ];
 
+  // For demo purposes, pre-populate some items into categories
+  if (includeDemo) {
+    const categorizedItems: Record<CategoryType, ComplexityItem[]> = {
+      [CATEGORIES.LOGISTICS]: [
+        { ...allItems[0], category: CATEGORIES.LOGISTICS }, // Frequent clinic visits
+        { ...allItems[2], category: CATEGORIES.LOGISTICS }, // Travel requirements
+      ],
+      [CATEGORIES.MOTIVATION]: [
+        { ...allItems[6], category: CATEGORIES.MOTIVATION }, // Dietary restrictions
+        { ...allItems[10], category: CATEGORIES.MOTIVATION }, // Support requirements
+      ],
+      [CATEGORIES.HEALTHCARE]: [
+        { ...allItems[4], category: CATEGORIES.HEALTHCARE }, // Number of procedures
+        { ...allItems[11], category: CATEGORIES.HEALTHCARE }, // Monitoring complexity
+      ],
+      [CATEGORIES.QUALITY]: [
+        { ...allItems[8], category: CATEGORIES.QUALITY }, // Potential side effects
+      ],
+    };
+
+    // Keep only the items that weren't categorized in the available list
+    const remainingItems = allItems.filter(item => 
+      !Object.values(categorizedItems).flat().some(categorizedItem => 
+        categorizedItem.id === item.id
+      )
+    ).map(item => ({ ...item, category: '' }));
+
+    return {
+      availableItems: remainingItems,
+      complexityItems: categorizedItems
+    };
+  } 
+  
+  // Return all items in available list when reset
   return {
-    availableItems,
+    availableItems: allItems.map(item => ({ ...item, category: '' })),
     complexityItems: {
       [CATEGORIES.LOGISTICS]: [],
       [CATEGORIES.MOTIVATION]: [],

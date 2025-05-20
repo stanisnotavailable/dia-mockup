@@ -1,4 +1,4 @@
-import { createContext, useState, ReactNode } from 'react';
+import { createContext, useState, useEffect, ReactNode } from 'react';
 
 // Define the type for a complexity element item
 export interface ComplexityItem {
@@ -57,6 +57,7 @@ interface TrialDataContextType {
   moveItem: (item: ComplexityItem, targetCategory: string, profileId?: string) => void;
   resetProfile: (profileId?: string) => void;
   updatePatientDemographic: (demographicData: Partial<PatientDemographic>, profileId?: string) => void;
+  isLoading: boolean;
 }
 
 // All items available for the trial
@@ -254,13 +255,25 @@ export const TrialDataContext = createContext<TrialDataContextType>({
   moveItem: () => {},
   resetProfile: () => {},
   updatePatientDemographic: () => {},
+  isLoading: true,
 });
 
 // Create the provider component
 export const TrialDataProvider = ({ children }: { children: ReactNode }) => {
+  // Initialize loading state
+  const [isLoading, setIsLoading] = useState(true);
   // Initialize profiles state
   const [profiles, setProfiles] = useState<Profile[]>(initialProfiles);
   const [currentProfileId, setCurrentProfileId] = useState<string>('profile1');
+  
+  // Simulate loading data from an API
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1500); // Simulate a 1.5-second load time
+    
+    return () => clearTimeout(timer);
+  }, []);
   
   // Get the current profile
   const getCurrentProfile = (): Profile => {
@@ -409,7 +422,8 @@ export const TrialDataProvider = ({ children }: { children: ReactNode }) => {
         getCurrentProfile,
         moveItem,
         resetProfile,
-        updatePatientDemographic
+        updatePatientDemographic,
+        isLoading
       }}
     >
       {children}

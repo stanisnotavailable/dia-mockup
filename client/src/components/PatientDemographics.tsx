@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,13 +14,19 @@ import {
 import { TrialDataContext, PatientDemographic } from "@/contexts/TrialDataContext";
 
 export default function PatientDemographics() {
-  const { getCurrentProfile, updatePatientDemographic } = useContext(TrialDataContext);
+  const { getCurrentProfile, updatePatientDemographic, currentProfileId } = useContext(TrialDataContext);
   const currentProfile = getCurrentProfile();
   const { patientDemographic, diseaseBurdenScore } = currentProfile;
   
   // Local state for form values
   const [localData, setLocalData] = useState<PatientDemographic>(patientDemographic);
   const [isEditing, setIsEditing] = useState(false);
+  
+  // Update local data when profile changes
+  useEffect(() => {
+    setLocalData(getCurrentProfile().patientDemographic);
+    setIsEditing(false);
+  }, [currentProfileId, getCurrentProfile]);
   
   // Handle input changes
   const handleChange = (field: keyof PatientDemographic, value: any) => {
@@ -52,14 +58,44 @@ export default function PatientDemographics() {
     setIsEditing(false);
   };
   
+  // Calculate BMI
+  const calculateBMI = (weight: number, height: number): number => {
+    // BMI = weight (kg) / height² (m²)
+    const heightInMeters = height / 100;
+    return Math.round((weight / (heightInMeters * heightInMeters)) * 10) / 10;
+  };
+  
+  const bmi = calculateBMI(patientDemographic.weight, patientDemographic.height);
+  
+  // Get BMI category
+  const getBMICategory = (bmi: number): string => {
+    if (bmi < 18.5) return "Underweight";
+    if (bmi < 25) return "Normal";
+    if (bmi < 30) return "Overweight";
+    return "Obese";
+  };
+  
+  const bmiCategory = getBMICategory(bmi);
+  
+  // Get BMI color
+  const getBMIColor = (category: string): string => {
+    switch(category) {
+      case "Underweight": return "text-yellow-600";
+      case "Normal": return "text-green-600";
+      case "Overweight": return "text-orange-600";
+      case "Obese": return "text-red-600";
+      default: return "text-gray-600";
+    }
+  };
+  
   return (
-    <Card className="border border-gray-100 shadow-sm mb-4">
+    <Card className="border border-gray-100 shadow-sm">
       <CardContent className="p-4">
         <div className="flex justify-between items-center mb-2">
           <div className="flex items-center">
             <h2 className="text-lg font-medium text-gray-800">Patient Demographics</h2>
             <div className="ml-3 text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">
-              Score: {diseaseBurdenScore}
+              Disease Burden Score: {diseaseBurdenScore}
             </div>
           </div>
           
@@ -94,7 +130,7 @@ export default function PatientDemographics() {
         </div>
         
         {isEditing ? (
-          <div className="grid grid-cols-2 gap-3 mt-3">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
             <div>
               <Label htmlFor="age" className="text-xs">Age</Label>
               <Input
@@ -159,7 +195,7 @@ export default function PatientDemographics() {
               </Select>
             </div>
             
-            <div className="col-span-2">
+            <div className="col-span-2 md:col-span-4">
               <Label htmlFor="medicalHistory" className="text-xs">Medical History (comma-separated)</Label>
               <Input
                 id="medicalHistory"
@@ -207,52 +243,63 @@ export default function PatientDemographics() {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-2 mt-3 text-sm">
-            <div className="flex">
-              <span className="text-gray-500 w-24">Age:</span>
-              <span className="font-medium">{patientDemographic.age} years</span>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-3 mt-3 text-sm">
+            <div>
+              <div className="text-gray-500 text-xs mb-1">Age</div>
+              <div className="font-medium">{patientDemographic.age} years</div>
             </div>
             
-            <div className="flex">
-              <span className="text-gray-500 w-24">Gender:</span>
-              <span className="font-medium">{patientDemographic.gender}</span>
+            <div>
+              <div className="text-gray-500 text-xs mb-1">Gender</div>
+              <div className="font-medium">{patientDemographic.gender}</div>
             </div>
             
-            <div className="flex">
-              <span className="text-gray-500 w-24">Ethnicity:</span>
-              <span className="font-medium">{patientDemographic.ethnicity}</span>
+            <div>
+              <div className="text-gray-500 text-xs mb-1">Ethnicity</div>
+              <div className="font-medium">{patientDemographic.ethnicity}</div>
             </div>
             
-            <div className="flex">
-              <span className="text-gray-500 w-24">Location:</span>
-              <span className="font-medium">{patientDemographic.location}</span>
+            <div>
+              <div className="text-gray-500 text-xs mb-1">Location</div>
+              <div className="font-medium">{patientDemographic.location}</div>
             </div>
             
-            <div className="flex col-span-2">
-              <span className="text-gray-500 w-24">History:</span>
-              <span className="font-medium">{patientDemographic.medicalHistory.join(', ')}</span>
-            </div>
-            
-            <div className="flex">
-              <span className="text-gray-500 w-24">Weight:</span>
-              <span className="font-medium">{patientDemographic.weight} kg</span>
-            </div>
-            
-            <div className="flex">
-              <span className="text-gray-500 w-24">Height:</span>
-              <span className="font-medium">{patientDemographic.height} cm</span>
-            </div>
-            
-            <div className="col-span-2">
-              <div className="flex">
-                <span className="text-gray-500 w-24">Compliance:</span>
-                <span className="font-medium">{patientDemographic.compliance}%</span>
+            <div className="col-span-2 md:col-span-4">
+              <div className="text-gray-500 text-xs mb-1">Medical History</div>
+              <div className="font-medium">
+                {patientDemographic.medicalHistory.length > 0 
+                  ? patientDemographic.medicalHistory.join(', ')
+                  : 'None'}
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-1.5 mt-1.5">
-                <div 
-                  className="bg-blue-600 h-1.5 rounded-full" 
-                  style={{ width: `${patientDemographic.compliance}%` }}
-                ></div>
+            </div>
+            
+            <div>
+              <div className="text-gray-500 text-xs mb-1">Weight</div>
+              <div className="font-medium">{patientDemographic.weight} kg</div>
+            </div>
+            
+            <div>
+              <div className="text-gray-500 text-xs mb-1">Height</div>
+              <div className="font-medium">{patientDemographic.height} cm</div>
+            </div>
+            
+            <div>
+              <div className="text-gray-500 text-xs mb-1">BMI</div>
+              <div className={`font-medium ${getBMIColor(bmiCategory)}`}>
+                {bmi} ({bmiCategory})
+              </div>
+            </div>
+            
+            <div>
+              <div className="text-gray-500 text-xs mb-1">Compliance</div>
+              <div className="font-medium flex items-center">
+                <span className="mr-2">{patientDemographic.compliance}%</span>
+                <div className="w-24 bg-gray-200 rounded-full h-1.5">
+                  <div 
+                    className="bg-blue-600 h-1.5 rounded-full" 
+                    style={{ width: `${patientDemographic.compliance}%` }}
+                  ></div>
+                </div>
               </div>
             </div>
           </div>

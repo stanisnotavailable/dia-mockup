@@ -3,6 +3,7 @@ import TrialComplexityCard from "@/components/TrialComplexityCard";
 import PatientFeasibilityPlot from "@/components/PatientFeasibilityPlot";
 import ProfileTabs from "@/components/ProfileTabs";
 import ElementsPanel from "@/components/ElementsPanel";
+import PatientDemographics from "@/components/PatientDemographics";
 
 export default function Dashboard() {
   useTitle("Clinical Trial Dashboard");
@@ -15,6 +16,11 @@ export default function Dashboard() {
       </header>
 
       <ProfileTabs />
+      
+      {/* Patient Demographics Section */}
+      <div className="mb-6">
+        <PatientDemographics />
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div>

@@ -60,41 +60,41 @@ interface TrialDataContextType {
   isLoading: boolean;
 }
 
+// Import questions data from JSON file
+import questionsData from '@/data/questions.json';
+
 // All items available for the trial
-const allItems: ComplexityItem[] = [
-  { id: '1', name: 'Question 1', category: '', complexity: 65 },
-  { id: '2', name: 'Question 2', category: '', complexity: 70 },
-  { id: '3', name: 'Question 3', category: '', complexity: 55 },
-  { id: '4', name: 'Question 4', category: '', complexity: 60 },
-  { id: '5', name: 'Question 5', category: '', complexity: 75 },
-  { id: '6', name: 'Question 6', category: '', complexity: 50 },
-  { id: '7', name: 'Question 7', category: '', complexity: 45 },
-  { id: '8', name: 'Question 8', category: '', complexity: 80 },
-  { id: '9', name: 'Question 9', category: '', complexity: 65 },
-  { id: '10', name: 'Question 10', category: '', complexity: 70 },
-  { id: '11', name: 'Question 11', category: '', complexity: 60 },
-  { id: '12', name: 'Question 12', category: '', complexity: 55 },
-];
+const allItems: ComplexityItem[] = questionsData.items.map(item => ({
+  ...item,
+  category: ''
+}));
 
 // Create profile 1 data (has mixed item distribution)
 const createProfile1Data = (): TrialData => {
   const categorizedItems: Record<CategoryType, ComplexityItem[]> = {
-    [CATEGORIES.LOGISTICS]: [
-      { ...allItems[0], category: CATEGORIES.LOGISTICS }, // Question 1
-      { ...allItems[2], category: CATEGORIES.LOGISTICS }, // Question 3
-    ],
-    [CATEGORIES.MOTIVATION]: [
-      { ...allItems[6], category: CATEGORIES.MOTIVATION }, // Question 7
-      { ...allItems[10], category: CATEGORIES.MOTIVATION }, // Question 11
-    ],
-    [CATEGORIES.HEALTHCARE]: [
-      { ...allItems[4], category: CATEGORIES.HEALTHCARE }, // Question 5
-      { ...allItems[11], category: CATEGORIES.HEALTHCARE }, // Question 12
-    ],
-    [CATEGORIES.QUALITY]: [
-      { ...allItems[8], category: CATEGORIES.QUALITY }, // Question 9
-    ],
+    [CATEGORIES.LOGISTICS]: [],
+    [CATEGORIES.MOTIVATION]: [],
+    [CATEGORIES.HEALTHCARE]: [],
+    [CATEGORIES.QUALITY]: [],
   };
+  
+  // Use the category data from the JSON file
+  Object.entries(questionsData.categories).forEach(([category, categoryData]) => {
+    if (categoryData && categoryData.length > 0) {
+      const profileItems = categoryData[0].profile1;
+      if (profileItems && profileItems.length > 0) {
+        profileItems.forEach(itemId => {
+          const item = allItems.find(item => item.id === itemId);
+          if (item) {
+            categorizedItems[category as CategoryType].push({
+              ...item,
+              category: category as CategoryType
+            });
+          }
+        });
+      }
+    }
+  });
 
   // Keep only the items that weren't categorized in the available list
   const remainingItems = allItems.filter(item => 
@@ -112,21 +112,29 @@ const createProfile1Data = (): TrialData => {
 // Create profile 2 data (focuses on logistics and quality of life)
 const createProfile2Data = (): TrialData => {
   const categorizedItems: Record<CategoryType, ComplexityItem[]> = {
-    [CATEGORIES.LOGISTICS]: [
-      { ...allItems[0], category: CATEGORIES.LOGISTICS }, // Question 1
-      { ...allItems[2], category: CATEGORIES.LOGISTICS }, // Question 3
-      { ...allItems[7], category: CATEGORIES.LOGISTICS }, // Question 8
-    ],
+    [CATEGORIES.LOGISTICS]: [],
     [CATEGORIES.MOTIVATION]: [],
-    [CATEGORIES.HEALTHCARE]: [
-      { ...allItems[11], category: CATEGORIES.HEALTHCARE }, // Question 12
-    ],
-    [CATEGORIES.QUALITY]: [
-      { ...allItems[8], category: CATEGORIES.QUALITY }, // Question 9
-      { ...allItems[6], category: CATEGORIES.QUALITY }, // Question 7
-      { ...allItems[5], category: CATEGORIES.QUALITY }, // Question 6
-    ],
+    [CATEGORIES.HEALTHCARE]: [],
+    [CATEGORIES.QUALITY]: [],
   };
+  
+  // Use the category data from the JSON file
+  Object.entries(questionsData.categories).forEach(([category, categoryData]) => {
+    if (categoryData && categoryData.length > 0) {
+      const profileItems = categoryData[0].profile2;
+      if (profileItems && profileItems.length > 0) {
+        profileItems.forEach(itemId => {
+          const item = allItems.find(item => item.id === itemId);
+          if (item) {
+            categorizedItems[category as CategoryType].push({
+              ...item,
+              category: category as CategoryType
+            });
+          }
+        });
+      }
+    }
+  });
 
   // Keep only the items that weren't categorized in the available list
   const remainingItems = allItems.filter(item => 
@@ -144,22 +152,29 @@ const createProfile2Data = (): TrialData => {
 // Create profile 3 data (focuses on healthcare and motivation)
 const createProfile3Data = (): TrialData => {
   const categorizedItems: Record<CategoryType, ComplexityItem[]> = {
-    [CATEGORIES.LOGISTICS]: [
-      { ...allItems[2], category: CATEGORIES.LOGISTICS }, // Question 3
-    ],
-    [CATEGORIES.MOTIVATION]: [
-      { ...allItems[6], category: CATEGORIES.MOTIVATION }, // Question 7
-      { ...allItems[10], category: CATEGORIES.MOTIVATION }, // Question 11
-      { ...allItems[9], category: CATEGORIES.MOTIVATION }, // Question 10
-      { ...allItems[3], category: CATEGORIES.MOTIVATION }, // Question 4
-    ],
-    [CATEGORIES.HEALTHCARE]: [
-      { ...allItems[4], category: CATEGORIES.HEALTHCARE }, // Question 5
-      { ...allItems[11], category: CATEGORIES.HEALTHCARE }, // Question 12
-      { ...allItems[1], category: CATEGORIES.HEALTHCARE }, // Question 2
-    ],
+    [CATEGORIES.LOGISTICS]: [],
+    [CATEGORIES.MOTIVATION]: [],
+    [CATEGORIES.HEALTHCARE]: [],
     [CATEGORIES.QUALITY]: [],
   };
+  
+  // Use the category data from the JSON file
+  Object.entries(questionsData.categories).forEach(([category, categoryData]) => {
+    if (categoryData && categoryData.length > 0) {
+      const profileItems = categoryData[0].profile3;
+      if (profileItems && profileItems.length > 0) {
+        profileItems.forEach(itemId => {
+          const item = allItems.find(item => item.id === itemId);
+          if (item) {
+            categorizedItems[category as CategoryType].push({
+              ...item,
+              category: category as CategoryType
+            });
+          }
+        });
+      }
+    }
+  });
 
   // Keep only the items that weren't categorized in the available list
   const remainingItems = allItems.filter(item => 

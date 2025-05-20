@@ -1,0 +1,30 @@
+{
+  "items": [
+    { "id": "1", "name": "Question 1", "complexity": 65 },
+    { "id": "2", "name": "Question 2", "complexity": 70 },
+    { "id": "3", "name": "Question 3", "complexity": 55 },
+    { "id": "4", "name": "Question 4", "complexity": 60 },
+    { "id": "5", "name": "Question 5", "complexity": 75 },
+    { "id": "6", "name": "Question 6", "complexity": 50 },
+    { "id": "7", "name": "Question 7", "complexity": 45 },
+    { "id": "8", "name": "Question 8", "complexity": 80 },
+    { "id": "9", "name": "Question 9", "complexity": 65 },
+    { "id": "10", "name": "Question 10", "complexity": 70 },
+    { "id": "11", "name": "Question 11", "complexity": 60 },
+    { "id": "12", "name": "Question 12", "complexity": 55 }
+  ],
+  "categories": {
+    "Logistics Challenge": [
+      { "profile1": ["1", "3"], "profile2": ["1", "3", "8"], "profile3": ["3"] }
+    ],
+    "Motivation": [
+      { "profile1": ["7", "11"], "profile2": [], "profile3": ["7", "11", "10", "4"] }
+    ],
+    "Healthcare Engagement": [
+      { "profile1": ["5", "12"], "profile2": ["12"], "profile3": ["5", "12", "2"] }
+    ],
+    "Quality of Life": [
+      { "profile1": ["9"], "profile2": ["9", "7", "6"], "profile3": [] }
+    ]
+  }
+}

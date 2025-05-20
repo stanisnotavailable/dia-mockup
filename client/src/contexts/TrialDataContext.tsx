@@ -27,12 +27,25 @@ export interface TrialData {
   availableItems: ComplexityItem[];
 }
 
+// Define patient demographic data
+export interface PatientDemographic {
+  age: number;
+  gender: string;
+  ethnicity: string;
+  location: string;
+  medicalHistory: string[];
+  weight: number; // in kg
+  height: number; // in cm
+  compliance: number; // 1-100 scale
+}
+
 // Define type for profile containing trial data
 export interface Profile {
   id: string;
   name: string;
   trialData: TrialData;
   diseaseBurdenScore: number;
+  patientDemographic: PatientDemographic;
 }
 
 // Define the context interface
@@ -43,6 +56,7 @@ interface TrialDataContextType {
   getCurrentProfile: () => Profile;
   moveItem: (item: ComplexityItem, targetCategory: string, profileId?: string) => void;
   resetProfile: (profileId?: string) => void;
+  updatePatientDemographic: (demographicData: Partial<PatientDemographic>, profileId?: string) => void;
 }
 
 // All items available for the trial
@@ -172,25 +186,62 @@ const createEmptyTrialData = (): TrialData => {
   };
 };
 
+// Create initial demographic data for the three profiles
+const profile1Demographics: PatientDemographic = {
+  age: 42,
+  gender: 'Female',
+  ethnicity: 'Caucasian',
+  location: 'Urban',
+  medicalHistory: ['Hypertension', 'Type 2 Diabetes'],
+  weight: 68,
+  height: 165,
+  compliance: 85
+};
+
+const profile2Demographics: PatientDemographic = {
+  age: 65,
+  gender: 'Male',
+  ethnicity: 'African American',
+  location: 'Suburban',
+  medicalHistory: ['COPD', 'Arthritis'],
+  weight: 82,
+  height: 178,
+  compliance: 70
+};
+
+const profile3Demographics: PatientDemographic = {
+  age: 29,
+  gender: 'Female',
+  ethnicity: 'Hispanic',
+  location: 'Rural',
+  medicalHistory: ['Asthma'],
+  weight: 61,
+  height: 160,
+  compliance: 92
+};
+
 // Initial profiles
 const initialProfiles: Profile[] = [
   {
     id: 'profile1',
     name: 'Profile 1',
     trialData: createProfile1Data(),
-    diseaseBurdenScore: 4.81
+    diseaseBurdenScore: 4.81,
+    patientDemographic: profile1Demographics
   },
   {
     id: 'profile2',
     name: 'Profile 2',
     trialData: createProfile2Data(),
-    diseaseBurdenScore: 3.92
+    diseaseBurdenScore: 3.92,
+    patientDemographic: profile2Demographics
   },
   {
     id: 'profile3',
     name: 'Profile 3',
     trialData: createProfile3Data(),
-    diseaseBurdenScore: 5.23
+    diseaseBurdenScore: 5.23,
+    patientDemographic: profile3Demographics
   }
 ];
 
@@ -202,6 +253,7 @@ export const TrialDataContext = createContext<TrialDataContextType>({
   getCurrentProfile: () => initialProfiles[0],
   moveItem: () => {},
   resetProfile: () => {},
+  updatePatientDemographic: () => {},
 });
 
 // Create the provider component
@@ -265,6 +317,45 @@ export const TrialDataProvider = ({ children }: { children: ReactNode }) => {
     });
   };
   
+  // Update patient demographic data
+  const updatePatientDemographic = (demographicData: Partial<PatientDemographic>, profileId?: string) => {
+    const targetProfileId = profileId || currentProfileId;
+    
+    setProfiles(prevProfiles => {
+      const updatedProfiles = [...prevProfiles];
+      const profileIndex = updatedProfiles.findIndex(p => p.id === targetProfileId);
+      
+      if (profileIndex === -1) return prevProfiles;
+      
+      const profile = {...updatedProfiles[profileIndex]};
+      
+      // Update only the fields that are provided
+      profile.patientDemographic = {
+        ...profile.patientDemographic,
+        ...demographicData
+      };
+      
+      // Update disease burden score based on demographics (simplified example)
+      if (demographicData.age || demographicData.medicalHistory || demographicData.compliance) {
+        const age = demographicData.age || profile.patientDemographic.age;
+        const medicalHistoryCount = demographicData.medicalHistory?.length || 
+          profile.patientDemographic.medicalHistory.length;
+        const compliance = demographicData.compliance || profile.patientDemographic.compliance;
+        
+        // Simple formula to calculate burden score based on demographics
+        const ageImpact = Math.min(age / 20, 3); // Age divided by 20, max 3
+        const historyImpact = medicalHistoryCount * 0.5; // Each condition adds 0.5
+        const complianceImpact = (100 - compliance) / 20; // Lower compliance = higher score
+        
+        // Calculate new score (range ~2-7)
+        profile.diseaseBurdenScore = Math.round((ageImpact + historyImpact + complianceImpact) * 100) / 100;
+      }
+      
+      updatedProfiles[profileIndex] = profile;
+      return updatedProfiles;
+    });
+  };
+  
   // Reset a profile to its initial state
   const resetProfile = (profileId?: string) => {
     const targetProfileId = profileId || currentProfileId;
@@ -277,25 +368,32 @@ export const TrialDataProvider = ({ children }: { children: ReactNode }) => {
       
       const profileId = updatedProfiles[profileIndex].id;
       let trialData: TrialData;
+      let patientDemographic: PatientDemographic;
       
       // Use the appropriate initial data based on profile ID
       switch(profileId) {
         case 'profile1':
           trialData = createProfile1Data();
+          patientDemographic = {...profile1Demographics};
           break;
         case 'profile2':
           trialData = createProfile2Data();
+          patientDemographic = {...profile2Demographics};
           break;
         case 'profile3':
           trialData = createProfile3Data();
+          patientDemographic = {...profile3Demographics};
           break;
         default:
           trialData = createEmptyTrialData();
+          patientDemographic = {...profile1Demographics}; // Default
       }
       
       updatedProfiles[profileIndex] = {
         ...updatedProfiles[profileIndex],
-        trialData
+        trialData,
+        patientDemographic,
+        diseaseBurdenScore: initialProfiles[profileIndex].diseaseBurdenScore
       };
       
       return updatedProfiles;
@@ -311,6 +409,7 @@ export const TrialDataProvider = ({ children }: { children: ReactNode }) => {
         getCurrentProfile,
         moveItem,
         resetProfile,
+        updatePatientDemographic
       }}
     >
       {children}

@@ -62,37 +62,37 @@ interface TrialDataContextType {
 
 // All items available for the trial
 const allItems: ComplexityItem[] = [
-  { id: '1', name: 'Frequent clinic visits', category: '', complexity: 65 },
-  { id: '2', name: 'Protocol complexity', category: '', complexity: 70 },
-  { id: '3', name: 'Travel requirements', category: '', complexity: 55 },
-  { id: '4', name: 'Duration of treatment', category: '', complexity: 60 },
-  { id: '5', name: 'Number of procedures', category: '', complexity: 75 },
-  { id: '6', name: 'Dosing frequency', category: '', complexity: 50 },
-  { id: '7', name: 'Dietary restrictions', category: '', complexity: 45 },
-  { id: '8', name: 'Time commitment', category: '', complexity: 80 },
-  { id: '9', name: 'Potential side effects', category: '', complexity: 65 },
-  { id: '10', name: 'Insurance coverage', category: '', complexity: 70 },
-  { id: '11', name: 'Support requirements', category: '', complexity: 60 },
-  { id: '12', name: 'Monitoring complexity', category: '', complexity: 55 },
+  { id: '1', name: 'Question 1', category: '', complexity: 65 },
+  { id: '2', name: 'Question 2', category: '', complexity: 70 },
+  { id: '3', name: 'Question 3', category: '', complexity: 55 },
+  { id: '4', name: 'Question 4', category: '', complexity: 60 },
+  { id: '5', name: 'Question 5', category: '', complexity: 75 },
+  { id: '6', name: 'Question 6', category: '', complexity: 50 },
+  { id: '7', name: 'Question 7', category: '', complexity: 45 },
+  { id: '8', name: 'Question 8', category: '', complexity: 80 },
+  { id: '9', name: 'Question 9', category: '', complexity: 65 },
+  { id: '10', name: 'Question 10', category: '', complexity: 70 },
+  { id: '11', name: 'Question 11', category: '', complexity: 60 },
+  { id: '12', name: 'Question 12', category: '', complexity: 55 },
 ];
 
 // Create profile 1 data (has mixed item distribution)
 const createProfile1Data = (): TrialData => {
   const categorizedItems: Record<CategoryType, ComplexityItem[]> = {
     [CATEGORIES.LOGISTICS]: [
-      { ...allItems[0], category: CATEGORIES.LOGISTICS }, // Frequent clinic visits
-      { ...allItems[2], category: CATEGORIES.LOGISTICS }, // Travel requirements
+      { ...allItems[0], category: CATEGORIES.LOGISTICS }, // Question 1
+      { ...allItems[2], category: CATEGORIES.LOGISTICS }, // Question 3
     ],
     [CATEGORIES.MOTIVATION]: [
-      { ...allItems[6], category: CATEGORIES.MOTIVATION }, // Dietary restrictions
-      { ...allItems[10], category: CATEGORIES.MOTIVATION }, // Support requirements
+      { ...allItems[6], category: CATEGORIES.MOTIVATION }, // Question 7
+      { ...allItems[10], category: CATEGORIES.MOTIVATION }, // Question 11
     ],
     [CATEGORIES.HEALTHCARE]: [
-      { ...allItems[4], category: CATEGORIES.HEALTHCARE }, // Number of procedures
-      { ...allItems[11], category: CATEGORIES.HEALTHCARE }, // Monitoring complexity
+      { ...allItems[4], category: CATEGORIES.HEALTHCARE }, // Question 5
+      { ...allItems[11], category: CATEGORIES.HEALTHCARE }, // Question 12
     ],
     [CATEGORIES.QUALITY]: [
-      { ...allItems[8], category: CATEGORIES.QUALITY }, // Potential side effects
+      { ...allItems[8], category: CATEGORIES.QUALITY }, // Question 9
     ],
   };
 
@@ -113,18 +113,18 @@ const createProfile1Data = (): TrialData => {
 const createProfile2Data = (): TrialData => {
   const categorizedItems: Record<CategoryType, ComplexityItem[]> = {
     [CATEGORIES.LOGISTICS]: [
-      { ...allItems[0], category: CATEGORIES.LOGISTICS }, // Frequent clinic visits
-      { ...allItems[2], category: CATEGORIES.LOGISTICS }, // Travel requirements
-      { ...allItems[7], category: CATEGORIES.LOGISTICS }, // Time commitment
+      { ...allItems[0], category: CATEGORIES.LOGISTICS }, // Question 1
+      { ...allItems[2], category: CATEGORIES.LOGISTICS }, // Question 3
+      { ...allItems[7], category: CATEGORIES.LOGISTICS }, // Question 8
     ],
     [CATEGORIES.MOTIVATION]: [],
     [CATEGORIES.HEALTHCARE]: [
-      { ...allItems[11], category: CATEGORIES.HEALTHCARE }, // Monitoring complexity
+      { ...allItems[11], category: CATEGORIES.HEALTHCARE }, // Question 12
     ],
     [CATEGORIES.QUALITY]: [
-      { ...allItems[8], category: CATEGORIES.QUALITY }, // Potential side effects
-      { ...allItems[6], category: CATEGORIES.QUALITY }, // Dietary restrictions
-      { ...allItems[5], category: CATEGORIES.QUALITY }, // Dosing frequency
+      { ...allItems[8], category: CATEGORIES.QUALITY }, // Question 9
+      { ...allItems[6], category: CATEGORIES.QUALITY }, // Question 7
+      { ...allItems[5], category: CATEGORIES.QUALITY }, // Question 6
     ],
   };
 

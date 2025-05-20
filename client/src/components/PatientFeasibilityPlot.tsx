@@ -4,7 +4,11 @@ import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend, 
 import { TrialDataContext, CATEGORIES, CategoryType } from "@/contexts/TrialDataContext";
 
 export default function PatientFeasibilityPlot() {
-  const { trialData } = useContext(TrialDataContext);
+  const { getCurrentProfile } = useContext(TrialDataContext);
+  
+  // Get the current profile data
+  const currentProfile = getCurrentProfile();
+  const trialData = currentProfile.trialData;
   
   // Define colors for each category
   const categoryColors = useMemo(() => ({
@@ -25,7 +29,7 @@ export default function PatientFeasibilityPlot() {
       
       // Add a datapoint for each category that has items
       Object.entries(trialData.complexityItems).forEach(([category, items]) => {
-        if (items.length > 0) {
+        if (items && items.length > 0) {
           result[category] = calculateCategoryValue(axis as CategoryType, category as CategoryType, items.length);
         }
       });
@@ -58,7 +62,8 @@ export default function PatientFeasibilityPlot() {
   
   // Check if there's data to display
   const hasDataToDisplay = useMemo(() => {
-    return Object.values(trialData.complexityItems).some(items => items.length > 0);
+    return trialData.complexityItems && 
+      Object.values(trialData.complexityItems).some(items => items && items.length > 0);
   }, [trialData.complexityItems]);
   
   // Legend items for the radar chart
@@ -83,10 +88,17 @@ export default function PatientFeasibilityPlot() {
   return (
     <Card className="border border-gray-100 shadow-sm lg:col-span-2">
       <CardContent className="p-6">
-        <h2 className="text-xl font-medium text-gray-800 mb-2">Patient Feasibility Plot</h2>
-        <p className="text-sm text-gray-500 mb-6">
-          Visual representation of the interaction between the elements of the Patient Experience
-        </p>
+        <div className="flex justify-between items-start mb-4">
+          <div>
+            <h2 className="text-xl font-medium text-gray-800 mb-2">Patient Feasibility Plot</h2>
+            <p className="text-sm text-gray-500">
+              Visual representation of the interaction between the elements of the Patient Experience
+            </p>
+          </div>
+          <div className="bg-blue-100 px-3 py-1 rounded-md text-blue-800 font-semibold">
+            Disease Burden: {currentProfile.diseaseBurdenScore}
+          </div>
+        </div>
         
         <div className="w-full h-80 flex justify-center items-center">
           {hasDataToDisplay ? (
@@ -103,7 +115,7 @@ export default function PatientFeasibilityPlot() {
                 
                 {/* Render a radar for each category that has items */}
                 {Object.entries(trialData.complexityItems).map(([category, items]) => {
-                  if (items.length === 0) return null;
+                  if (!items || items.length === 0) return null;
                   
                   return (
                     <Radar

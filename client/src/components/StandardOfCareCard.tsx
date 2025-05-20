@@ -1,14 +1,20 @@
+import { useContext } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { TrialDataContext } from "@/contexts/TrialDataContext";
 
 export default function StandardOfCareCard() {
   const { toast } = useToast();
+  const { getCurrentProfile } = useContext(TrialDataContext);
+  
+  // Get the current profile
+  const currentProfile = getCurrentProfile();
 
   const handleViewInsights = () => {
     toast({
       title: "Insights View",
-      description: "Insights functionality would open a detailed modal in the full application.",
+      description: `Insights for ${currentProfile.name} would open a detailed modal in the full application.`,
     });
   };
 
@@ -33,7 +39,7 @@ export default function StandardOfCareCard() {
         <div className="mt-8">
           <h3 className="text-lg text-gray-700 font-medium">Disease Burden Score</h3>
           <p className="text-sm text-gray-500 mb-2">Quantified score from Standard of Care</p>
-          <div className="text-4xl font-semibold text-gray-800">4.81</div>
+          <div className="text-4xl font-semibold text-gray-800">{currentProfile.diseaseBurdenScore}</div>
         </div>
       </CardContent>
     </Card>

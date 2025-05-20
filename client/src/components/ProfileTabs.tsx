@@ -1,32 +1,35 @@
 import { useContext } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TrialDataContext } from "@/contexts/TrialDataContext";
 
 export default function ProfileTabs() {
   const { profiles, currentProfileId, setCurrentProfileId } = useContext(TrialDataContext);
   
   return (
-    <div className="mb-6">
-      <Tabs 
-        defaultValue={currentProfileId} 
-        value={currentProfileId}
-        onValueChange={setCurrentProfileId}
-        className="w-full"
-      >
-        <div className="border-b mb-4">
-          <TabsList className="grid grid-cols-3">
-            {profiles.map((profile) => (
-              <TabsTrigger 
+    <div className="mb-8 mt-4">
+      <div className="w-full bg-white rounded-md shadow-sm">
+        <div className="flex justify-around relative">
+          {profiles.map((profile) => {
+            const isActive = profile.id === currentProfileId;
+            
+            return (
+              <button
                 key={profile.id}
-                value={profile.id}
-                className="py-3 text-base data-[state=active]:border-b-2 data-[state=active]:border-primary"
+                className={`relative py-4 px-6 w-full text-center font-medium text-base transition-colors ${
+                  isActive 
+                    ? "text-gray-900" 
+                    : "text-gray-500 hover:text-gray-700"
+                }`}
+                onClick={() => setCurrentProfileId(profile.id)}
               >
                 {profile.name}
-              </TabsTrigger>
-            ))}
-          </TabsList>
+                {isActive && (
+                  <div className="absolute bottom-0 left-0 w-full h-0.5 bg-pink-600"></div>
+                )}
+              </button>
+            );
+          })}
         </div>
-      </Tabs>
+      </div>
     </div>
   );
 }

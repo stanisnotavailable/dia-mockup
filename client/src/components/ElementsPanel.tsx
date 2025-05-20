@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { TrialDataContext, ComplexityItem, CategoryType } from "@/contexts/TrialDataContext";
@@ -6,26 +6,66 @@ import { TrialDataContext, ComplexityItem, CategoryType } from "@/contexts/Trial
 export default function ElementsPanel() {
   const { getCurrentProfile, moveItem, resetProfile } = useContext(TrialDataContext);
   const [draggedItem, setDraggedItem] = useState<ComplexityItem | null>(null);
+  const [isDraggedOver, setIsDraggedOver] = useState(false);
   
   // Get the current profile data
   const currentProfile = getCurrentProfile();
   const trialData = currentProfile.trialData;
 
+  // Reset dragged item when it's released without a proper drop
+  useEffect(() => {
+    const handleGlobalDragEnd = () => {
+      setDraggedItem(null);
+      setIsDraggedOver(false);
+    };
+    
+    window.addEventListener('dragend', handleGlobalDragEnd);
+    return () => {
+      window.removeEventListener('dragend', handleGlobalDragEnd);
+    };
+  }, []);
+
   // Handle starting to drag an item
-  const handleDragStart = (item: ComplexityItem) => {
+  const handleDragStart = (e: React.DragEvent, item: ComplexityItem) => {
+    e.dataTransfer.effectAllowed = "move";
+    // Store the item ID in dataTransfer
+    e.dataTransfer.setData("text/plain", item.id);
     setDraggedItem(item);
   };
 
   // Handle the drag over event to enable dropping
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault(); // This is necessary to allow dropping
+    e.dataTransfer.dropEffect = "move";
+    setIsDraggedOver(true);
+  };
+  
+  // Handle drag leaving the element
+  const handleDragLeave = () => {
+    setIsDraggedOver(false);
   };
 
   // Handle dropping an item back to available items
-  const handleDropToAvailable = () => {
-    if (draggedItem && draggedItem.category !== '') {
-      moveItem(draggedItem, '');
-      setDraggedItem(null);
+  const handleDropToAvailable = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDraggedOver(false);
+    
+    // Get the item ID from dataTransfer
+    const itemId = e.dataTransfer.getData("text/plain");
+    
+    // Find the item from either availableItems or any category
+    let foundItem = trialData.availableItems.find(item => item.id === itemId);
+    
+    if (!foundItem) {
+      // Search through all categories
+      for (const category of Object.values(trialData.complexityItems)) {
+        foundItem = category.find(item => item.id === itemId);
+        if (foundItem) break;
+      }
+    }
+    
+    if (foundItem && foundItem.category !== '') {
+      moveItem(foundItem, '');
     }
   };
 
@@ -34,7 +74,7 @@ export default function ElementsPanel() {
     return (
       <div
         draggable={isDraggable}
-        onDragStart={() => handleDragStart(item)}
+        onDragStart={(e) => handleDragStart(e, item)}
         className="bg-gray-100 border-gray-300 py-1 px-2 my-1 rounded border cursor-move shadow-sm transition-all hover:shadow-md flex items-center justify-between"
       >
         <div className="font-medium text-xs">{item.name}</div>
@@ -68,8 +108,11 @@ export default function ElementsPanel() {
         </p>
         
         <div 
-          className="border rounded-md p-2 bg-gray-50 flex-grow overflow-hidden"
+          className={`border rounded-md p-2 bg-gray-50 flex-grow overflow-hidden ${
+            isDraggedOver ? "border-blue-400 bg-blue-50 ring-2 ring-blue-200" : ""
+          }`}
           onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
           onDrop={handleDropToAvailable}
         >
           <div className="overflow-y-auto h-full">

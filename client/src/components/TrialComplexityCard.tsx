@@ -1,10 +1,11 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { TrialDataContext, ComplexityItem, CATEGORIES, CategoryType } from "@/contexts/TrialDataContext";
 
 export default function TrialComplexityCard() {
   const { getCurrentProfile, moveItem } = useContext(TrialDataContext);
   const [draggedItem, setDraggedItem] = useState<ComplexityItem | null>(null);
+  const [draggedOverCategory, setDraggedOverCategory] = useState<string | null>(null);
   
   // Get the current profile data
   const currentProfile = getCurrentProfile();
@@ -26,21 +27,60 @@ export default function TrialComplexityCard() {
     [CATEGORIES.QUALITY]: "bg-purple-50",
   };
 
+  // Reset dragged item when it's released without a proper drop
+  useEffect(() => {
+    const handleGlobalDragEnd = () => {
+      setDraggedItem(null);
+      setDraggedOverCategory(null);
+    };
+    
+    window.addEventListener('dragend', handleGlobalDragEnd);
+    return () => {
+      window.removeEventListener('dragend', handleGlobalDragEnd);
+    };
+  }, []);
+
   // Handle starting to drag an item
-  const handleDragStart = (item: ComplexityItem) => {
+  const handleDragStart = (e: React.DragEvent, item: ComplexityItem) => {
+    e.dataTransfer.effectAllowed = "move";
+    // Store the item ID in dataTransfer
+    e.dataTransfer.setData("text/plain", item.id);
     setDraggedItem(item);
   };
 
   // Handle the drag over event to enable dropping
-  const handleDragOver = (e: React.DragEvent) => {
+  const handleDragOver = (e: React.DragEvent, category: string) => {
     e.preventDefault(); // This is necessary to allow dropping
+    e.dataTransfer.dropEffect = "move";
+    setDraggedOverCategory(category);
+  };
+
+  // Handle drag leaving a category
+  const handleDragLeave = () => {
+    setDraggedOverCategory(null);
   };
 
   // Handle dropping an item into a category
-  const handleDrop = (category: string) => {
-    if (draggedItem) {
-      moveItem(draggedItem, category);
-      setDraggedItem(null);
+  const handleDrop = (e: React.DragEvent, category: string) => {
+    e.preventDefault();
+    setDraggedOverCategory(null);
+    
+    // Get the item ID from dataTransfer
+    const itemId = e.dataTransfer.getData("text/plain");
+    
+    // Find the item from either availableItems or any category
+    let foundItem = trialData.availableItems.find(item => item.id === itemId);
+    
+    if (!foundItem) {
+      // Search through all categories
+      for (const categoryItems of Object.values(trialData.complexityItems)) {
+        foundItem = categoryItems.find(item => item.id === itemId);
+        if (foundItem) break;
+      }
+    }
+    
+    if (foundItem) {
+      moveItem(foundItem, category);
     }
   };
 
@@ -51,7 +91,7 @@ export default function TrialComplexityCard() {
     return (
       <div
         draggable
-        onDragStart={() => handleDragStart(item)}
+        onDragStart={(e) => handleDragStart(e, item)}
         className={`${itemClass} py-1 px-2 my-1 rounded border cursor-move shadow-sm transition-all hover:shadow-md flex items-center justify-between`}
       >
         <div className="font-medium text-xs">{item.name}</div>
@@ -72,36 +112,45 @@ export default function TrialComplexityCard() {
         
         {/* Categories grid - 2x2 layout */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {Object.entries(CATEGORIES).map(([key, category]) => (
-            <div 
-              key={category}
-              className={`${categoryBgColors[category as CategoryType]} border rounded-md p-3 transition-all ${
-                draggedItem ? "ring-1 ring-blue-400" : ""
-              }`}
-              onDragOver={handleDragOver}
-              onDrop={() => handleDrop(category)}
-            >
-              <div className="flex justify-between items-center mb-2">
-                <h3 className={`font-medium ${categoryColors[category as CategoryType].split(" ").slice(-1)[0]}`}>
-                  {category}
-                </h3>
-                <span className="text-xs bg-white rounded-full px-2 py-0.5 border">
-                  {trialData.complexityItems[category].length} items
-                </span>
+          {Object.entries(CATEGORIES).map(([key, category]) => {
+            const isDropTarget = draggedOverCategory === category;
+            
+            return (
+              <div 
+                key={category}
+                className={`${categoryBgColors[category as CategoryType]} border rounded-md p-3 transition-all ${
+                  isDropTarget 
+                    ? `ring-2 ring-${key.toLowerCase()}-400 border-${key.toLowerCase()}-400` 
+                    : ""
+                }`}
+                onDragOver={(e) => handleDragOver(e, category)}
+                onDragLeave={handleDragLeave}
+                onDrop={(e) => handleDrop(e, category)}
+              >
+                <div className="flex justify-between items-center mb-2">
+                  <h3 className={`font-medium ${categoryColors[category as CategoryType].split(" ").slice(-1)[0]}`}>
+                    {category}
+                  </h3>
+                  <span className="text-xs bg-white rounded-full px-2 py-0.5 border">
+                    {trialData.complexityItems[category].length} items
+                  </span>
+                </div>
+                
+                <div className="overflow-y-auto pr-1" style={{ height: "135px" }}>
+                  {trialData.complexityItems[category].map((item: ComplexityItem) => (
+                    <ComplexityItemComponent key={item.id} item={item} />
+                  ))}
+                  {trialData.complexityItems[category].length === 0 && (
+                    <div className={`text-gray-400 text-sm text-center py-8 border border-dashed rounded-md ${
+                      isDropTarget ? "bg-white bg-opacity-50" : ""
+                    }`}>
+                      Drop elements here
+                    </div>
+                  )}
+                </div>
               </div>
-              
-              <div className="overflow-y-auto pr-1" style={{ height: "135px" }}>
-                {trialData.complexityItems[category].map((item: ComplexityItem) => (
-                  <ComplexityItemComponent key={item.id} item={item} />
-                ))}
-                {trialData.complexityItems[category].length === 0 && (
-                  <div className="text-gray-400 text-sm text-center py-8 border border-dashed rounded-md">
-                    Drop elements here
-                  </div>
-                )}
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
         
         <div className="text-xs text-gray-600 mt-3 p-2 bg-gray-50 rounded flex items-center">

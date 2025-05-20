@@ -26,5 +26,55 @@
     "Quality of Life": [
       { "profile1": ["9"], "profile2": ["9", "7", "6"], "profile3": [] }
     ]
-  }
+  },
+  "patientDemographics": {
+    "profile1": {
+      "age": 42,
+      "gender": "Female",
+      "ethnicity": "Caucasian",
+      "location": "Urban",
+      "medicalHistory": ["Hypertension", "Type 2 Diabetes"],
+      "weight": 68,
+      "height": 165,
+      "compliance": 85,
+      "diseaseBurdenScore": 4.81
+    },
+    "profile2": {
+      "age": 65,
+      "gender": "Male",
+      "ethnicity": "African American",
+      "location": "Suburban",
+      "medicalHistory": ["COPD", "Arthritis"],
+      "weight": 82,
+      "height": 178,
+      "compliance": 70,
+      "diseaseBurdenScore": 3.92
+    },
+    "profile3": {
+      "age": 29,
+      "gender": "Female",
+      "ethnicity": "Hispanic",
+      "location": "Rural",
+      "medicalHistory": ["Asthma"],
+      "weight": 61,
+      "height": 160,
+      "compliance": 92,
+      "diseaseBurdenScore": 5.23
+    }
+  },
+  "profiles": [
+    {
+      "id": "profile1",
+      "name": "Profile 1"
+    },
+    {
+      "id": "profile2",
+      "name": "Profile 2"
+    },
+    {
+      "id": "profile3",
+      "name": "Profile 3"
+    }
+  ],
+  "loadingTime": 10000
 }

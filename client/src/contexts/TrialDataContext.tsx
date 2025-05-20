@@ -63,6 +63,25 @@ interface TrialDataContextType {
 // Import questions data from JSON file
 import questionsData from '@/data/questions.json';
 
+// Define types for the JSON data
+interface QuestionData {
+  items: ComplexityItem[];
+  categories: Record<string, Array<Record<string, string[]>>>;
+  patientDemographics: Record<string, {
+    age: number;
+    gender: string;
+    ethnicity: string;
+    location: string;
+    medicalHistory: string[];
+    weight: number;
+    height: number;
+    compliance: number;
+    diseaseBurdenScore: number;
+  }>;
+  profiles: Array<{id: string; name: string}>;
+  loadingTime: number;
+}
+
 // All items available for the trial
 const allItems: ComplexityItem[] = questionsData.items.map(item => ({
   ...item,
@@ -202,64 +221,37 @@ const createEmptyTrialData = (): TrialData => {
   };
 };
 
-// Create initial demographic data for the three profiles
-const profile1Demographics: PatientDemographic = {
-  age: 42,
-  gender: 'Female',
-  ethnicity: 'Caucasian',
-  location: 'Urban',
-  medicalHistory: ['Hypertension', 'Type 2 Diabetes'],
-  weight: 68,
-  height: 165,
-  compliance: 85
-};
-
-const profile2Demographics: PatientDemographic = {
-  age: 65,
-  gender: 'Male',
-  ethnicity: 'African American',
-  location: 'Suburban',
-  medicalHistory: ['COPD', 'Arthritis'],
-  weight: 82,
-  height: 178,
-  compliance: 70
-};
-
-const profile3Demographics: PatientDemographic = {
-  age: 29,
-  gender: 'Female',
-  ethnicity: 'Hispanic',
-  location: 'Rural',
-  medicalHistory: ['Asthma'],
-  weight: 61,
-  height: 160,
-  compliance: 92
+// Get demographic data from the JSON file
+const getDemographicData = (profileId: string): PatientDemographic => {
+  // Using type assertion to handle string index access
+  const demographics = (questionsData as QuestionData).patientDemographics[profileId];
+  
+  return {
+    age: demographics.age,
+    gender: demographics.gender,
+    ethnicity: demographics.ethnicity,
+    location: demographics.location,
+    medicalHistory: demographics.medicalHistory,
+    weight: demographics.weight,
+    height: demographics.height,
+    compliance: demographics.compliance
+  };
 };
 
 // Initial profiles
-const initialProfiles: Profile[] = [
-  {
-    id: 'profile1',
-    name: 'Profile 1',
-    trialData: createProfile1Data(),
-    diseaseBurdenScore: 4.81,
-    patientDemographic: profile1Demographics
-  },
-  {
-    id: 'profile2',
-    name: 'Profile 2',
-    trialData: createProfile2Data(),
-    diseaseBurdenScore: 3.92,
-    patientDemographic: profile2Demographics
-  },
-  {
-    id: 'profile3',
-    name: 'Profile 3',
-    trialData: createProfile3Data(),
-    diseaseBurdenScore: 5.23,
-    patientDemographic: profile3Demographics
-  }
-];
+const initialProfiles: Profile[] = (questionsData as QuestionData).profiles.map(profile => {
+  return {
+    id: profile.id,
+    name: profile.name,
+    trialData: profile.id === 'profile1' 
+      ? createProfile1Data() 
+      : profile.id === 'profile2' 
+        ? createProfile2Data() 
+        : createProfile3Data(),
+    diseaseBurdenScore: (questionsData as QuestionData).patientDemographics[profile.id].diseaseBurdenScore,
+    patientDemographic: getDemographicData(profile.id)
+  };
+});
 
 // Create context with default values
 export const TrialDataContext = createContext<TrialDataContextType>({
@@ -281,11 +273,11 @@ export const TrialDataProvider = ({ children }: { children: ReactNode }) => {
   const [profiles, setProfiles] = useState<Profile[]>(initialProfiles);
   const [currentProfileId, setCurrentProfileId] = useState<string>('profile1');
   
-  // Simulate loading data from an API
+  // Simulate loading data from an API with time from the JSON file
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 10000); // Simulate a 10-second load time
+    }, (questionsData as any).loadingTime || 10000); // Use the loading time from JSON or default to 10 seconds
     
     return () => clearTimeout(timer);
   }, []);
@@ -396,32 +388,31 @@ export const TrialDataProvider = ({ children }: { children: ReactNode }) => {
       
       const profileId = updatedProfiles[profileIndex].id;
       let trialData: TrialData;
-      let patientDemographic: PatientDemographic;
       
       // Use the appropriate initial data based on profile ID
       switch(profileId) {
         case 'profile1':
           trialData = createProfile1Data();
-          patientDemographic = {...profile1Demographics};
           break;
         case 'profile2':
           trialData = createProfile2Data();
-          patientDemographic = {...profile2Demographics};
           break;
         case 'profile3':
           trialData = createProfile3Data();
-          patientDemographic = {...profile3Demographics};
           break;
         default:
           trialData = createEmptyTrialData();
-          patientDemographic = {...profile1Demographics}; // Default
       }
+      
+      // Get fresh demographic data from JSON
+      const freshDemographicData = getDemographicData(profileId);
+      const originalBurdenScore = (questionsData as QuestionData).patientDemographics[profileId].diseaseBurdenScore;
       
       updatedProfiles[profileIndex] = {
         ...updatedProfiles[profileIndex],
         trialData,
-        patientDemographic,
-        diseaseBurdenScore: initialProfiles[profileIndex].diseaseBurdenScore
+        patientDemographic: freshDemographicData,
+        diseaseBurdenScore: originalBurdenScore
       };
       
       return updatedProfiles;

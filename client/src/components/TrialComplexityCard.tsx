@@ -1,144 +1,165 @@
-import { useContext } from "react";
+import { useContext, useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
-import { Slider } from "@/components/ui/slider";
-import { TrialDataContext } from "@/contexts/TrialDataContext";
+import { Button } from "@/components/ui/button";
+import { TrialDataContext, ComplexityItem, CATEGORIES } from "@/contexts/TrialDataContext";
+import { AgGridReact } from "ag-grid-react";
+import { ColDef, RowDragEndEvent } from "ag-grid-community";
+
+// Import AG Grid styles in the actual page component
+import "ag-grid-community/styles/ag-grid.css";
+import "ag-grid-community/styles/ag-theme-alpine.css";
 
 export default function TrialComplexityCard() {
-  const { 
-    trialData, 
-    setInclusionSelected, 
-    setSequenceSelected, 
-    setLifestyleSelected, 
-    setOtherSelected,
-    setSequenceValue,
-    setLifestyleValue,
-    setOtherValue
-  } = useContext(TrialDataContext);
+  const { trialData, moveItem, resetItems } = useContext(TrialDataContext);
+  
+  // Get the data for the available items list
+  const availableItemsData = useMemo(() => {
+    return trialData.availableItems;
+  }, [trialData.availableItems]);
+  
+  // Create the column definitions for available items
+  const availableItemsColDefs: ColDef[] = useMemo(() => [
+    {
+      field: 'name',
+      headerName: 'Available Trial Complexity Elements',
+      flex: 1,
+      rowDrag: true,
+    }
+  ], []);
+  
+  // Create category grid configurations
+  const categoryGridConfigs = useMemo(() => {
+    return [
+      {
+        category: CATEGORIES.LOGISTICS,
+        title: CATEGORIES.LOGISTICS,
+        color: 'primary', // Blue color
+        data: trialData.complexityItems[CATEGORIES.LOGISTICS]
+      },
+      {
+        category: CATEGORIES.MOTIVATION,
+        title: CATEGORIES.MOTIVATION,
+        color: 'pink-500', // Pink color
+        data: trialData.complexityItems[CATEGORIES.MOTIVATION]
+      },
+      {
+        category: CATEGORIES.HEALTHCARE,
+        title: CATEGORIES.HEALTHCARE,
+        color: 'green-500', // Green color
+        data: trialData.complexityItems[CATEGORIES.HEALTHCARE]
+      },
+      {
+        category: CATEGORIES.QUALITY,
+        title: CATEGORIES.QUALITY,
+        color: 'purple-500', // Purple color
+        data: trialData.complexityItems[CATEGORIES.QUALITY]
+      },
+    ];
+  }, [trialData.complexityItems]);
+  
+  // Create column definitions for category grids
+  const getCategoryColDefs = useMemo((): ColDef[] => [
+    {
+      field: 'name',
+      headerName: 'Element',
+      flex: 1,
+      rowDrag: true,
+    }
+  ], []);
+  
+  // Handle row drag end for available items
+  const onAvailableItemDragEnd = (event: RowDragEndEvent) => {
+    const item = event.node.data as ComplexityItem;
+    // Check if the drop was external (to one of the category grids)
+    if (event.overNode && event.overNode.data) {
+      // This is not needed as it handled by the category grid
+    } else if (event.vDirection === 'up') {
+      // Get the containing element of the grid
+      const gridEl = event.event?.target as HTMLElement;
+      const closestContainer = gridEl.closest('.category-container');
+      
+      if (closestContainer) {
+        const category = closestContainer.getAttribute('data-category');
+        if (category) {
+          moveItem(item, category);
+        }
+      }
+    }
+  };
 
+  // Handle row drag end for category items
+  const onCategoryItemDragEnd = (event: RowDragEndEvent, category: string) => {
+    const item = event.node.data as ComplexityItem;
+    
+    // Check if the drop was external
+    if (event.vDirection === 'up') {
+      // Get the containing element of the grid
+      const gridEl = event.event?.target as HTMLElement;
+      const closestContainer = gridEl.closest('.category-container');
+      
+      if (closestContainer) {
+        const targetCategory = closestContainer.getAttribute('data-category');
+        if (targetCategory && targetCategory !== category) {
+          moveItem(item, targetCategory);
+        }
+      } else {
+        // Move back to available items
+        moveItem(item, '');
+      }
+    }
+  };
+  
   return (
-    <Card className="border border-gray-100 shadow-sm">
+    <Card className="border border-gray-100 shadow-sm lg:col-span-2">
       <CardContent className="p-6">
-        <h2 className="text-xl font-medium text-gray-800 mb-2">Trial Complexity Elements</h2>
-        <p className="text-sm text-gray-500 mb-6">
-          Key metrics from trial design affecting the patient experience
-        </p>
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h2 className="text-xl font-medium text-gray-800 mb-2">Trial Complexity Elements</h2>
+            <p className="text-sm text-gray-500">
+              Drag elements to categorize them and affect patient experience metrics
+            </p>
+          </div>
+          <Button onClick={resetItems} variant="outline">
+            Reset Elements
+          </Button>
+        </div>
         
-        <div className="space-y-6">
-          {/* Inclusion criteria */}
-          <div className="flex items-start space-x-2">
-            <Checkbox 
-              id="inclusion-criteria" 
-              checked={trialData.inclusionSelected}
-              onCheckedChange={(checked) => setInclusionSelected(checked as boolean)}
-              className="mt-1"
+        {/* Available items grid */}
+        <div className="mb-6 border rounded-md p-4">
+          <h3 className="text-md font-medium text-gray-700 mb-3">Available Elements</h3>
+          <div className="ag-theme-alpine w-full" style={{ height: '150px' }}>
+            <AgGridReact
+              rowData={availableItemsData}
+              columnDefs={availableItemsColDefs}
+              rowDragManaged={true}
+              animateRows={true}
+              onRowDragEnd={onAvailableItemDragEnd}
+              suppressMovableColumns={true}
+              suppressRowClickSelection={true}
             />
-            <div className="grid gap-1.5 leading-none">
-              <Label htmlFor="inclusion-criteria" className="text-gray-700">
-                Inclusion criteria
-              </Label>
-            </div>
           </div>
-          
-          {/* Sequence */}
-          <div className="space-y-2">
-            <div className="flex items-start space-x-2">
-              <Checkbox 
-                id="sequence" 
-                checked={trialData.sequenceSelected}
-                onCheckedChange={(checked) => setSequenceSelected(checked as boolean)}
-                className="mt-1"
-              />
-              <div className="grid gap-1.5 leading-none">
-                <Label htmlFor="sequence" className="text-gray-700">
-                  Sequence
-                </Label>
+        </div>
+        
+        {/* Category grids in a grid layout */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {categoryGridConfigs.map((config) => (
+            <div key={config.category} className={`category-container border rounded-md p-4`} data-category={config.category}>
+              <h3 className={`text-md font-medium text-${config.color} mb-3`}>
+                {config.title} ({config.data.length})
+              </h3>
+              <div className="ag-theme-alpine w-full" style={{ height: '150px' }}>
+                <AgGridReact
+                  rowData={config.data}
+                  columnDefs={getCategoryColDefs}
+                  rowDragManaged={true}
+                  animateRows={true}
+                  onRowDragEnd={(e) => onCategoryItemDragEnd(e, config.category)}
+                  suppressMovableColumns={true}
+                  suppressRowClickSelection={true}
+                />
               </div>
             </div>
-            
-            <div className="pl-7 mt-3">
-              <Slider
-                value={[trialData.sequenceValue]}
-                min={5}
-                max={15}
-                step={1}
-                className="w-full accent-pink-500"
-                onValueChange={(value) => setSequenceValue(value[0])}
-                disabled={!trialData.sequenceSelected}
-              />
-              <div className="flex justify-between text-xs text-gray-500 mt-1">
-                <span>5</span>
-                <span>15+</span>
-              </div>
-            </div>
-          </div>
-          
-          {/* Lifestyle adjustments */}
-          <div className="space-y-2">
-            <div className="flex items-start space-x-2">
-              <Checkbox 
-                id="lifestyle-adjustments" 
-                checked={trialData.lifestyleSelected}
-                onCheckedChange={(checked) => setLifestyleSelected(checked as boolean)}
-                className="mt-1"
-              />
-              <div className="grid gap-1.5 leading-none">
-                <Label htmlFor="lifestyle-adjustments" className="text-gray-700">
-                  Lifestyle adjustments
-                </Label>
-              </div>
-            </div>
-            
-            <div className="pl-7 mt-3">
-              <Slider
-                value={[trialData.lifestyleValue]}
-                min={3}
-                max={7}
-                step={1}
-                className="w-full accent-green-500"
-                onValueChange={(value) => setLifestyleValue(value[0])}
-                disabled={!trialData.lifestyleSelected}
-              />
-              <div className="flex justify-between text-xs text-gray-500 mt-1">
-                <span>3</span>
-                <span>7+</span>
-              </div>
-            </div>
-          </div>
-          
-          {/* Other parameter */}
-          <div className="space-y-2">
-            <div className="flex items-start space-x-2">
-              <Checkbox 
-                id="other-parameter" 
-                checked={trialData.otherSelected}
-                onCheckedChange={(checked) => setOtherSelected(checked as boolean)}
-                className="mt-1"
-              />
-              <div className="grid gap-1.5 leading-none">
-                <Label htmlFor="other-parameter" className="text-gray-700">
-                  Other parameter
-                </Label>
-              </div>
-            </div>
-            
-            <div className="pl-7 mt-3">
-              <Slider
-                value={[trialData.otherValue]}
-                min={0}
-                max={100}
-                step={1}
-                className="w-full accent-blue-500"
-                onValueChange={(value) => setOtherValue(value[0])}
-                disabled={!trialData.otherSelected}
-              />
-              <div className="flex justify-between text-xs text-gray-500 mt-1">
-                <span>XXX</span>
-                <span>YYY</span>
-              </div>
-            </div>
-          </div>
+          ))}
         </div>
       </CardContent>
     </Card>

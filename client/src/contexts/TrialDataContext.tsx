@@ -145,18 +145,18 @@ const createProfile2Data = (): TrialData => {
 const createProfile3Data = (): TrialData => {
   const categorizedItems: Record<CategoryType, ComplexityItem[]> = {
     [CATEGORIES.LOGISTICS]: [
-      { ...allItems[2], category: CATEGORIES.LOGISTICS }, // Travel requirements
+      { ...allItems[2], category: CATEGORIES.LOGISTICS }, // Question 3
     ],
     [CATEGORIES.MOTIVATION]: [
-      { ...allItems[6], category: CATEGORIES.MOTIVATION }, // Dietary restrictions
-      { ...allItems[10], category: CATEGORIES.MOTIVATION }, // Support requirements
-      { ...allItems[9], category: CATEGORIES.MOTIVATION }, // Insurance coverage
-      { ...allItems[3], category: CATEGORIES.MOTIVATION }, // Duration of treatment
+      { ...allItems[6], category: CATEGORIES.MOTIVATION }, // Question 7
+      { ...allItems[10], category: CATEGORIES.MOTIVATION }, // Question 11
+      { ...allItems[9], category: CATEGORIES.MOTIVATION }, // Question 10
+      { ...allItems[3], category: CATEGORIES.MOTIVATION }, // Question 4
     ],
     [CATEGORIES.HEALTHCARE]: [
-      { ...allItems[4], category: CATEGORIES.HEALTHCARE }, // Number of procedures
-      { ...allItems[11], category: CATEGORIES.HEALTHCARE }, // Monitoring complexity
-      { ...allItems[1], category: CATEGORIES.HEALTHCARE }, // Protocol complexity
+      { ...allItems[4], category: CATEGORIES.HEALTHCARE }, // Question 5
+      { ...allItems[11], category: CATEGORIES.HEALTHCARE }, // Question 12
+      { ...allItems[1], category: CATEGORIES.HEALTHCARE }, // Question 2
     ],
     [CATEGORIES.QUALITY]: [],
   };

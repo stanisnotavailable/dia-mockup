@@ -68,11 +68,11 @@ export default function ElementsPanel() {
         </p>
         
         <div 
-          className="border rounded-md p-2 bg-gray-50 h-[calc(100%-50px)]"
+          className="border rounded-md p-2 bg-gray-50 h-full"
           onDragOver={handleDragOver}
           onDrop={handleDropToAvailable}
         >
-          <div className="overflow-y-auto h-full" style={{ maxHeight: "350px" }}>
+          <div className="overflow-y-auto" style={{ maxHeight: "400px" }}>
             {trialData.availableItems.map((item: ComplexityItem) => (
               <ComplexityItemComponent key={item.id} item={item} />
             ))}
@@ -82,14 +82,6 @@ export default function ElementsPanel() {
                 Drag items back here to return them to the available pool.
               </div>
             )}
-          </div>
-        </div>
-        
-        <div className="mt-3 py-2 px-3 bg-blue-50 rounded text-xs text-blue-800 flex items-center">
-          <div className="rounded-full bg-blue-100 text-blue-700 w-5 h-5 flex items-center justify-center mr-2 font-bold">i</div>
-          <div>
-            Disease Burden Score: <span className="font-semibold">{currentProfile.diseaseBurdenScore}</span>
-            <div className="text-xs mt-1">Score is specific to each profile and impacts the feasibility plot</div>
           </div>
         </div>
       </CardContent>

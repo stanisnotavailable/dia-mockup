@@ -1,4 +1,30 @@
 {
+  "allQuestions": [
+    {"id": "q1", "name": "Question 1"},
+    {"id": "q2", "name": "Question 2"},
+    {"id": "q3", "name": "Question 3"},
+    {"id": "q4", "name": "Question 4"},
+    {"id": "q5", "name": "Question 5"},
+    {"id": "q6", "name": "Question 6"},
+    {"id": "q7", "name": "Question 7"},
+    {"id": "q8", "name": "Question 8"},
+    {"id": "q9", "name": "Question 9"},
+    {"id": "q10", "name": "Question 10"},
+    {"id": "q11", "name": "Question 11"},
+    {"id": "q12", "name": "Question 12"},
+    {"id": "q13", "name": "Question 13"},
+    {"id": "q14", "name": "Question 14"},
+    {"id": "q15", "name": "Question 15"},
+    {"id": "q16", "name": "Question 16"},
+    {"id": "q17", "name": "Question 17"},
+    {"id": "q18", "name": "Question 18"},
+    {"id": "q19", "name": "Question 19"},
+    {"id": "q20", "name": "Question 20"},
+    {"id": "q21", "name": "Question 21"},
+    {"id": "q22", "name": "Question 22"},
+    {"id": "q23", "name": "Question 23"},
+    {"id": "q24", "name": "Question 24"}
+  ],
   "profile1": {
     "profile_details": {
       "origin": [
@@ -15,50 +41,22 @@
       {
         "name": "Logistics Challenge",
         "model_value": 4.5,
-        "questions": [
-          { "id": "1", "name": "Question 1" },
-          { "id": "2", "name": "Question 2" },
-          { "id": "3", "name": "Question 3" },
-          { "id": "4", "name": "Question 4" },
-          { "id": "5", "name": "Question 5" },
-          { "id": "6", "name": "Question 6" }
-        ]
+        "questions": []
       },
       {
         "name": "Motivation",
         "model_value": 3.7,
-        "questions": [
-          { "id": "7", "name": "Question 7" },
-          { "id": "8", "name": "Question 8" },
-          { "id": "9", "name": "Question 9" },
-          { "id": "10", "name": "Question 10" },
-          { "id": "11", "name": "Question 11" },
-          { "id": "12", "name": "Question 12" }
-        ]
+        "questions": []
       },
       {
         "name": "Healthcare Engagement",
         "model_value": 2.2,
-        "questions": [
-          { "id": "13", "name": "Question 13" },
-          { "id": "14", "name": "Question 14" },
-          { "id": "15", "name": "Question 15" },
-          { "id": "16", "name": "Question 16" },
-          { "id": "17", "name": "Question 17" },
-          { "id": "18", "name": "Question 18" }
-        ]
+        "questions": []
       },
       {
         "name": "Quality of Life",
         "model_value": 1.5,
-        "questions": [
-          { "id": "19", "name": "Question 19" },
-          { "id": "20", "name": "Question 20" },
-          { "id": "21", "name": "Question 21" },
-          { "id": "22", "name": "Question 22" },
-          { "id": "23", "name": "Question 23" },
-          { "id": "24", "name": "Question 24" }
-        ]
+        "questions": []
       }
     ]
   },
@@ -78,50 +76,22 @@
       {
         "name": "Logistics Challenge",
         "model_value": 2.8,
-        "questions": [
-          { "id": "1", "name": "Question 1" },
-          { "id": "2", "name": "Question 2" },
-          { "id": "3", "name": "Question 3" },
-          { "id": "4", "name": "Question 4" },
-          { "id": "5", "name": "Question 5" },
-          { "id": "6", "name": "Question 6" }
-        ]
+        "questions": []
       },
       {
         "name": "Motivation",
         "model_value": 5.2,
-        "questions": [
-          { "id": "7", "name": "Question 7" },
-          { "id": "8", "name": "Question 8" },
-          { "id": "9", "name": "Question 9" },
-          { "id": "10", "name": "Question 10" },
-          { "id": "11", "name": "Question 11" },
-          { "id": "12", "name": "Question 12" }
-        ]
+        "questions": []
       },
       {
         "name": "Healthcare Engagement",
         "model_value": 3.4,
-        "questions": [
-          { "id": "13", "name": "Question 13" },
-          { "id": "14", "name": "Question 14" },
-          { "id": "15", "name": "Question 15" },
-          { "id": "16", "name": "Question 16" },
-          { "id": "17", "name": "Question 17" },
-          { "id": "18", "name": "Question 18" }
-        ]
+        "questions": []
       },
       {
         "name": "Quality of Life",
         "model_value": 4.1,
-        "questions": [
-          { "id": "19", "name": "Question 19" },
-          { "id": "20", "name": "Question 20" },
-          { "id": "21", "name": "Question 21" },
-          { "id": "22", "name": "Question 22" },
-          { "id": "23", "name": "Question 23" },
-          { "id": "24", "name": "Question 24" }
-        ]
+        "questions": []
       }
     ]
   },
@@ -141,50 +111,22 @@
       {
         "name": "Logistics Challenge",
         "model_value": 1.9,
-        "questions": [
-          { "id": "1", "name": "Question 1" },
-          { "id": "2", "name": "Question 2" },
-          { "id": "3", "name": "Question 3" },
-          { "id": "4", "name": "Question 4" },
-          { "id": "5", "name": "Question 5" },
-          { "id": "6", "name": "Question 6" }
-        ]
+        "questions": []
       },
       {
         "name": "Motivation",
         "model_value": 4.3,
-        "questions": [
-          { "id": "7", "name": "Question 7" },
-          { "id": "8", "name": "Question 8" },
-          { "id": "9", "name": "Question 9" },
-          { "id": "10", "name": "Question 10" },
-          { "id": "11", "name": "Question 11" },
-          { "id": "12", "name": "Question 12" }
-        ]
+        "questions": []
       },
       {
         "name": "Healthcare Engagement",
         "model_value": 5.5,
-        "questions": [
-          { "id": "13", "name": "Question 13" },
-          { "id": "14", "name": "Question 14" },
-          { "id": "15", "name": "Question 15" },
-          { "id": "16", "name": "Question 16" },
-          { "id": "17", "name": "Question 17" },
-          { "id": "18", "name": "Question 18" }
-        ]
+        "questions": []
       },
       {
         "name": "Quality of Life",
         "model_value": 3.0,
-        "questions": [
-          { "id": "19", "name": "Question 19" },
-          { "id": "20", "name": "Question 20" },
-          { "id": "21", "name": "Question 21" },
-          { "id": "22", "name": "Question 22" },
-          { "id": "23", "name": "Question 23" },
-          { "id": "24", "name": "Question 24" }
-        ]
+        "questions": []
       }
     ]
   },

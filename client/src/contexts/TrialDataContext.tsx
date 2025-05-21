@@ -80,33 +80,17 @@ interface TrialDataContextType {
   isLoading: boolean;
 }
 
-// Create a flat list of all items available for the trial from each profile's categories
+// Get all 24 questions from the JSON data
 const getAllItems = (): ComplexityItem[] => {
-  const allItems: ComplexityItem[] = [];
-  const itemMap = new Map<string, boolean>();
+  // Use the allQuestions array from our JSON data
+  const allQuestions = questionsData.allQuestions || [];
   
-  // Process each profile's categories
-  Object.keys(questionsData).forEach(profileKey => {
-    if (profileKey === 'loadingTime') return;
-    
-    const profile = questionsData[profileKey as keyof typeof questionsData];
-    if (!profile.categories) return;
-    
-    profile.categories.forEach(category => {
-      category.questions.forEach(question => {
-        if (!itemMap.has(question.id)) {
-          itemMap.set(question.id, true);
-          allItems.push({
-            ...question,
-            category: '', // Initially no category assigned
-            complexity: 60 // Default complexity
-          });
-        }
-      });
-    });
-  });
-  
-  return allItems;
+  // Map the questions to ComplexityItems
+  return allQuestions.map(question => ({
+    ...question,
+    category: '', // Initially no category assigned
+    complexity: 60 // Default complexity value
+  }));
 };
 
 const allItems = getAllItems();

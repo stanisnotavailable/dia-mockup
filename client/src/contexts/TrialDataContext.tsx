@@ -1,12 +1,7 @@
 import { createContext, useState, useEffect, ReactNode } from 'react';
 
-// Define the type for a complexity element item
-export interface ComplexityItem {
-  id: string;
-  name: string;
-  category: string;
-  complexity: number;
-}
+// Import questions data from JSON file
+import questionsData from '@/data/questions.json';
 
 // Define the categories for complexity items
 export const CATEGORIES = {
@@ -19,6 +14,14 @@ export const CATEGORIES = {
 // Define category type
 export type CategoryType = typeof CATEGORIES[keyof typeof CATEGORIES];
 
+// Define the type for a complexity element item
+export interface ComplexityItem {
+  id: string;
+  name: string;
+  category: string;
+  complexity?: number;
+}
+
 // Define the type for trial data
 export interface TrialData {
   // Map of complexity items by their category
@@ -27,16 +30,32 @@ export interface TrialData {
   availableItems: ComplexityItem[];
 }
 
+// Define profile details data
+export interface ProfileDetails {
+  origin: Array<{country: string; percentage: number}>;
+  age: string;
+  role: Array<{role_name: string; percentage: number}>;
+}
+
 // Define patient demographic data
 export interface PatientDemographic {
-  age: number;
-  gender: string;
-  ethnicity: string;
-  location: string;
-  medicalHistory: string[];
-  weight: number; // in kg
-  height: number; // in cm
-  compliance: number; // 1-100 scale
+  age: string;
+  gender?: string;
+  ethnicity?: string;
+  location?: string;
+  medicalHistory?: string[];
+  weight?: number;
+  height?: number;
+  compliance?: number;
+  origin: Array<{country: string; percentage: number}>;
+  role: Array<{role_name: string; percentage: number}>;
+}
+
+// Define category data structure
+export interface CategoryData {
+  name: string;
+  model_value: number;
+  questions: ComplexityItem[];
 }
 
 // Define type for profile containing trial data
@@ -44,8 +63,9 @@ export interface Profile {
   id: string;
   name: string;
   trialData: TrialData;
-  diseaseBurdenScore: number;
+  diseaseBurdenScore?: number;
   patientDemographic: PatientDemographic;
+  categories?: CategoryData[];
 }
 
 // Define the context interface
@@ -60,36 +80,39 @@ interface TrialDataContextType {
   isLoading: boolean;
 }
 
-// Import questions data from JSON file
-import questionsData from '@/data/questions.json';
+// Create a flat list of all items available for the trial from each profile's categories
+const getAllItems = (): ComplexityItem[] => {
+  const allItems: ComplexityItem[] = [];
+  const itemMap = new Map<string, boolean>();
+  
+  // Process each profile's categories
+  Object.keys(questionsData).forEach(profileKey => {
+    if (profileKey === 'loadingTime') return;
+    
+    const profile = questionsData[profileKey as keyof typeof questionsData];
+    if (!profile.categories) return;
+    
+    profile.categories.forEach(category => {
+      category.questions.forEach(question => {
+        if (!itemMap.has(question.id)) {
+          itemMap.set(question.id, true);
+          allItems.push({
+            ...question,
+            category: '', // Initially no category assigned
+            complexity: 60 // Default complexity
+          });
+        }
+      });
+    });
+  });
+  
+  return allItems;
+};
 
-// Define types for the JSON data
-interface QuestionData {
-  items: ComplexityItem[];
-  categories: Record<string, Array<Record<string, string[]>>>;
-  patientDemographics: Record<string, {
-    age: number;
-    gender: string;
-    ethnicity: string;
-    location: string;
-    medicalHistory: string[];
-    weight: number;
-    height: number;
-    compliance: number;
-    diseaseBurdenScore: number;
-  }>;
-  profiles: Array<{id: string; name: string}>;
-  loadingTime: number;
-}
+const allItems = getAllItems();
 
-// All items available for the trial
-const allItems: ComplexityItem[] = questionsData.items.map(item => ({
-  ...item,
-  category: ''
-}));
-
-// Create profile 1 data (has mixed item distribution)
-const createProfile1Data = (): TrialData => {
+// Helper function to create trial data for a specific profile
+const createProfileData = (profileId: string): TrialData => {
   const categorizedItems: Record<CategoryType, ComplexityItem[]> = {
     [CATEGORIES.LOGISTICS]: [],
     [CATEGORIES.MOTIVATION]: [],
@@ -97,116 +120,50 @@ const createProfile1Data = (): TrialData => {
     [CATEGORIES.QUALITY]: [],
   };
   
-  // Use the category data from the JSON file
-  Object.entries(questionsData.categories).forEach(([category, categoryData]) => {
-    if (categoryData && categoryData.length > 0) {
-      const profileItems = categoryData[0].profile1;
-      if (profileItems && profileItems.length > 0) {
-        profileItems.forEach(itemId => {
-          const item = allItems.find(item => item.id === itemId);
-          if (item) {
-            categorizedItems[category as CategoryType].push({
-              ...item,
-              category: category as CategoryType
-            });
-          }
-        });
-      }
-    }
-  });
-
-  // Keep only the items that weren't categorized in the available list
-  const remainingItems = allItems.filter(item => 
-    !Object.values(categorizedItems).flat().some(categorizedItem => 
-      categorizedItem.id === item.id
-    )
-  ).map(item => ({ ...item, category: '' }));
-
-  return {
-    availableItems: remainingItems,
-    complexityItems: categorizedItems
-  };
-};
-
-// Create profile 2 data (focuses on logistics and quality of life)
-const createProfile2Data = (): TrialData => {
-  const categorizedItems: Record<CategoryType, ComplexityItem[]> = {
-    [CATEGORIES.LOGISTICS]: [],
-    [CATEGORIES.MOTIVATION]: [],
-    [CATEGORIES.HEALTHCARE]: [],
-    [CATEGORIES.QUALITY]: [],
-  };
+  // Get the profile data from our JSON
+  const profileData = questionsData[profileId as keyof typeof questionsData];
   
-  // Use the category data from the JSON file
-  Object.entries(questionsData.categories).forEach(([category, categoryData]) => {
-    if (categoryData && categoryData.length > 0) {
-      const profileItems = categoryData[0].profile2;
-      if (profileItems && profileItems.length > 0) {
-        profileItems.forEach(itemId => {
-          const item = allItems.find(item => item.id === itemId);
-          if (item) {
-            categorizedItems[category as CategoryType].push({
-              ...item,
-              category: category as CategoryType
-            });
-          }
+  if (profileData && profileData.categories) {
+    // Process each category
+    profileData.categories.forEach(categoryData => {
+      // Find the matching category in our CATEGORIES constant
+      const categoryKey = Object.entries(CATEGORIES).find(
+        ([_, value]) => value === categoryData.name
+      )?.[0];
+      
+      if (categoryKey) {
+        const categoryType = CATEGORIES[categoryKey as keyof typeof CATEGORIES];
+        
+        // Add each question to the appropriate category
+        categoryData.questions.forEach(question => {
+          categorizedItems[categoryType].push({
+            ...question,
+            category: categoryType,
+            complexity: 60 // Default complexity
+          });
         });
       }
-    }
-  });
-
-  // Keep only the items that weren't categorized in the available list
-  const remainingItems = allItems.filter(item => 
-    !Object.values(categorizedItems).flat().some(categorizedItem => 
-      categorizedItem.id === item.id
-    )
-  ).map(item => ({ ...item, category: '' }));
-
-  return {
-    availableItems: remainingItems,
-    complexityItems: categorizedItems
-  };
-};
-
-// Create profile 3 data (focuses on healthcare and motivation)
-const createProfile3Data = (): TrialData => {
-  const categorizedItems: Record<CategoryType, ComplexityItem[]> = {
-    [CATEGORIES.LOGISTICS]: [],
-    [CATEGORIES.MOTIVATION]: [],
-    [CATEGORIES.HEALTHCARE]: [],
-    [CATEGORIES.QUALITY]: [],
-  };
+    });
+  }
   
-  // Use the category data from the JSON file
-  Object.entries(questionsData.categories).forEach(([category, categoryData]) => {
-    if (categoryData && categoryData.length > 0) {
-      const profileItems = categoryData[0].profile3;
-      if (profileItems && profileItems.length > 0) {
-        profileItems.forEach(itemId => {
-          const item = allItems.find(item => item.id === itemId);
-          if (item) {
-            categorizedItems[category as CategoryType].push({
-              ...item,
-              category: category as CategoryType
-            });
-          }
-        });
-      }
-    }
-  });
-
-  // Keep only the items that weren't categorized in the available list
-  const remainingItems = allItems.filter(item => 
-    !Object.values(categorizedItems).flat().some(categorizedItem => 
-      categorizedItem.id === item.id
-    )
-  ).map(item => ({ ...item, category: '' }));
-
+  // Items that aren't in any category go to available items
+  const itemsInCategories = new Set(
+    Object.values(categorizedItems).flat().map(item => item.id)
+  );
+  
+  const remainingItems = allItems.filter(item => !itemsInCategories.has(item.id))
+    .map(item => ({ ...item, category: '' }));
+  
   return {
     availableItems: remainingItems,
     complexityItems: categorizedItems
   };
 };
+
+// Create data for each profile using the helper function
+const createProfile1Data = (): TrialData => createProfileData('profile1');
+const createProfile2Data = (): TrialData => createProfileData('profile2');
+const createProfile3Data = (): TrialData => createProfileData('profile3');
 
 // Create the empty trial data (all items available)
 const createEmptyTrialData = (): TrialData => {
@@ -223,35 +180,63 @@ const createEmptyTrialData = (): TrialData => {
 
 // Get demographic data from the JSON file
 const getDemographicData = (profileId: string): PatientDemographic => {
-  // Using type assertion to handle string index access
-  const demographics = (questionsData as QuestionData).patientDemographics[profileId];
+  const profileData = questionsData[profileId as keyof typeof questionsData];
   
+  if (profileData && profileData.profile_details) {
+    return {
+      age: profileData.profile_details.age,
+      origin: profileData.profile_details.origin,
+      role: profileData.profile_details.role,
+      // Optional fields with default values
+      gender: '',
+      ethnicity: '',
+      location: '',
+      medicalHistory: [],
+      weight: 0,
+      height: 0,
+      compliance: 0
+    };
+  }
+  
+  // Fallback empty demographic data
   return {
-    age: demographics.age,
-    gender: demographics.gender,
-    ethnicity: demographics.ethnicity,
-    location: demographics.location,
-    medicalHistory: demographics.medicalHistory,
-    weight: demographics.weight,
-    height: demographics.height,
-    compliance: demographics.compliance
+    age: '',
+    origin: [],
+    role: [],
+    gender: '',
+    ethnicity: '',
+    location: '',
+    medicalHistory: [],
+    weight: 0,
+    height: 0,
+    compliance: 0
   };
 };
 
 // Initial profiles
-const initialProfiles: Profile[] = (questionsData as QuestionData).profiles.map(profile => {
-  return {
-    id: profile.id,
-    name: profile.name,
-    trialData: profile.id === 'profile1' 
-      ? createProfile1Data() 
-      : profile.id === 'profile2' 
-        ? createProfile2Data() 
-        : createProfile3Data(),
-    diseaseBurdenScore: (questionsData as QuestionData).patientDemographics[profile.id].diseaseBurdenScore,
-    patientDemographic: getDemographicData(profile.id)
-  };
-});
+const initialProfiles: Profile[] = [
+  {
+    id: 'profile1',
+    name: 'Profile 1',
+    trialData: createProfile1Data(),
+    patientDemographic: getDemographicData('profile1'),
+    categories: questionsData.profile1?.categories
+  },
+  {
+    id: 'profile2',
+    name: 'Profile 2',
+    trialData: createProfile2Data(),
+    patientDemographic: getDemographicData('profile2'),
+    categories: questionsData.profile2?.categories
+  },
+  {
+    id: 'profile3',
+    name: 'Profile 3',
+    trialData: createProfile3Data(),
+    patientDemographic: getDemographicData('profile3'),
+    categories: questionsData.profile3?.categories
+  }
+];
 
 // Create context with default values
 export const TrialDataContext = createContext<TrialDataContextType>({
@@ -355,21 +340,17 @@ export const TrialDataProvider = ({ children }: { children: ReactNode }) => {
         ...demographicData
       };
       
-      // Update disease burden score based on demographics (simplified example)
+      // We're now using the model_value from the JSON data instead of calculating a disease burden score
+      // This block is no longer needed but kept for reference
+      /*
       if (demographicData.age || demographicData.medicalHistory || demographicData.compliance) {
-        const age = demographicData.age || profile.patientDemographic.age;
-        const medicalHistoryCount = demographicData.medicalHistory?.length || 
-          profile.patientDemographic.medicalHistory.length;
-        const compliance = demographicData.compliance || profile.patientDemographic.compliance;
-        
-        // Simple formula to calculate burden score based on demographics
-        const ageImpact = Math.min(age / 20, 3); // Age divided by 20, max 3
-        const historyImpact = medicalHistoryCount * 0.5; // Each condition adds 0.5
-        const complianceImpact = (100 - compliance) / 20; // Lower compliance = higher score
-        
-        // Calculate new score (range ~2-7)
-        profile.diseaseBurdenScore = Math.round((ageImpact + historyImpact + complianceImpact) * 100) / 100;
+        // Disease burden score is now derived from model_value in the JSON data
+        const profileData = questionsData[profile.id as keyof typeof questionsData];
+        if (profileData && profileData.categories && profileData.categories.length > 0) {
+          // Could calculate an average model_value across categories if needed
+        }
       }
+      */
       
       updatedProfiles[profileIndex] = profile;
       return updatedProfiles;

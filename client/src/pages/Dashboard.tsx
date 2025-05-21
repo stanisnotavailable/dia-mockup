@@ -147,8 +147,8 @@ export default function Dashboard() {
                         {category.model_value.toFixed(1)}
                       </div>
                     </div>
-                    <div className="space-y-1">
-                      {category.questions.slice(0, 3).map((question, qIdx) => {
+                    <div className="max-h-[120px] overflow-y-auto pr-1 space-y-1 custom-scrollbar">
+                      {category.questions.map((question, qIdx) => {
                         // Create a full ComplexityItem for dragging
                         const complexityItem = {
                           id: question.id,
@@ -185,11 +185,6 @@ export default function Dashboard() {
                           </div>
                         );
                       })}
-                      {category.questions.length > 3 && (
-                        <div className="text-xs text-gray-500 italic">
-                          +{category.questions.length - 3} more items
-                        </div>
-                      )}
                     </div>
                   </div>
                 );

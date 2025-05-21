@@ -105,17 +105,18 @@ export default function Dashboard() {
                 return (
                   <div 
                     key={idx} 
-                    className="p-3 border border-gray-100 rounded-md"
+                    className="p-3 border border-gray-100 rounded-md transition-colors"
                     onDragOver={(e) => {
                       e.preventDefault();
-                      e.currentTarget.classList.add('bg-gray-50');
+                      e.dataTransfer.dropEffect = "move";
+                      e.currentTarget.classList.add('bg-blue-50', 'border-blue-200');
                     }}
                     onDragLeave={(e) => {
-                      e.currentTarget.classList.remove('bg-gray-50');
+                      e.currentTarget.classList.remove('bg-blue-50', 'border-blue-200');
                     }}
                     onDrop={(e) => {
                       e.preventDefault();
-                      e.currentTarget.classList.remove('bg-gray-50');
+                      e.currentTarget.classList.remove('bg-blue-50', 'border-blue-200');
                       
                       // Get the item ID from dataTransfer
                       const itemId = e.dataTransfer.getData("text/plain");
@@ -124,17 +125,19 @@ export default function Dashboard() {
                       let foundItem = profile.trialData.availableItems.find(item => item.id === itemId);
                       
                       if (!foundItem) {
-                        // Search through all categories
-                        for (const categoryName in profile.trialData.complexityItems) {
-                          const items = profile.trialData.complexityItems[categoryName];
-                          foundItem = items.find(item => item.id === itemId);
-                          if (foundItem) break;
-                        }
+                        // Search through all categories in complexityItems
+                        Object.values(profile.trialData.complexityItems).forEach(categoryItems => {
+                          const item = categoryItems.find(item => item.id === itemId);
+                          if (item) foundItem = item;
+                        });
                       }
                       
                       // Move the item to this category
                       if (foundItem) {
-                        moveItem(foundItem, category.name);
+                        // Don't move if it's already in this category
+                        if (foundItem.category !== category.name) {
+                          moveItem(foundItem, category.name);
+                        }
                       }
                     }}
                   >
@@ -146,11 +149,12 @@ export default function Dashboard() {
                     </div>
                     <div className="space-y-1">
                       {category.questions.slice(0, 3).map((question, qIdx) => {
-                        // Convert question to ComplexityItem format for dragging
+                        // Create a full ComplexityItem for dragging
                         const complexityItem = {
                           id: question.id,
                           name: question.name,
-                          category: category.name
+                          category: category.name,
+                          complexity: 0 // Add default complexity if needed
                         };
                         
                         return (
@@ -160,7 +164,20 @@ export default function Dashboard() {
                             draggable={true}
                             onDragStart={(e) => {
                               e.dataTransfer.effectAllowed = "move";
-                              e.dataTransfer.setData("text/plain", question.id);
+                              e.dataTransfer.setData("text/plain", complexityItem.id);
+                              // Add a visual indicator of what is being dragged
+                              e.currentTarget.classList.add('bg-blue-50');
+                              
+                              // Create a drag image
+                              const dragImage = document.createElement('div');
+                              dragImage.className = 'p-2 bg-white border rounded text-xs shadow-md';
+                              dragImage.textContent = complexityItem.name;
+                              document.body.appendChild(dragImage);
+                              e.dataTransfer.setDragImage(dragImage, 0, 0);
+                              setTimeout(() => document.body.removeChild(dragImage), 0);
+                            }}
+                            onDragEnd={(e) => {
+                              e.currentTarget.classList.remove('bg-blue-50');
                             }}
                           >
                             <div className="w-1 h-1 rounded-full bg-gray-400 mr-2"></div>

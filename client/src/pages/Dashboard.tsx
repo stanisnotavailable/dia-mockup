@@ -8,9 +8,50 @@ import PatientDemographics from "@/components/PatientDemographics";
 import { TrialDataContext } from "@/contexts/TrialDataContext";
 import LoadingAnimation from "@/components/LoadingAnimation";
 
+// Component for individual category elements
+interface CategoryElementProps {
+  categoryName: string;
+  color: string;
+}
+
+const CategoryElement = ({ categoryName, color }: CategoryElementProps) => {
+  const { getCurrentProfile } = useContext(TrialDataContext);
+  const profile = getCurrentProfile();
+  
+  // Find the category data to display questions
+  const categoryData = profile.categories?.find(cat => cat.name === categoryName);
+  const modelValue = categoryData?.model_value || 0;
+  
+  return (
+    <div className="p-3 border border-gray-100 rounded-md">
+      <div className="flex justify-between items-center mb-2">
+        <h4 className="text-sm font-medium">{categoryName}</h4>
+        <div className={`text-xs px-2 py-0.5 rounded-full ${color}`}>
+          {modelValue.toFixed(1)}
+        </div>
+      </div>
+      <div className="space-y-1">
+        {categoryData?.questions.slice(0, 3).map((question, idx) => (
+          <div key={idx} className="text-xs text-gray-600 flex items-center">
+            <div className="w-1 h-1 rounded-full bg-gray-400 mr-2"></div>
+            {question.name}
+          </div>
+        ))}
+        {(categoryData?.questions.length || 0) > 3 && (
+          <div className="text-xs text-gray-500 italic">
+            +{(categoryData?.questions.length || 0) - 3} more items
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// Dashboard component
 export default function Dashboard() {
   useTitle("Clinical Trial Dashboard");
-  const { isLoading } = useContext(TrialDataContext);
+  const { isLoading, getCurrentProfile } = useContext(TrialDataContext);
+  const profile = getCurrentProfile();
 
   // If we're in loading state, show the "thinking" animation instead of skeletons
   if (isLoading) {
@@ -43,12 +84,47 @@ export default function Dashboard() {
           </div>
         </div>
         
-        {/* Trial Complexity Card with reduced height */}
+        {/* Trial Complexity Categories - One container with four category elements */}
         <div className="border border-gray-100 shadow-sm rounded-lg overflow-hidden">
           <div className="p-4">
-            <h3 className="text-base font-medium text-gray-800 mb-2">Trial Complexity Categories</h3>
-            <div className="max-h-[250px] overflow-y-auto">
-              <TrialComplexityCard />
+            <h3 className="text-base font-medium text-gray-800 mb-4">Trial Complexity Categories</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {/* Display each complexity category as a separate card */}
+              {profile.categories?.map((category, idx) => {
+                // Define colors for each category
+                const colors = {
+                  "Logistics Challenge": "bg-blue-100 text-blue-800",
+                  "Motivation": "bg-green-100 text-green-800",
+                  "Healthcare Engagement": "bg-purple-100 text-purple-800",
+                  "Quality of Life": "bg-amber-100 text-amber-800"
+                };
+                
+                const color = colors[category.name as keyof typeof colors] || "bg-gray-100 text-gray-800";
+                
+                return (
+                  <div key={idx} className="p-3 border border-gray-100 rounded-md">
+                    <div className="flex justify-between items-center mb-2">
+                      <h4 className="text-sm font-medium">{category.name}</h4>
+                      <div className={`text-xs px-2 py-0.5 rounded-full ${color}`}>
+                        {category.model_value.toFixed(1)}
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      {category.questions.slice(0, 3).map((question, qIdx) => (
+                        <div key={qIdx} className="text-xs text-gray-600 flex items-center">
+                          <div className="w-1 h-1 rounded-full bg-gray-400 mr-2"></div>
+                          {question.name}
+                        </div>
+                      ))}
+                      {category.questions.length > 3 && (
+                        <div className="text-xs text-gray-500 italic">
+                          +{category.questions.length - 3} more items
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>

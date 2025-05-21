@@ -16,7 +16,17 @@ import { TrialDataContext, PatientDemographic } from "@/contexts/TrialDataContex
 export default function PatientDemographics() {
   const { getCurrentProfile, updatePatientDemographic, currentProfileId } = useContext(TrialDataContext);
   const currentProfile = getCurrentProfile();
-  const { patientDemographic, diseaseBurdenScore } = currentProfile;
+  const { patientDemographic, categories } = currentProfile;
+  
+  // Calculate average model_value to display as disease burden score
+  const calculateAverageModelValue = (): number => {
+    if (!categories || categories.length === 0) return 0;
+    
+    const sum = categories.reduce((acc, category) => acc + category.model_value, 0);
+    return Math.round((sum / categories.length) * 10) / 10;
+  };
+  
+  const averageModelValue = calculateAverageModelValue();
   
   // Local state for form values
   const [localData, setLocalData] = useState<PatientDemographic>(patientDemographic);
@@ -59,7 +69,8 @@ export default function PatientDemographics() {
   };
   
   // Calculate BMI
-  const calculateBMI = (weight: number, height: number): number => {
+  const calculateBMI = (weight?: number, height?: number): number => {
+    if (!weight || !height) return 0;
     // BMI = weight (kg) / height² (m²)
     const heightInMeters = height / 100;
     return Math.round((weight / (heightInMeters * heightInMeters)) * 10) / 10;
@@ -69,6 +80,7 @@ export default function PatientDemographics() {
   
   // Get BMI category
   const getBMICategory = (bmi: number): string => {
+    if (bmi === 0) return "Unknown";
     if (bmi < 18.5) return "Underweight";
     if (bmi < 25) return "Normal";
     if (bmi < 30) return "Overweight";
@@ -95,7 +107,7 @@ export default function PatientDemographics() {
           <div className="flex items-center">
             <h2 className="text-lg font-medium text-gray-800">Patient Demographics</h2>
             <div className="ml-3 text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">
-              Disease Burden Score: {diseaseBurdenScore}
+              Avg. Model Value: {averageModelValue}
             </div>
           </div>
           
@@ -132,176 +144,144 @@ export default function PatientDemographics() {
         {isEditing ? (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
             <div>
-              <Label htmlFor="age" className="text-xs">Age</Label>
+              <Label htmlFor="age" className="text-xs">Age Range</Label>
               <Input
                 id="age"
-                type="number"
                 value={localData.age}
-                onChange={e => handleChange('age', parseInt(e.target.value))}
+                onChange={e => handleChange('age', e.target.value)}
                 className="h-8 text-sm"
               />
             </div>
             
-            <div>
-              <Label htmlFor="gender" className="text-xs">Gender</Label>
-              <Select 
-                value={localData.gender}
-                onValueChange={value => handleChange('gender', value)}
-              >
-                <SelectTrigger id="gender" className="h-8 text-sm">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Male">Male</SelectItem>
-                  <SelectItem value="Female">Female</SelectItem>
-                  <SelectItem value="Other">Other</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div>
-              <Label htmlFor="ethnicity" className="text-xs">Ethnicity</Label>
-              <Select 
-                value={localData.ethnicity}
-                onValueChange={value => handleChange('ethnicity', value)}
-              >
-                <SelectTrigger id="ethnicity" className="h-8 text-sm">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Caucasian">Caucasian</SelectItem>
-                  <SelectItem value="African American">African American</SelectItem>
-                  <SelectItem value="Hispanic">Hispanic</SelectItem>
-                  <SelectItem value="Asian">Asian</SelectItem>
-                  <SelectItem value="Other">Other</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div>
-              <Label htmlFor="location" className="text-xs">Location</Label>
-              <Select 
-                value={localData.location}
-                onValueChange={value => handleChange('location', value)}
-              >
-                <SelectTrigger id="location" className="h-8 text-sm">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Urban">Urban</SelectItem>
-                  <SelectItem value="Suburban">Suburban</SelectItem>
-                  <SelectItem value="Rural">Rural</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div className="col-span-2 md:col-span-4">
-              <Label htmlFor="medicalHistory" className="text-xs">Medical History (comma-separated)</Label>
-              <Input
-                id="medicalHistory"
-                value={localData.medicalHistory.join(', ')}
-                onChange={e => handleMedicalHistoryChange(e.target.value)}
-                className="h-8 text-sm"
-              />
-            </div>
-            
-            <div>
-              <Label htmlFor="weight" className="text-xs">Weight (kg)</Label>
-              <Input
-                id="weight"
-                type="number"
-                value={localData.weight}
-                onChange={e => handleChange('weight', parseFloat(e.target.value))}
-                className="h-8 text-sm"
-              />
-            </div>
-            
-            <div>
-              <Label htmlFor="height" className="text-xs">Height (cm)</Label>
-              <Input
-                id="height"
-                type="number"
-                value={localData.height}
-                onChange={e => handleChange('height', parseFloat(e.target.value))}
-                className="h-8 text-sm"
-              />
-            </div>
+            {/* Origin information will be shown but not editable for now */}
             
             <div className="col-span-2">
               <div className="flex justify-between">
-                <Label htmlFor="compliance" className="text-xs">Compliance Level ({localData.compliance}%)</Label>
+                <Label htmlFor="compliance" className="text-xs">Compliance Level ({localData.compliance || 0}%)</Label>
               </div>
               <Slider
                 id="compliance"
                 min={0}
                 max={100}
                 step={1}
-                value={[localData.compliance]}
+                value={[localData.compliance || 0]}
                 onValueChange={value => handleChange('compliance', value[0])}
                 className="py-2"
               />
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-3 mt-3 text-sm">
+          <div className="grid grid-cols-2 gap-x-4 gap-y-3 mt-3 text-sm">
             <div>
-              <div className="text-gray-500 text-xs mb-1">Age</div>
-              <div className="font-medium">{patientDemographic.age} years</div>
+              <div className="text-gray-500 text-xs mb-1">Age Range</div>
+              <div className="font-medium">{patientDemographic.age}</div>
             </div>
             
-            <div>
-              <div className="text-gray-500 text-xs mb-1">Gender</div>
-              <div className="font-medium">{patientDemographic.gender}</div>
-            </div>
-            
-            <div>
-              <div className="text-gray-500 text-xs mb-1">Ethnicity</div>
-              <div className="font-medium">{patientDemographic.ethnicity}</div>
-            </div>
-            
-            <div>
-              <div className="text-gray-500 text-xs mb-1">Location</div>
-              <div className="font-medium">{patientDemographic.location}</div>
-            </div>
-            
-            <div className="col-span-2 md:col-span-4">
-              <div className="text-gray-500 text-xs mb-1">Medical History</div>
+            <div className="col-span-2">
+              <div className="text-gray-500 text-xs mb-1">Origin</div>
               <div className="font-medium">
-                {patientDemographic.medicalHistory.length > 0 
-                  ? patientDemographic.medicalHistory.join(', ')
-                  : 'None'}
+                {patientDemographic.origin && patientDemographic.origin.map((item, index) => (
+                  <div key={index} className="flex justify-between items-center mb-1">
+                    <span>{item.country}:</span>
+                    <div className="flex items-center">
+                      <span className="mr-2">{item.percentage}%</span>
+                      <div className="w-24 bg-gray-200 rounded-full h-1.5">
+                        <div 
+                          className="bg-blue-600 h-1.5 rounded-full" 
+                          style={{ width: `${item.percentage}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
             
-            <div>
-              <div className="text-gray-500 text-xs mb-1">Weight</div>
-              <div className="font-medium">{patientDemographic.weight} kg</div>
-            </div>
-            
-            <div>
-              <div className="text-gray-500 text-xs mb-1">Height</div>
-              <div className="font-medium">{patientDemographic.height} cm</div>
-            </div>
-            
-            <div>
-              <div className="text-gray-500 text-xs mb-1">BMI</div>
-              <div className={`font-medium ${getBMIColor(bmiCategory)}`}>
-                {bmi} ({bmiCategory})
+            <div className="col-span-2">
+              <div className="text-gray-500 text-xs mb-1">Role</div>
+              <div className="font-medium">
+                {patientDemographic.role && patientDemographic.role.map((item, index) => (
+                  <div key={index} className="flex justify-between items-center mb-1">
+                    <span>{item.role_name}:</span>
+                    <div className="flex items-center">
+                      <span className="mr-2">{item.percentage}%</span>
+                      <div className="w-24 bg-gray-200 rounded-full h-1.5">
+                        <div 
+                          className="bg-green-600 h-1.5 rounded-full" 
+                          style={{ width: `${item.percentage}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
             
-            <div>
-              <div className="text-gray-500 text-xs mb-1">Compliance</div>
-              <div className="font-medium flex items-center">
-                <span className="mr-2">{patientDemographic.compliance}%</span>
-                <div className="w-24 bg-gray-200 rounded-full h-1.5">
-                  <div 
-                    className="bg-blue-600 h-1.5 rounded-full" 
-                    style={{ width: `${patientDemographic.compliance}%` }}
-                  ></div>
+            {patientDemographic.gender && (
+              <div>
+                <div className="text-gray-500 text-xs mb-1">Gender</div>
+                <div className="font-medium">{patientDemographic.gender}</div>
+              </div>
+            )}
+            
+            {patientDemographic.ethnicity && (
+              <div>
+                <div className="text-gray-500 text-xs mb-1">Ethnicity</div>
+                <div className="font-medium">{patientDemographic.ethnicity}</div>
+              </div>
+            )}
+            
+            {patientDemographic.location && (
+              <div>
+                <div className="text-gray-500 text-xs mb-1">Location</div>
+                <div className="font-medium">{patientDemographic.location}</div>
+              </div>
+            )}
+            
+            {patientDemographic.medicalHistory && patientDemographic.medicalHistory.length > 0 && (
+              <div className="col-span-2">
+                <div className="text-gray-500 text-xs mb-1">Medical History</div>
+                <div className="font-medium">
+                  {patientDemographic.medicalHistory.join(', ')}
                 </div>
               </div>
-            </div>
+            )}
+            
+            {patientDemographic.weight && patientDemographic.height && (
+              <>
+                <div>
+                  <div className="text-gray-500 text-xs mb-1">Weight</div>
+                  <div className="font-medium">{patientDemographic.weight} kg</div>
+                </div>
+                
+                <div>
+                  <div className="text-gray-500 text-xs mb-1">Height</div>
+                  <div className="font-medium">{patientDemographic.height} cm</div>
+                </div>
+                
+                <div>
+                  <div className="text-gray-500 text-xs mb-1">BMI</div>
+                  <div className={`font-medium ${getBMIColor(bmiCategory)}`}>
+                    {bmi} ({bmiCategory})
+                  </div>
+                </div>
+              </>
+            )}
+            
+            {patientDemographic.compliance !== undefined && (
+              <div>
+                <div className="text-gray-500 text-xs mb-1">Compliance</div>
+                <div className="font-medium flex items-center">
+                  <span className="mr-2">{patientDemographic.compliance}%</span>
+                  <div className="w-24 bg-gray-200 rounded-full h-1.5">
+                    <div 
+                      className="bg-blue-600 h-1.5 rounded-full" 
+                      style={{ width: `${patientDemographic.compliance}%` }}
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </CardContent>

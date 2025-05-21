@@ -18,12 +18,43 @@ export default function PatientFeasibilityPlot() {
     [CATEGORIES.QUALITY]: "#8b5cf6", // Purple
   }), []);
   
-  // Calculate data points for the radar chart based on trial complexity elements
+  // Calculate data points for the radar chart based on category model values
   const getRadarData = () => {
-    // Map trial complexity values to radar chart data
+    if (!currentProfile.categories || currentProfile.categories.length === 0) {
+      // Fallback to the old calculation if no categories are available
+      return calculateDataFromTrialComplexity();
+    }
+    
+    // Map model values from the categories array
     const axes = Object.values(CATEGORIES);
     
     // Data transformation for the radar chart
+    return axes.map(axis => {
+      const result: Record<string, any> = { axis };
+      
+      // Find the matching category in the profile's categories
+      const category = currentProfile.categories?.find(cat => cat.name === axis);
+      
+      if (category) {
+        // We already have model_value for this category, use it directly
+        // Scale it to match expected radar chart values (0-100 range)
+        result[axis] = category.model_value * 20; // Scale 0-5 to 0-100
+      } else {
+        // Fallback calculation if the category is not found
+        const items = trialData.complexityItems[axis as CategoryType];
+        if (items && items.length > 0) {
+          result[axis] = calculateCategoryValue(axis as CategoryType, axis as CategoryType, items.length);
+        }
+      }
+      
+      return result;
+    });
+  };
+  
+  // Fallback calculation based on trial complexity (used if no categories with model_value are available)
+  const calculateDataFromTrialComplexity = () => {
+    const axes = Object.values(CATEGORIES);
+    
     return axes.map(axis => {
       const result: Record<string, any> = { axis };
       
@@ -62,9 +93,15 @@ export default function PatientFeasibilityPlot() {
   
   // Check if there's data to display
   const hasDataToDisplay = useMemo(() => {
+    // First check if we have model values from the categories
+    if (currentProfile.categories && currentProfile.categories.length > 0) {
+      return true;
+    }
+    
+    // Fallback to checking for complexity items
     return trialData.complexityItems && 
       Object.values(trialData.complexityItems).some(items => items && items.length > 0);
-  }, [trialData.complexityItems]);
+  }, [currentProfile.categories, trialData.complexityItems]);
   
   // Get total items count for categories with data
   const getActiveCategoryCount = (category: string) => {
@@ -146,23 +183,37 @@ export default function PatientFeasibilityPlot() {
                   axisLine={false}
                 />
                 
-                {/* Render a radar for each category that has items */}
-                {Object.entries(trialData.complexityItems).map(([category, items]) => {
-                  if (!items || items.length === 0) return null;
-                  
-                  return (
-                    <Radar
-                      key={category}
-                      name={`${category} (${items.length})`}
-                      dataKey={category}
-                      stroke={categoryColors[category as CategoryType]}
-                      fill={categoryColors[category as CategoryType]}
-                      fillOpacity={0.3}
-                      dot={true}
-                      activeDot={{ r: 4 }}
-                    />
-                  );
-                })}
+                {/* Render a single radar using model values if available */}
+                {currentProfile.categories && currentProfile.categories.length > 0 ? (
+                  // Use model values for the radar (new JSON format)
+                  <Radar
+                    name="Model Values"
+                    dataKey={(value) => value[value.axis]}
+                    stroke="#3b82f6"
+                    fill="#3b82f6"
+                    fillOpacity={0.4}
+                    dot={true}
+                    activeDot={{ r: 4 }}
+                  />
+                ) : (
+                  // Fallback: Render a radar for each category that has items
+                  Object.entries(trialData.complexityItems).map(([category, items]) => {
+                    if (!items || items.length === 0) return null;
+                    
+                    return (
+                      <Radar
+                        key={category}
+                        name={`${category} (${items.length})`}
+                        dataKey={category}
+                        stroke={categoryColors[category as CategoryType]}
+                        fill={categoryColors[category as CategoryType]}
+                        fillOpacity={0.3}
+                        dot={true}
+                        activeDot={{ r: 4 }}
+                      />
+                    );
+                  })
+                )}
                 
                 <Legend 
                   content={renderLegend} 

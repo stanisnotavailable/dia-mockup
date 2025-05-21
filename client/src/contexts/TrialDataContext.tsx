@@ -258,11 +258,11 @@ export const TrialDataProvider = ({ children }: { children: ReactNode }) => {
   const [profiles, setProfiles] = useState<Profile[]>(initialProfiles);
   const [currentProfileId, setCurrentProfileId] = useState<string>('profile1');
   
-  // Simulate loading data from an API with time from the JSON file
+  // Simulate loading data from an API with fixed loading time
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, (questionsData as any).loadingTime || 10000); // Use the loading time from JSON or default to 10 seconds
+    }, 10000); // 10 seconds loading time
     
     return () => clearTimeout(timer);
   }, []);

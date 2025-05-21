@@ -27,17 +27,22 @@ export default function Dashboard() {
 
       <ProfileTabs />
       
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-4">
-        <div className="lg:col-span-1 space-y-6">
-          <PatientDemographics />
-          <ElementsPanel />
+      <div className="mt-4 space-y-6">
+        {/* Patient Demographics takes full width */}
+        <PatientDemographics />
+        
+        {/* Elements and Feasibility Plot side by side */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          <div className="lg:col-span-1">
+            <ElementsPanel />
+          </div>
+          <div className="lg:col-span-3">
+            <PatientFeasibilityPlot />
+          </div>
         </div>
-        <div className="lg:col-span-2">
-          <PatientFeasibilityPlot />
-        </div>
-        <div className="lg:col-span-3">
-          <TrialComplexityCard />
-        </div>
+        
+        {/* Trial Complexity Card spans full width */}
+        <TrialComplexityCard />
       </div>
     </div>
   );

@@ -35,12 +35,14 @@ export default function Dashboard() {
         <TrialComplexityCard />
         
         {/* Container with Available Elements and Feasibility Plot side by side */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          <div className="lg:col-span-1">
-            <ElementsPanel />
-          </div>
-          <div className="lg:col-span-3">
-            <PatientFeasibilityPlot />
+        <div className="border border-gray-100 shadow-sm rounded-lg overflow-hidden">
+          <div className="flex flex-col lg:flex-row">
+            <div className="lg:w-1/2 p-4 border-b lg:border-b-0 lg:border-r border-gray-200">
+              <ElementsPanel />
+            </div>
+            <div className="lg:w-1/2 p-4">
+              <PatientFeasibilityPlot />
+            </div>
           </div>
         </div>
       </div>

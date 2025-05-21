@@ -50,8 +50,9 @@ const CategoryElement = ({ categoryName, color }: CategoryElementProps) => {
 // Dashboard component
 export default function Dashboard() {
   useTitle("Clinical Trial Dashboard");
-  const { isLoading, getCurrentProfile } = useContext(TrialDataContext);
+  const { isLoading, getCurrentProfile, moveItem } = useContext(TrialDataContext);
   const profile = getCurrentProfile();
+  const currentProfile = profile; // Alias for clarity
 
   // If we're in loading state, show the "thinking" animation instead of skeletons
   if (isLoading) {
@@ -102,7 +103,41 @@ export default function Dashboard() {
                 const color = colors[category.name as keyof typeof colors] || "bg-gray-100 text-gray-800";
                 
                 return (
-                  <div key={idx} className="p-3 border border-gray-100 rounded-md">
+                  <div 
+                    key={idx} 
+                    className="p-3 border border-gray-100 rounded-md"
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      e.currentTarget.classList.add('bg-gray-50');
+                    }}
+                    onDragLeave={(e) => {
+                      e.currentTarget.classList.remove('bg-gray-50');
+                    }}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      e.currentTarget.classList.remove('bg-gray-50');
+                      
+                      // Get the item ID from dataTransfer
+                      const itemId = e.dataTransfer.getData("text/plain");
+                      
+                      // Find the item in available items
+                      let foundItem = profile.trialData.availableItems.find(item => item.id === itemId);
+                      
+                      if (!foundItem) {
+                        // Search through all categories
+                        for (const categoryName in profile.trialData.complexityItems) {
+                          const items = profile.trialData.complexityItems[categoryName];
+                          foundItem = items.find(item => item.id === itemId);
+                          if (foundItem) break;
+                        }
+                      }
+                      
+                      // Move the item to this category
+                      if (foundItem) {
+                        moveItem(foundItem, category.name);
+                      }
+                    }}
+                  >
                     <div className="flex justify-between items-center mb-2">
                       <h4 className="text-sm font-medium">{category.name}</h4>
                       <div className={`text-xs px-2 py-0.5 rounded-full ${color}`}>
@@ -110,12 +145,29 @@ export default function Dashboard() {
                       </div>
                     </div>
                     <div className="space-y-1">
-                      {category.questions.slice(0, 3).map((question, qIdx) => (
-                        <div key={qIdx} className="text-xs text-gray-600 flex items-center">
-                          <div className="w-1 h-1 rounded-full bg-gray-400 mr-2"></div>
-                          {question.name}
-                        </div>
-                      ))}
+                      {category.questions.slice(0, 3).map((question, qIdx) => {
+                        // Convert question to ComplexityItem format for dragging
+                        const complexityItem = {
+                          id: question.id,
+                          name: question.name,
+                          category: category.name
+                        };
+                        
+                        return (
+                          <div 
+                            key={qIdx} 
+                            className="text-xs text-gray-600 flex items-center py-1 px-1 rounded cursor-move hover:bg-gray-100"
+                            draggable={true}
+                            onDragStart={(e) => {
+                              e.dataTransfer.effectAllowed = "move";
+                              e.dataTransfer.setData("text/plain", question.id);
+                            }}
+                          >
+                            <div className="w-1 h-1 rounded-full bg-gray-400 mr-2"></div>
+                            {question.name}
+                          </div>
+                        );
+                      })}
                       {category.questions.length > 3 && (
                         <div className="text-xs text-gray-500 italic">
                           +{category.questions.length - 3} more items

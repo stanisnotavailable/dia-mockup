@@ -298,35 +298,31 @@ export const TrialDataProvider = ({ children }: { children: ReactNode }) => {
       
       // Also update the categories array for the radar chart
       if (profile.categories) {
-        // Find the category in the categories array
-        const categoryIndex = profile.categories.findIndex(cat => cat.name === targetCategory);
+        // First, remove the question from ALL categories to ensure it's only in one place
+        profile.categories = profile.categories.map(cat => ({
+          ...cat,
+          questions: cat.questions.filter(q => q.id !== item.id)
+        }));
         
-        if (categoryIndex !== -1 && targetCategory !== '') {
-          // Create a new questions array for the category
-          const questions = [...profile.categories[categoryIndex].questions];
+        // Now add the question to the target category if needed
+        if (targetCategory !== '') {
+          const categoryIndex = profile.categories.findIndex(cat => cat.name === targetCategory);
           
-          // Add the question to the category if it's not already there
-          if (!questions.some(q => q.id === item.id)) {
+          if (categoryIndex !== -1) {
+            // Create a new questions array for the category
+            const questions = [...profile.categories[categoryIndex].questions];
+            
+            // Add the question to the category (it shouldn't be there already since we removed it from all categories)
             questions.push({
               id: item.id,
               name: item.name,
               category: targetCategory
             });
-          }
-          
-          // Update the category with the new questions
-          profile.categories[categoryIndex] = {
-            ...profile.categories[categoryIndex],
-            questions: questions
-          };
-        } else if (item.category !== '') {
-          // If the item was in a category before, remove it from that category
-          const oldCategoryIndex = profile.categories.findIndex(cat => cat.name === item.category);
-          
-          if (oldCategoryIndex !== -1) {
-            profile.categories[oldCategoryIndex] = {
-              ...profile.categories[oldCategoryIndex],
-              questions: profile.categories[oldCategoryIndex].questions.filter(q => q.id !== item.id)
+            
+            // Update the category with the new questions
+            profile.categories[categoryIndex] = {
+              ...profile.categories[categoryIndex],
+              questions: questions
             };
           }
         }

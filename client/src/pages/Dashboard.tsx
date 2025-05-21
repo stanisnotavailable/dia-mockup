@@ -142,13 +142,19 @@ export default function Dashboard() {
                           
                           // Don't move if it's already in this category
                           if (complexityItem.category !== categoryName) {
+                            // Make sure it's removed from the previous category first
+                            if (complexityItem.category) {
+                              console.log(`Moving from ${complexityItem.category} to ${categoryName}`);
+                            }
+                            
+                            // Move the item to the new category
                             moveItem(complexityItem, categoryName);
                           }
                         } else {
                           // Fallback for backward compatibility - treat as ID only
                           const itemId = itemData;
                           
-                          // Find the item in available items
+                          // Find the item in available items first
                           let foundItem = profile.trialData.availableItems.find(item => item.id === itemId);
                           
                           if (!foundItem) {
@@ -159,7 +165,7 @@ export default function Dashboard() {
                             });
                           }
                           
-                          // Move the item to this category
+                          // Move the item to this category if it exists and isn't already here
                           if (foundItem && foundItem.category !== categoryName) {
                             moveItem(foundItem, categoryName);
                           }

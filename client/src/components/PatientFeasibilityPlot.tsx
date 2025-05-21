@@ -18,16 +18,13 @@ function useForceUpdate() {
 
 export default function PatientFeasibilityPlot() {
   // Get everything directly from context to ensure real-time updates
-  const { getCurrentProfile, profiles, currentProfileId } = useContext(TrialDataContext);
+  const { getCurrentProfile } = useContext(TrialDataContext);
   
   // Force re-render to catch updates
   useForceUpdate();
   
   // Get profile data directly from context each time
-  // This ensures we're always working with the latest data
   const profileData = getCurrentProfile();
-  
-  // For easier access in the component
   const trialData = profileData.trialData;
   
   // Define colors for each category
@@ -38,19 +35,22 @@ export default function PatientFeasibilityPlot() {
     [CATEGORIES.QUALITY]: "#8b5cf6", // Purple
   }), []);
   
-  // Calculate data for the radar chart - not memoized to ensure updates
-  const chartData = Object.values(CATEGORIES).map(category => {
-    console.log("Chart data updated"); // Debug log
-    
-    const items = trialData.complexityItems[category as CategoryType] || [];
-    // Scale: 1 item = 20%, max 5 items = 100%
-    const value = items.length > 0 ? Math.min(100, items.length * 20) : 0;
-    
-    return {
-      category,
-      value
-    };
-  });
+  // Prepare data for the radar chart
+  const radarData = useMemo(() => {
+    // Create one data point for each axis
+    return Object.values(CATEGORIES).map(category => {
+      // Convert to flat data structure for the chart
+      const dataPoint: Record<string, any> = { category };
+      
+      // For each category, add a value
+      Object.values(CATEGORIES).forEach(cat => {
+        const items = trialData.complexityItems[cat as CategoryType] || [];
+        dataPoint[cat] = items.length > 0 ? Math.min(100, items.length * 20) : 0;
+      });
+      
+      return dataPoint;
+    });
+  }, [trialData.complexityItems]);
   
   // Check if there's data to display
   const hasDataToDisplay = useMemo(() => {
@@ -62,7 +62,7 @@ export default function PatientFeasibilityPlot() {
     return trialData.complexityItems[category as CategoryType]?.length || 0;
   };
   
-  // Custom legend renderer with better styling
+  // Legend for chart
   const renderCustomLegend = () => {
     if (!hasDataToDisplay) return null;
     
@@ -108,7 +108,7 @@ export default function PatientFeasibilityPlot() {
             <ResponsiveContainer width="100%" height="100%">
               <RadarChart 
                 outerRadius="70%" 
-                data={chartData}
+                data={radarData}
                 margin={{ top: 5, right: 30, left: 30, bottom: 5 }}
               >
                 <PolarGrid gridType="polygon" stroke="#e5e7eb" />
@@ -126,17 +126,24 @@ export default function PatientFeasibilityPlot() {
                   tickLine={false}
                 />
                 
-                {/* Single Radar approach - simplifies visualization */}
-                <Radar
-                  dataKey="value"
-                  name="Trial Complexity"
-                  stroke="#3b82f6"
-                  fill="#3b82f6"
-                  fillOpacity={0.3}
-                  dot={true}
-                  activeDot={{ r: 5 }}
-                  isAnimationActive={true}
-                />
+                {/* One radar per category with respective colors */}
+                {Object.values(CATEGORIES).map(category => {
+                  const items = trialData.complexityItems[category as CategoryType] || [];
+                  if (items.length === 0) return null; // Skip empty categories
+                  
+                  return (
+                    <Radar
+                      key={category}
+                      name={category}
+                      dataKey={category}
+                      stroke={categoryColors[category as CategoryType]}
+                      fill={categoryColors[category as CategoryType]}
+                      fillOpacity={0.3}
+                      dot 
+                      activeDot={{ r: 5 }}
+                    />
+                  );
+                })}
               </RadarChart>
             </ResponsiveContainer>
           ) : (

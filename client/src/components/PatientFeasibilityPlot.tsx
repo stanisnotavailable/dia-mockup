@@ -4,23 +4,15 @@ import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend, 
 import { TrialDataContext, CATEGORIES, CategoryType, Profile } from "@/contexts/TrialDataContext";
 
 export default function PatientFeasibilityPlot() {
-  const { getCurrentProfile } = useContext(TrialDataContext);
+  // Access entire context instead of just getCurrentProfile
+  const { getCurrentProfile, profiles, currentProfileId } = useContext(TrialDataContext);
   const [profileData, setProfileData] = useState<Profile>(getCurrentProfile());
   
-  // Update chart data when the current profile changes or when trial data is modified
+  // Update chart data whenever profiles state changes or current profile changes
   useEffect(() => {
-    // Create polling interval to check for updates to the profile data
-    const updateInterval = setInterval(() => {
-      const currentProfile = getCurrentProfile();
-      setProfileData(currentProfile);
-    }, 200); // Check for updates every 200ms
-    
-    // Initial update
-    setProfileData(getCurrentProfile());
-    
-    // Clean up interval on unmount
-    return () => clearInterval(updateInterval);
-  }, [getCurrentProfile]);
+    const currentProfile = getCurrentProfile();
+    setProfileData(currentProfile);
+  }, [profiles, currentProfileId, getCurrentProfile]);
   
   // For easier access in the component
   const trialData = profileData.trialData;
@@ -33,10 +25,13 @@ export default function PatientFeasibilityPlot() {
     [CATEGORIES.QUALITY]: "#8b5cf6", // Purple
   }), []);
   
-  // Calculate data for the radar chart
+  // Calculate data for the radar chart - force update when trial data changes
   const chartData = useMemo(() => {
+    console.log("Chart data updated"); // Debug log
+    
     return Object.values(CATEGORIES).map(category => {
       const items = trialData.complexityItems[category as CategoryType] || [];
+      // Scale: 1 item = 20%, max 5 items = 100%
       const value = items.length > 0 ? Math.min(100, items.length * 20) : 0;
       
       return {
@@ -44,7 +39,7 @@ export default function PatientFeasibilityPlot() {
         value
       };
     });
-  }, [trialData.complexityItems]);
+  }, [trialData.complexityItems, profileData.id]);
   
   // Check if there's data to display
   const hasDataToDisplay = useMemo(() => {
@@ -56,7 +51,7 @@ export default function PatientFeasibilityPlot() {
     return trialData.complexityItems[category as CategoryType]?.length || 0;
   };
   
-  // Custom legend renderer
+  // Custom legend renderer with better styling
   const renderCustomLegend = () => {
     if (!hasDataToDisplay) return null;
     
@@ -67,9 +62,23 @@ export default function PatientFeasibilityPlot() {
           if (count === 0) return null;
           
           return (
-            <div key={category} className="flex items-center text-xs px-2 py-1 rounded-md bg-white shadow-sm border">
-              <div className="w-3 h-3 rounded-full mr-1" style={{ backgroundColor: color }} />
-              <span>{category} ({count})</span>
+            <div 
+              key={category} 
+              className="flex items-center text-xs px-2 py-1 rounded-full" 
+              style={{ 
+                backgroundColor: `${color}15`, 
+                color: color,
+                border: `1px solid ${color}30`
+              }}
+            >
+              <div 
+                className="w-2.5 h-2.5 rounded-full mr-1.5" 
+                style={{ backgroundColor: color }} 
+              />
+              <span className="font-medium">{category}</span>
+              <span className="ml-1 bg-white px-1.5 py-0.5 rounded-full text-xs font-medium" style={{ color }}>
+                {count}
+              </span>
             </div>
           );
         })}
@@ -89,37 +98,34 @@ export default function PatientFeasibilityPlot() {
               <RadarChart 
                 outerRadius="70%" 
                 data={chartData}
+                margin={{ top: 5, right: 30, left: 30, bottom: 5 }}
               >
-                <PolarGrid stroke="#e5e7eb" />
+                <PolarGrid gridType="polygon" stroke="#e5e7eb" />
                 <PolarAngleAxis 
                   dataKey="category" 
-                  tick={{ fill: '#6b7280', fontSize: 12 }}
+                  tick={{ fill: '#6b7280', fontSize: 11, fontWeight: 500 }}
+                  tickLine={{ stroke: '#e5e7eb' }}
+                  axisLine={{ stroke: '#e5e7eb' }}
                 />
                 <PolarRadiusAxis 
                   domain={[0, 100]} 
-                  tick={{ fill: '#9ca3af', fontSize: 10 }}
+                  tick={{ fill: '#9ca3af', fontSize: 9 }}
                   tickCount={5}
                   axisLine={false}
+                  tickLine={false}
                 />
                 
-                {Object.values(CATEGORIES).map(category => {
-                  const items = trialData.complexityItems[category as CategoryType];
-                  if (!items || items.length === 0) return null;
-                  
-                  // Create individual radar for each category with items
-                  return (
-                    <Radar
-                      key={category}
-                      dataKey="value"
-                      name={category}
-                      stroke={categoryColors[category as CategoryType]}
-                      fill={categoryColors[category as CategoryType]}
-                      fillOpacity={0.3}
-                      dot 
-                      isAnimationActive
-                    />
-                  );
-                })}
+                {/* Single Radar approach - simplifies visualization */}
+                <Radar
+                  dataKey="value"
+                  name="Trial Complexity"
+                  stroke="#3b82f6"
+                  fill="#3b82f6"
+                  fillOpacity={0.3}
+                  dot={true}
+                  activeDot={{ r: 5 }}
+                  isAnimationActive={true}
+                />
               </RadarChart>
             </ResponsiveContainer>
           ) : (

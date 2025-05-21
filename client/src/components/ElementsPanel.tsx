@@ -134,16 +134,16 @@ export default function ElementsPanel() {
         </p>
         
         <div 
-          className={`border rounded-md p-2 bg-gray-50 flex-grow overflow-hidden ${
+          className={`border rounded-md p-2 bg-gray-50 flex-grow ${
             isDraggedOver ? "border-blue-400 bg-blue-50 ring-2 ring-blue-200" : ""
           }`}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDropToAvailable}
         >
-          <div className="overflow-y-auto h-full">
+          <div className="overflow-y-auto h-full max-h-[300px] custom-scrollbar pr-1">
             {trialData.availableItems.map((item: ComplexityItem) => (
-              <ComplexityItemComponent key={item.id} item={item} />
+              <ComplexityItemComponent key={`available-${item.id}`} item={item} />
             ))}
             {trialData.availableItems.length === 0 && (
               <div className="text-gray-500 text-xs text-center py-6 border border-dashed rounded-md mt-4">

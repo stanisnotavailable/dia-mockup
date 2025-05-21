@@ -103,13 +103,18 @@ export default function PatientFeasibilityPlot() {
         <div className="font-medium text-lg mb-1">Patient Feasibility Plot</div>
         <div className="text-sm text-gray-500 mb-4">Visualizing trial complexity across key dimensions</div>
         
-        <div className="w-full h-[300px]">
+        <div className="w-full h-[300px] relative">
+          {/* Display category legend inside the chart at the top */}
+          <div className="absolute top-0 left-0 right-0 z-10 py-2">
+            {renderCustomLegend()}
+          </div>
+          
           {hasDataToDisplay ? (
             <ResponsiveContainer width="100%" height="100%">
               <RadarChart 
                 outerRadius="70%" 
                 data={radarData}
-                margin={{ top: 5, right: 30, left: 30, bottom: 5 }}
+                margin={{ top: 30, right: 30, left: 30, bottom: 5 }}
               >
                 <PolarGrid gridType="polygon" stroke="#e5e7eb" />
                 <PolarAngleAxis 
@@ -154,9 +159,6 @@ export default function PatientFeasibilityPlot() {
               </div>
             </div>
           )}
-          
-          {/* Display category legend below chart */}
-          {renderCustomLegend()}
         </div>
       </CardContent>
     </Card>

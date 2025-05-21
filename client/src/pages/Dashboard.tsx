@@ -34,7 +34,7 @@ export default function Dashboard() {
         {/* Container with Available Elements and Feasibility Plot side by side */}
         <div className="border border-gray-100 shadow-sm rounded-lg overflow-hidden">
           <div className="flex flex-col lg:flex-row">
-            <div className="lg:w-1/2 p-4 border-b lg:border-b-0 lg:border-r border-gray-200">
+            <div className="lg:w-1/2 p-4">
               <ElementsPanel />
             </div>
             <div className="lg:w-1/2 p-4">

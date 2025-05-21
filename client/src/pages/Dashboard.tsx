@@ -5,7 +5,7 @@ import PatientFeasibilityPlot from "@/components/PatientFeasibilityPlot";
 import ProfileTabs from "@/components/ProfileTabs";
 import ElementsPanel from "@/components/ElementsPanel";
 import PatientDemographics from "@/components/PatientDemographics";
-import { TrialDataContext } from "@/contexts/TrialDataContext";
+import { TrialDataContext, ComplexityItem, CATEGORIES } from "@/contexts/TrialDataContext";
 import LoadingAnimation from "@/components/LoadingAnimation";
 
 // Component for individual category elements
@@ -85,38 +85,51 @@ export default function Dashboard() {
           </div>
         </div>
         
-        {/* Trial Complexity Categories - One container with four category elements */}
+        {/* Four-Column Trial Complexity Categories Layout */}
         <div className="border border-gray-100 shadow-sm rounded-lg overflow-hidden">
           <div className="p-4">
             <h3 className="text-base font-medium text-gray-800 mb-4">Trial Complexity Categories</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {/* Display each complexity category as a separate card */}
-              {profile.categories?.map((category, idx) => {
+            
+            {/* Four column layout for categories */}
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+              {/* Fixed set of categories, each with its own column */}
+              {[
+                'Logistics Challenge',
+                'Motivation',
+                'Healthcare Engagement',
+                'Quality of Life'
+              ].map((categoryName, idx) => {
+                // Find the category data
+                const categoryData = profile.categories?.find(cat => cat.name === categoryName);
+                const items = categoryData?.questions || [];
+                
                 // Define colors for each category
                 const colors = {
-                  "Logistics Challenge": "bg-blue-100 text-blue-800",
-                  "Motivation": "bg-green-100 text-green-800",
-                  "Healthcare Engagement": "bg-purple-100 text-purple-800",
-                  "Quality of Life": "bg-amber-100 text-amber-800"
+                  "Logistics Challenge": "bg-blue-100 text-blue-800 border-blue-200",
+                  "Motivation": "bg-green-100 text-green-800 border-green-200",
+                  "Healthcare Engagement": "bg-purple-100 text-purple-800 border-purple-200",
+                  "Quality of Life": "bg-amber-100 text-amber-800 border-amber-200"
                 };
                 
-                const color = colors[category.name as keyof typeof colors] || "bg-gray-100 text-gray-800";
+                const color = colors[categoryName as keyof typeof colors] || "bg-gray-100 text-gray-800";
+                const borderColor = color.split(' ').find(c => c.startsWith('border-')) || 'border-gray-200';
                 
                 return (
                   <div 
                     key={idx} 
-                    className="p-3 border border-gray-100 rounded-md transition-colors"
+                    className={`p-3 border rounded-md transition-colors flex flex-col h-full ${borderColor}`}
                     onDragOver={(e) => {
                       e.preventDefault();
                       e.dataTransfer.dropEffect = "move";
-                      e.currentTarget.classList.add('bg-blue-50', 'border-blue-200');
+                      const hoverColor = color.split(' ')[0].replace('bg-', 'bg-') + '/50';
+                      e.currentTarget.classList.add(hoverColor);
                     }}
                     onDragLeave={(e) => {
-                      e.currentTarget.classList.remove('bg-blue-50', 'border-blue-200');
+                      e.currentTarget.classList.remove(`${color.split(' ')[0]}/50`);
                     }}
                     onDrop={(e) => {
                       e.preventDefault();
-                      e.currentTarget.classList.remove('bg-blue-50', 'border-blue-200');
+                      e.currentTarget.classList.remove(`${color.split(' ')[0]}/50`);
                       
                       // Get the item data from dataTransfer
                       try {
@@ -128,8 +141,8 @@ export default function Dashboard() {
                           const complexityItem = JSON.parse(itemData) as ComplexityItem;
                           
                           // Don't move if it's already in this category
-                          if (complexityItem.category !== category.name) {
-                            moveItem(complexityItem, category.name);
+                          if (complexityItem.category !== categoryName) {
+                            moveItem(complexityItem, categoryName);
                           }
                         } else {
                           // Fallback for backward compatibility - treat as ID only
@@ -147,8 +160,8 @@ export default function Dashboard() {
                           }
                           
                           // Move the item to this category
-                          if (foundItem && foundItem.category !== category.name) {
-                            moveItem(foundItem, category.name);
+                          if (foundItem && foundItem.category !== categoryName) {
+                            moveItem(foundItem, categoryName);
                           }
                         }
                       } catch (error) {
@@ -156,51 +169,60 @@ export default function Dashboard() {
                       }
                     }}
                   >
+                    {/* Category header with name and score */}
                     <div className="flex justify-between items-center mb-2">
-                      <h4 className="text-sm font-medium">{category.name}</h4>
-                      <div className={`text-xs px-2 py-0.5 rounded-full ${color}`}>
-                        {category.model_value.toFixed(1)}
+                      <h4 className="text-sm font-medium">{categoryName}</h4>
+                      <div className={`text-xs px-2 py-0.5 rounded-full ${color.split(' ').slice(0, 2).join(' ')}`}>
+                        {categoryData?.model_value.toFixed(1) || '0.0'}
                       </div>
                     </div>
-                    <div className="max-h-[120px] overflow-y-auto pr-1 space-y-1 custom-scrollbar">
-                      {category.questions.map((question, qIdx) => {
-                        // Create a full ComplexityItem for dragging
-                        const complexityItem = {
-                          id: question.id,
-                          name: question.name,
-                          category: category.name,
-                          complexity: 0 // Add default complexity if needed
-                        };
-                        
-                        return (
-                          <div 
-                            key={qIdx} 
-                            className="text-xs text-gray-600 flex items-center py-1 px-1 rounded cursor-move hover:bg-gray-100"
-                            draggable={true}
-                            onDragStart={(e) => {
-                              e.dataTransfer.effectAllowed = "move";
-                              // Store the full item data as JSON string to preserve category info
-                              e.dataTransfer.setData("text/plain", JSON.stringify(complexityItem));
-                              // Add a visual indicator of what is being dragged
-                              e.currentTarget.classList.add('bg-blue-50');
-                              
-                              // Create a drag image
-                              const dragImage = document.createElement('div');
-                              dragImage.className = 'p-2 bg-white border rounded text-xs shadow-md';
-                              dragImage.textContent = complexityItem.name;
-                              document.body.appendChild(dragImage);
-                              e.dataTransfer.setDragImage(dragImage, 0, 0);
-                              setTimeout(() => document.body.removeChild(dragImage), 0);
-                            }}
-                            onDragEnd={(e) => {
-                              e.currentTarget.classList.remove('bg-blue-50');
-                            }}
-                          >
-                            <div className="w-1 h-1 rounded-full bg-gray-400 mr-2"></div>
-                            {question.name}
-                          </div>
-                        );
-                      })}
+                    
+                    {/* Scrollable items container */}
+                    <div className="flex-grow min-h-[120px] max-h-[180px] overflow-y-auto pr-1 space-y-1 custom-scrollbar">
+                      {items.length > 0 ? (
+                        items.map((question, qIdx) => {
+                          // Create a full ComplexityItem for dragging
+                          const complexityItem = {
+                            id: question.id,
+                            name: question.name,
+                            category: categoryName,
+                            complexity: 0 // Add default complexity if needed
+                          };
+                          
+                          return (
+                            <div 
+                              key={qIdx} 
+                              className="text-xs text-gray-600 flex items-center py-1 px-2 rounded cursor-move hover:bg-gray-100"
+                              draggable={true}
+                              onDragStart={(e) => {
+                                e.dataTransfer.effectAllowed = "move";
+                                // Store the full item data as JSON string to preserve category info
+                                e.dataTransfer.setData("text/plain", JSON.stringify(complexityItem));
+                                // Add a visual indicator of what is being dragged
+                                e.currentTarget.classList.add('bg-blue-50');
+                                
+                                // Create a drag image
+                                const dragImage = document.createElement('div');
+                                dragImage.className = 'p-2 bg-white border rounded text-xs shadow-md';
+                                dragImage.textContent = complexityItem.name;
+                                document.body.appendChild(dragImage);
+                                e.dataTransfer.setDragImage(dragImage, 0, 0);
+                                setTimeout(() => document.body.removeChild(dragImage), 0);
+                              }}
+                              onDragEnd={(e) => {
+                                e.currentTarget.classList.remove('bg-blue-50');
+                              }}
+                            >
+                              <div className="w-1 h-1 rounded-full bg-gray-400 mr-2"></div>
+                              {question.name}
+                            </div>
+                          );
+                        })
+                      ) : (
+                        <div className="h-full flex items-center justify-center text-xs text-gray-400 italic border border-dashed rounded p-2">
+                          Drop items here
+                        </div>
+                      )}
                     </div>
                   </div>
                 );

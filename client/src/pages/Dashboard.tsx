@@ -27,12 +27,9 @@ export default function Dashboard() {
 
       <ProfileTabs />
       
-      <div className="mb-6">
-        <PatientDemographics />
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-4">
+        <div className="lg:col-span-1 space-y-6">
+          <PatientDemographics />
           <ElementsPanel />
         </div>
         <div className="lg:col-span-2">

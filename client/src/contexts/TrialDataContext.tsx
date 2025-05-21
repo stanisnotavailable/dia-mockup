@@ -296,6 +296,42 @@ export const TrialDataProvider = ({ children }: { children: ReactNode }) => {
         }
       }
       
+      // Also update the categories array for the radar chart
+      if (profile.categories) {
+        // Find the category in the categories array
+        const categoryIndex = profile.categories.findIndex(cat => cat.name === targetCategory);
+        
+        if (categoryIndex !== -1 && targetCategory !== '') {
+          // Create a new questions array for the category
+          const questions = [...profile.categories[categoryIndex].questions];
+          
+          // Add the question to the category if it's not already there
+          if (!questions.some(q => q.id === item.id)) {
+            questions.push({
+              id: item.id,
+              name: item.name,
+              category: targetCategory
+            });
+          }
+          
+          // Update the category with the new questions
+          profile.categories[categoryIndex] = {
+            ...profile.categories[categoryIndex],
+            questions: questions
+          };
+        } else if (item.category !== '') {
+          // If the item was in a category before, remove it from that category
+          const oldCategoryIndex = profile.categories.findIndex(cat => cat.name === item.category);
+          
+          if (oldCategoryIndex !== -1) {
+            profile.categories[oldCategoryIndex] = {
+              ...profile.categories[oldCategoryIndex],
+              questions: profile.categories[oldCategoryIndex].questions.filter(q => q.id !== item.id)
+            };
+          }
+        }
+      }
+      
       profile.trialData = trialData;
       updatedProfiles[profileIndex] = profile;
       
@@ -368,13 +404,19 @@ export const TrialDataProvider = ({ children }: { children: ReactNode }) => {
       
       // Get fresh demographic data from JSON
       const freshDemographicData = getDemographicData(profileId);
-      const originalBurdenScore = (questionsData as QuestionData).patientDemographics[profileId].diseaseBurdenScore;
+      
+      // Reset the categories to have empty questions
+      const freshCategories = questionsData[profileId as keyof typeof questionsData]?.categories || [];
+      const categoriesWithEmptyQuestions = freshCategories.map(category => ({
+        ...category,
+        questions: [] // Reset questions to empty array
+      }));
       
       updatedProfiles[profileIndex] = {
         ...updatedProfiles[profileIndex],
         trialData,
         patientDemographic: freshDemographicData,
-        diseaseBurdenScore: originalBurdenScore
+        categories: categoriesWithEmptyQuestions
       };
       
       return updatedProfiles;

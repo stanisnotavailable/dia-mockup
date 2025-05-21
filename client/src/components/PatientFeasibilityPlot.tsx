@@ -3,16 +3,29 @@ import { Card, CardContent } from "@/components/ui/card";
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend, ResponsiveContainer } from "recharts";
 import { TrialDataContext, CATEGORIES, CategoryType, Profile } from "@/contexts/TrialDataContext";
 
-export default function PatientFeasibilityPlot() {
-  // Access entire context instead of just getCurrentProfile
-  const { getCurrentProfile, profiles, currentProfileId } = useContext(TrialDataContext);
-  const [profileData, setProfileData] = useState<Profile>(getCurrentProfile());
+// Force component to rerender on interval (temporary fix for real-time updates)
+function useForceUpdate() {
+  const [, setValue] = useState(0);
   
-  // Update chart data whenever profiles state changes or current profile changes
   useEffect(() => {
-    const currentProfile = getCurrentProfile();
-    setProfileData(currentProfile);
-  }, [profiles, currentProfileId, getCurrentProfile]);
+    const interval = setInterval(() => {
+      setValue(value => value + 1);
+    }, 100);
+    
+    return () => clearInterval(interval);
+  }, []);
+}
+
+export default function PatientFeasibilityPlot() {
+  // Get everything directly from context to ensure real-time updates
+  const { getCurrentProfile, profiles, currentProfileId } = useContext(TrialDataContext);
+  
+  // Force re-render to catch updates
+  useForceUpdate();
+  
+  // Get profile data directly from context each time
+  // This ensures we're always working with the latest data
+  const profileData = getCurrentProfile();
   
   // For easier access in the component
   const trialData = profileData.trialData;
@@ -25,21 +38,19 @@ export default function PatientFeasibilityPlot() {
     [CATEGORIES.QUALITY]: "#8b5cf6", // Purple
   }), []);
   
-  // Calculate data for the radar chart - force update when trial data changes
-  const chartData = useMemo(() => {
+  // Calculate data for the radar chart - not memoized to ensure updates
+  const chartData = Object.values(CATEGORIES).map(category => {
     console.log("Chart data updated"); // Debug log
     
-    return Object.values(CATEGORIES).map(category => {
-      const items = trialData.complexityItems[category as CategoryType] || [];
-      // Scale: 1 item = 20%, max 5 items = 100%
-      const value = items.length > 0 ? Math.min(100, items.length * 20) : 0;
-      
-      return {
-        category,
-        value
-      };
-    });
-  }, [trialData.complexityItems, profileData.id]);
+    const items = trialData.complexityItems[category as CategoryType] || [];
+    // Scale: 1 item = 20%, max 5 items = 100%
+    const value = items.length > 0 ? Math.min(100, items.length * 20) : 0;
+    
+    return {
+      category,
+      value
+    };
+  });
   
   // Check if there's data to display
   const hasDataToDisplay = useMemo(() => {

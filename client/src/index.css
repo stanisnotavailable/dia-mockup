@@ -21,6 +21,37 @@
   background: #9ca3af;
 }
 
+/* AG Grid customizations */
+.ag-theme-alpine {
+  --ag-border-color: #e5e7eb;
+  --ag-background-color: white;
+  --ag-header-background-color: #f9fafb;
+  --ag-odd-row-background-color: white;
+  --ag-row-hover-color: #f3f4f6;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.ag-theme-alpine .ag-header-cell {
+  font-weight: 600;
+  color: #4b5563;
+}
+
+.ag-theme-alpine .ag-cell {
+  padding: 0;
+}
+
+.category-container {
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.375rem;
+  padding: 0.5rem;
+  min-height: 220px;
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+}
+
 :root {
       --background: 0 0% 100%;
 --foreground: 20 14.3% 4.1%;

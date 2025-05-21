@@ -5,7 +5,7 @@ import PatientFeasibilityPlot from "@/components/PatientFeasibilityPlot";
 import ProfileTabs from "@/components/ProfileTabs";
 import ElementsPanel from "@/components/ElementsPanel";
 import PatientDemographics from "@/components/PatientDemographics";
-import { TrialDataContext, ComplexityItem, CATEGORIES } from "@/contexts/TrialDataContext";
+import { TrialDataContext, ComplexityItem } from "@/contexts/TrialDataContext";
 import LoadingAnimation from "@/components/LoadingAnimation";
 
 // Component for individual category elements
@@ -122,14 +122,14 @@ export default function Dashboard() {
                       e.preventDefault();
                       e.dataTransfer.dropEffect = "move";
                       const hoverColor = color.split(' ')[0].replace('bg-', 'bg-') + '/50';
-                      e.currentTarget.classList.add(hoverColor);
+                      e.currentTarget.classList.add('bg-blue-50');
                     }}
                     onDragLeave={(e) => {
-                      e.currentTarget.classList.remove(`${color.split(' ')[0]}/50`);
+                      e.currentTarget.classList.remove('bg-blue-50');
                     }}
                     onDrop={(e) => {
                       e.preventDefault();
-                      e.currentTarget.classList.remove(`${color.split(' ')[0]}/50`);
+                      e.currentTarget.classList.remove('bg-blue-50');
                       
                       // Get the item data from dataTransfer
                       try {

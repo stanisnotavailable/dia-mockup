@@ -7,10 +7,19 @@ export default function PatientFeasibilityPlot() {
   const { getCurrentProfile } = useContext(TrialDataContext);
   const [profileData, setProfileData] = useState<Profile>(getCurrentProfile());
   
-  // Update chart data when the current profile changes
+  // Update chart data when the current profile changes or when trial data is modified
   useEffect(() => {
-    const currentProfile = getCurrentProfile();
-    setProfileData(currentProfile);
+    // Create polling interval to check for updates to the profile data
+    const updateInterval = setInterval(() => {
+      const currentProfile = getCurrentProfile();
+      setProfileData(currentProfile);
+    }, 200); // Check for updates every 200ms
+    
+    // Initial update
+    setProfileData(getCurrentProfile());
+    
+    // Clean up interval on unmount
+    return () => clearInterval(updateInterval);
   }, [getCurrentProfile]);
   
   // For easier access in the component

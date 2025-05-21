@@ -41,22 +41,34 @@
       {
         "name": "Logistics Challenge",
         "model_value": 4.5,
-        "questions": []
+        "questions": [
+          {"id": "q1", "name": "Question 1", "category": "Logistics Challenge"},
+          {"id": "q2", "name": "Question 2", "category": "Logistics Challenge"}
+        ]
       },
       {
         "name": "Motivation",
         "model_value": 3.7,
-        "questions": []
+        "questions": [
+          {"id": "q3", "name": "Question 3", "category": "Motivation"},
+          {"id": "q4", "name": "Question 4", "category": "Motivation"}
+        ]
       },
       {
         "name": "Healthcare Engagement",
         "model_value": 2.2,
-        "questions": []
+        "questions": [
+          {"id": "q5", "name": "Question 5", "category": "Healthcare Engagement"},
+          {"id": "q6", "name": "Question 6", "category": "Healthcare Engagement"}
+        ]
       },
       {
         "name": "Quality of Life",
         "model_value": 1.5,
-        "questions": []
+        "questions": [
+          {"id": "q7", "name": "Question 7", "category": "Quality of Life"},
+          {"id": "q8", "name": "Question 8", "category": "Quality of Life"}
+        ]
       }
     ]
   },
@@ -76,22 +88,34 @@
       {
         "name": "Logistics Challenge",
         "model_value": 2.8,
-        "questions": []
+        "questions": [
+          {"id": "q9", "name": "Question 9", "category": "Logistics Challenge"},
+          {"id": "q10", "name": "Question 10", "category": "Logistics Challenge"}
+        ]
       },
       {
         "name": "Motivation",
         "model_value": 5.2,
-        "questions": []
+        "questions": [
+          {"id": "q11", "name": "Question 11", "category": "Motivation"},
+          {"id": "q12", "name": "Question 12", "category": "Motivation"}
+        ]
       },
       {
         "name": "Healthcare Engagement",
         "model_value": 3.4,
-        "questions": []
+        "questions": [
+          {"id": "q13", "name": "Question 13", "category": "Healthcare Engagement"},
+          {"id": "q14", "name": "Question 14", "category": "Healthcare Engagement"}
+        ]
       },
       {
         "name": "Quality of Life",
         "model_value": 4.1,
-        "questions": []
+        "questions": [
+          {"id": "q15", "name": "Question 15", "category": "Quality of Life"},
+          {"id": "q16", "name": "Question 16", "category": "Quality of Life"}
+        ]
       }
     ]
   },
@@ -111,22 +135,34 @@
       {
         "name": "Logistics Challenge",
         "model_value": 1.9,
-        "questions": []
+        "questions": [
+          {"id": "q17", "name": "Question 17", "category": "Logistics Challenge"},
+          {"id": "q18", "name": "Question 18", "category": "Logistics Challenge"}
+        ]
       },
       {
         "name": "Motivation",
         "model_value": 4.3,
-        "questions": []
+        "questions": [
+          {"id": "q19", "name": "Question 19", "category": "Motivation"},
+          {"id": "q20", "name": "Question 20", "category": "Motivation"}
+        ]
       },
       {
         "name": "Healthcare Engagement",
         "model_value": 5.5,
-        "questions": []
+        "questions": [
+          {"id": "q21", "name": "Question 21", "category": "Healthcare Engagement"},
+          {"id": "q22", "name": "Question 22", "category": "Healthcare Engagement"}
+        ]
       },
       {
         "name": "Quality of Life",
         "model_value": 3.0,
-        "questions": []
+        "questions": [
+          {"id": "q23", "name": "Question 23", "category": "Quality of Life"},
+          {"id": "q24", "name": "Question 24", "category": "Quality of Life"}
+        ]
       }
     ]
   },

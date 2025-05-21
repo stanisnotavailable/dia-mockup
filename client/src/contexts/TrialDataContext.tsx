@@ -287,6 +287,9 @@ export const TrialDataProvider = ({ children }: { children: ReactNode }) => {
   const moveItem = (item: ComplexityItem, targetCategory: string, profileId?: string) => {
     const targetProfileId = profileId || currentProfileId;
     
+    // Log the movement for debugging
+    console.log(`Moving from ${item.category} to ${targetCategory}`);
+    
     setProfiles(prevProfiles => {
       const updatedProfiles = [...prevProfiles];
       const profileIndex = updatedProfiles.findIndex(p => p.id === targetProfileId);

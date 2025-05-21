@@ -31,7 +31,10 @@ export default function Dashboard() {
         {/* Patient Demographics takes full width */}
         <PatientDemographics />
         
-        {/* Elements and Feasibility Plot side by side */}
+        {/* Trial Complexity Card spans full width */}
+        <TrialComplexityCard />
+        
+        {/* Container with Available Elements and Feasibility Plot side by side */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           <div className="lg:col-span-1">
             <ElementsPanel />
@@ -40,9 +43,6 @@ export default function Dashboard() {
             <PatientFeasibilityPlot />
           </div>
         </div>
-        
-        {/* Trial Complexity Card spans full width */}
-        <TrialComplexityCard />
       </div>
     </div>
   );

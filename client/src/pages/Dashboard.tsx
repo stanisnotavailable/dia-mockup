@@ -31,9 +31,6 @@ export default function Dashboard() {
         {/* Patient Demographics takes full width */}
         <PatientDemographics />
         
-        {/* Trial Complexity Card spans full width */}
-        <TrialComplexityCard />
-        
         {/* Container with Available Elements and Feasibility Plot side by side */}
         <div className="border border-gray-100 shadow-sm rounded-lg overflow-hidden">
           <div className="flex flex-col lg:flex-row">
@@ -42,6 +39,16 @@ export default function Dashboard() {
             </div>
             <div className="lg:w-1/2 p-4">
               <PatientFeasibilityPlot />
+            </div>
+          </div>
+        </div>
+        
+        {/* Trial Complexity Card with reduced height */}
+        <div className="border border-gray-100 shadow-sm rounded-lg overflow-hidden">
+          <div className="p-4">
+            <h3 className="text-base font-medium text-gray-800 mb-2">Trial Complexity Categories</h3>
+            <div className="max-h-[250px] overflow-y-auto">
+              <TrialComplexityCard />
             </div>
           </div>
         </div>

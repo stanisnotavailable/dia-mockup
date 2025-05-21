@@ -118,26 +118,41 @@ export default function Dashboard() {
                       e.preventDefault();
                       e.currentTarget.classList.remove('bg-blue-50', 'border-blue-200');
                       
-                      // Get the item ID from dataTransfer
-                      const itemId = e.dataTransfer.getData("text/plain");
-                      
-                      // Find the item in available items
-                      let foundItem = profile.trialData.availableItems.find(item => item.id === itemId);
-                      
-                      if (!foundItem) {
-                        // Search through all categories in complexityItems
-                        Object.values(profile.trialData.complexityItems).forEach(categoryItems => {
-                          const item = categoryItems.find(item => item.id === itemId);
-                          if (item) foundItem = item;
-                        });
-                      }
-                      
-                      // Move the item to this category
-                      if (foundItem) {
-                        // Don't move if it's already in this category
-                        if (foundItem.category !== category.name) {
-                          moveItem(foundItem, category.name);
+                      // Get the item data from dataTransfer
+                      try {
+                        const itemData = e.dataTransfer.getData("text/plain");
+                        
+                        // Check if it's JSON data
+                        if (itemData.startsWith('{')) {
+                          // Parse the ComplexityItem from JSON
+                          const complexityItem = JSON.parse(itemData) as ComplexityItem;
+                          
+                          // Don't move if it's already in this category
+                          if (complexityItem.category !== category.name) {
+                            moveItem(complexityItem, category.name);
+                          }
+                        } else {
+                          // Fallback for backward compatibility - treat as ID only
+                          const itemId = itemData;
+                          
+                          // Find the item in available items
+                          let foundItem = profile.trialData.availableItems.find(item => item.id === itemId);
+                          
+                          if (!foundItem) {
+                            // Search through all categories in complexityItems
+                            Object.values(profile.trialData.complexityItems).forEach(categoryItems => {
+                              const item = categoryItems.find(item => item.id === itemId);
+                              if (item) foundItem = item;
+                            });
+                          }
+                          
+                          // Move the item to this category
+                          if (foundItem && foundItem.category !== category.name) {
+                            moveItem(foundItem, category.name);
+                          }
                         }
+                      } catch (error) {
+                        console.error("Error handling drop:", error);
                       }
                     }}
                   >
@@ -164,7 +179,8 @@ export default function Dashboard() {
                             draggable={true}
                             onDragStart={(e) => {
                               e.dataTransfer.effectAllowed = "move";
-                              e.dataTransfer.setData("text/plain", complexityItem.id);
+                              // Store the full item data as JSON string to preserve category info
+                              e.dataTransfer.setData("text/plain", JSON.stringify(complexityItem));
                               // Add a visual indicator of what is being dragged
                               e.currentTarget.classList.add('bg-blue-50');
                               

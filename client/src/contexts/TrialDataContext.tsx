@@ -113,6 +113,7 @@ const allItems = getAllItems();
 
 // Helper function to create trial data for a specific profile
 const createProfileData = (profileId: string): TrialData => {
+  // All categories start empty
   const categorizedItems: Record<CategoryType, ComplexityItem[]> = {
     [CATEGORIES.LOGISTICS]: [],
     [CATEGORIES.MOTIVATION]: [],
@@ -123,39 +124,10 @@ const createProfileData = (profileId: string): TrialData => {
   // Get the profile data from our JSON
   const profileData = questionsData[profileId as keyof typeof questionsData];
   
-  if (profileData && profileData.categories) {
-    // Process each category
-    profileData.categories.forEach(categoryData => {
-      // Find the matching category in our CATEGORIES constant
-      const categoryKey = Object.entries(CATEGORIES).find(
-        ([_, value]) => value === categoryData.name
-      )?.[0];
-      
-      if (categoryKey) {
-        const categoryType = CATEGORIES[categoryKey as keyof typeof CATEGORIES];
-        
-        // Add each question to the appropriate category
-        categoryData.questions.forEach(question => {
-          categorizedItems[categoryType].push({
-            ...question,
-            category: categoryType,
-            complexity: 60 // Default complexity
-          });
-        });
-      }
-    });
-  }
-  
-  // Items that aren't in any category go to available items
-  const itemsInCategories = new Set(
-    Object.values(categorizedItems).flat().map(item => item.id)
-  );
-  
-  const remainingItems = allItems.filter(item => !itemsInCategories.has(item.id))
-    .map(item => ({ ...item, category: '' }));
-  
+  // Initialize all items in the available items list
+  // This way, all questions start in "Available Elements"
   return {
-    availableItems: remainingItems,
+    availableItems: allItems.map(item => ({ ...item, category: '' })),
     complexityItems: categorizedItems
   };
 };

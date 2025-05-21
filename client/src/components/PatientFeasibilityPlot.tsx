@@ -1,14 +1,21 @@
-import { useContext, useMemo } from "react";
+import { useContext, useMemo, useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend, ResponsiveContainer } from "recharts";
-import { TrialDataContext, CATEGORIES, CategoryType } from "@/contexts/TrialDataContext";
+import { TrialDataContext, CATEGORIES, CategoryType, Profile } from "@/contexts/TrialDataContext";
 
 export default function PatientFeasibilityPlot() {
   const { getCurrentProfile } = useContext(TrialDataContext);
+  const [profileData, setProfileData] = useState<Profile>(getCurrentProfile());
   
-  // Get the current profile data
-  const currentProfile = getCurrentProfile();
-  const trialData = currentProfile.trialData;
+  // Update chart data when the current profile changes
+  useEffect(() => {
+    // Get latest profile data
+    const currentProfile = getCurrentProfile();
+    setProfileData(currentProfile);
+  }, [getCurrentProfile]);
+  
+  // For easier access in the component
+  const trialData = profileData.trialData;
   
   // Define colors for each category
   const categoryColors = useMemo(() => ({
@@ -20,7 +27,7 @@ export default function PatientFeasibilityPlot() {
   
   // Calculate data points for the radar chart based on category model values
   const getRadarData = () => {
-    if (!currentProfile.categories || currentProfile.categories.length === 0) {
+    if (!profileData.categories || profileData.categories.length === 0) {
       // Fallback to the old calculation if no categories are available
       return calculateDataFromTrialComplexity();
     }
@@ -33,7 +40,7 @@ export default function PatientFeasibilityPlot() {
       const result: Record<string, any> = { axis };
       
       // Find the matching category in the profile's categories
-      const category = currentProfile.categories?.find(cat => cat.name === axis);
+      const category = profileData.categories?.find((cat: any) => cat.name === axis);
       
       if (category) {
         // We already have model_value for this category, use it directly
@@ -94,14 +101,14 @@ export default function PatientFeasibilityPlot() {
   // Check if there's data to display
   const hasDataToDisplay = useMemo(() => {
     // First check if we have model values from the categories
-    if (currentProfile.categories && currentProfile.categories.length > 0) {
+    if (profileData.categories && profileData.categories.length > 0) {
       return true;
     }
     
     // Fallback to checking for complexity items
     return trialData.complexityItems && 
       Object.values(trialData.complexityItems).some(items => items && items.length > 0);
-  }, [currentProfile.categories, trialData.complexityItems]);
+  }, [profileData.categories, trialData.complexityItems]);
   
   // Get total items count for categories with data
   const getActiveCategoryCount = (category: string) => {
@@ -184,7 +191,7 @@ export default function PatientFeasibilityPlot() {
                 />
                 
                 {/* Render a single radar using model values if available */}
-                {currentProfile.categories && currentProfile.categories.length > 0 ? (
+                {profileData.categories && profileData.categories.length > 0 ? (
                   // Use model values for the radar (new JSON format)
                   <Radar
                     name="Model Values"

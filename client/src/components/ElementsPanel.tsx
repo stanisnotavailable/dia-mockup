@@ -28,9 +28,17 @@ export default function ElementsPanel() {
   // Handle starting to drag an item
   const handleDragStart = (e: React.DragEvent, item: ComplexityItem) => {
     e.dataTransfer.effectAllowed = "move";
-    // Store the item ID in dataTransfer
-    e.dataTransfer.setData("text/plain", item.id);
+    // Store the full item data as JSON string
+    e.dataTransfer.setData("text/plain", JSON.stringify(item));
     setDraggedItem(item);
+    
+    // Create a drag image
+    const dragImage = document.createElement('div');
+    dragImage.className = 'p-2 bg-white border rounded text-xs shadow-md';
+    dragImage.textContent = item.name;
+    document.body.appendChild(dragImage);
+    e.dataTransfer.setDragImage(dragImage, 0, 0);
+    setTimeout(() => document.body.removeChild(dragImage), 0);
   };
 
   // Handle the drag over event to enable dropping
@@ -50,22 +58,40 @@ export default function ElementsPanel() {
     e.preventDefault();
     setIsDraggedOver(false);
     
-    // Get the item ID from dataTransfer
-    const itemId = e.dataTransfer.getData("text/plain");
-    
-    // Find the item from either availableItems or any category
-    let foundItem = trialData.availableItems.find(item => item.id === itemId);
-    
-    if (!foundItem) {
-      // Search through all categories
-      for (const category of Object.values(trialData.complexityItems)) {
-        foundItem = category.find(item => item.id === itemId);
-        if (foundItem) break;
+    try {
+      // Get the item data from dataTransfer
+      const itemData = e.dataTransfer.getData("text/plain");
+      
+      // Check if it's JSON data
+      if (itemData.startsWith('{')) {
+        // Parse the ComplexityItem from JSON
+        const complexityItem = JSON.parse(itemData) as ComplexityItem;
+        
+        // Only move if not already in available items (empty category)
+        if (complexityItem.category !== '') {
+          moveItem(complexityItem, '');
+        }
+      } else {
+        // Fallback to the old way with just an ID
+        const itemId = itemData;
+        
+        // Find the item from either availableItems or any category
+        let foundItem = trialData.availableItems.find(item => item.id === itemId);
+        
+        if (!foundItem) {
+          // Search through all categories
+          for (const category of Object.values(trialData.complexityItems)) {
+            foundItem = category.find(item => item.id === itemId);
+            if (foundItem) break;
+          }
+        }
+        
+        if (foundItem && foundItem.category !== '') {
+          moveItem(foundItem, '');
+        }
       }
-    }
-    
-    if (foundItem && foundItem.category !== '') {
-      moveItem(foundItem, '');
+    } catch (error) {
+      console.error("Error handling drop to available:", error);
     }
   };
 

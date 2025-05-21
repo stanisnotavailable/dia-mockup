@@ -67,32 +67,29 @@ export default function PatientFeasibilityPlot() {
     if (!hasDataToDisplay) return null;
     
     return (
-      <div className="flex flex-wrap justify-center gap-2 mt-4">
-        {Object.entries(categoryColors).map(([category, color]) => {
-          const count = getQuestionCount(category);
-          if (count === 0) return null;
-          
-          return (
-            <div 
-              key={category} 
-              className="flex items-center text-xs px-2 py-1 rounded-full" 
-              style={{ 
-                backgroundColor: `${color}15`, 
-                color: color,
-                border: `1px solid ${color}30`
-              }}
-            >
+      <div className="bg-white/90 rounded-lg shadow-sm px-3 py-2 mx-auto max-w-fit border border-gray-100">
+        <div className="flex flex-wrap justify-center items-center gap-x-4 gap-y-2">
+          {Object.entries(categoryColors).map(([category, color]) => {
+            const count = getQuestionCount(category);
+            if (count === 0) return null;
+            
+            return (
               <div 
-                className="w-2.5 h-2.5 rounded-full mr-1.5" 
-                style={{ backgroundColor: color }} 
-              />
-              <span className="font-medium">{category}</span>
-              <span className="ml-1 bg-white px-1.5 py-0.5 rounded-full text-xs font-medium" style={{ color }}>
-                {count}
-              </span>
-            </div>
-          );
-        })}
+                key={category} 
+                className="flex items-center text-xs" 
+              >
+                <div 
+                  className="w-2.5 h-2.5 rounded-full mr-1.5" 
+                  style={{ backgroundColor: color }} 
+                />
+                <span className="font-medium" style={{ color }}>{category}</span>
+                <span className="ml-1 bg-gray-100 px-1.5 py-0.5 rounded-full text-xs font-medium">
+                  {count}
+                </span>
+              </div>
+            );
+          })}
+        </div>
       </div>
     );
   };
@@ -105,7 +102,7 @@ export default function PatientFeasibilityPlot() {
         
         <div className="w-full h-[350px] relative">
           {/* Display category legend inside the chart at the top */}
-          <div className="absolute top-0 left-0 right-0 z-10 py-2">
+          <div className="absolute top-2 left-1/2 -translate-x-1/2 z-10">
             {renderCustomLegend()}
           </div>
           

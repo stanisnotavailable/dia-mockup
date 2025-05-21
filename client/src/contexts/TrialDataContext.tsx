@@ -97,7 +97,7 @@ const allItems = getAllItems();
 
 // Helper function to create trial data for a specific profile
 const createProfileData = (profileId: string): TrialData => {
-  // All categories start empty
+  // Initialize categories with some pre-distributed questions
   const categorizedItems: Record<CategoryType, ComplexityItem[]> = {
     [CATEGORIES.LOGISTICS]: [],
     [CATEGORIES.MOTIVATION]: [],
@@ -108,10 +108,39 @@ const createProfileData = (profileId: string): TrialData => {
   // Get the profile data from our JSON
   const profileData = questionsData[profileId as keyof typeof questionsData];
   
-  // Initialize all items in the available items list
-  // This way, all questions start in "Available Elements"
+  // Make a copy of all items to distribute
+  const allItemsCopy = [...allItems.map(item => ({ ...item, category: '' }))];
+  
+  // Distribute some questions to different categories
+  // Logistics: Add questions 0 and 1
+  categorizedItems[CATEGORIES.LOGISTICS].push(
+    { ...allItemsCopy[0], category: CATEGORIES.LOGISTICS },
+    { ...allItemsCopy[1], category: CATEGORIES.LOGISTICS }
+  );
+  
+  // Motivation: Add questions 2 and 3
+  categorizedItems[CATEGORIES.MOTIVATION].push(
+    { ...allItemsCopy[2], category: CATEGORIES.MOTIVATION },
+    { ...allItemsCopy[3], category: CATEGORIES.MOTIVATION }
+  );
+  
+  // Healthcare: Add questions 4 and 5
+  categorizedItems[CATEGORIES.HEALTHCARE].push(
+    { ...allItemsCopy[4], category: CATEGORIES.HEALTHCARE },
+    { ...allItemsCopy[5], category: CATEGORIES.HEALTHCARE }
+  );
+  
+  // Quality of Life: Add questions 6 and 7
+  categorizedItems[CATEGORIES.QUALITY].push(
+    { ...allItemsCopy[6], category: CATEGORIES.QUALITY },
+    { ...allItemsCopy[7], category: CATEGORIES.QUALITY }
+  );
+  
+  // The remaining items (8-23) go to the available items
+  const availableItems = allItemsCopy.slice(8);
+  
   return {
-    availableItems: allItems.map(item => ({ ...item, category: '' })),
+    availableItems,
     complexityItems: categorizedItems
   };
 };

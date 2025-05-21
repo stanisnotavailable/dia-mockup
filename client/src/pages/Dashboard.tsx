@@ -6,18 +6,18 @@ import ProfileTabs from "@/components/ProfileTabs";
 import ElementsPanel from "@/components/ElementsPanel";
 import PatientDemographics from "@/components/PatientDemographics";
 import { TrialDataContext } from "@/contexts/TrialDataContext";
-
-// Import skeleton components
-import ProfileTabsSkeleton from "@/components/skeletons/ProfileTabsSkeleton";
-import PatientDemographicsSkeleton from "@/components/skeletons/PatientDemographicsSkeleton";
-import ElementsPanelSkeleton from "@/components/skeletons/ElementsPanelSkeleton";
-import PatientFeasibilityPlotSkeleton from "@/components/skeletons/PatientFeasibilityPlotSkeleton";
-import TrialComplexityCardSkeleton from "@/components/skeletons/TrialComplexityCardSkeleton";
+import LoadingAnimation from "@/components/LoadingAnimation";
 
 export default function Dashboard() {
   useTitle("Clinical Trial Dashboard");
   const { isLoading } = useContext(TrialDataContext);
 
+  // If we're in loading state, show the "thinking" animation instead of skeletons
+  if (isLoading) {
+    return <LoadingAnimation />;
+  }
+
+  // When data is loaded, show the dashboard
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
       <header className="mb-6">
@@ -25,49 +25,23 @@ export default function Dashboard() {
         <p className="text-gray-600">Monitor patient experience and trial complexity metrics</p>
       </header>
 
-      {isLoading ? (
-        <>
-          <ProfileTabsSkeleton />
-          
-          {/* Patient Demographics Section Skeleton */}
-          <div className="mb-6">
-            <PatientDemographicsSkeleton />
-          </div>
+      <ProfileTabs />
+      
+      <div className="mb-6">
+        <PatientDemographics />
+      </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div>
-              <ElementsPanelSkeleton />
-            </div>
-            <div className="lg:col-span-2">
-              <PatientFeasibilityPlotSkeleton />
-            </div>
-            <div className="lg:col-span-3">
-              <TrialComplexityCardSkeleton />
-            </div>
-          </div>
-        </>
-      ) : (
-        <>
-          <ProfileTabs />
-          
-          {/* Patient Demographics Section */}
-          <div className="mb-6">
-            <PatientDemographics />
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div>
-              <ElementsPanel />
-            </div>
-            <div className="lg:col-span-2">
-              <PatientFeasibilityPlot />
-            </div>
-            <div className="lg:col-span-3">
-              <TrialComplexityCard />
-            </div>
-          </div>
-        </>
-      )}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div>
+          <ElementsPanel />
+        </div>
+        <div className="lg:col-span-2">
+          <PatientFeasibilityPlot />
+        </div>
+        <div className="lg:col-span-3">
+          <TrialComplexityCard />
+        </div>
+      </div>
     </div>
   );
 }

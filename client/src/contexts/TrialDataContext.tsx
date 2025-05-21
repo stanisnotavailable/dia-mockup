@@ -258,13 +258,38 @@ export const TrialDataProvider = ({ children }: { children: ReactNode }) => {
   const [profiles, setProfiles] = useState<Profile[]>(initialProfiles);
   const [currentProfileId, setCurrentProfileId] = useState<string>('profile1');
   
-  // Simulate loading data from an API with fixed loading time
+  // Simulate loading data from an API with a "thinking" effect
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 10000); // 10 seconds loading time
+    // First load the data structure (faster)
+    const timer1 = setTimeout(() => {
+      console.log("Phase 1: Loading data structure...");
+      // Keep isLoading true, but we could update a more detailed loading state here
+    }, 2000);
     
-    return () => clearTimeout(timer);
+    // Then simulate processing the data
+    const timer2 = setTimeout(() => {
+      console.log("Phase 2: Processing patient data...");
+      // Still loading
+    }, 4000);
+    
+    // Then simulate analyzing the model values
+    const timer3 = setTimeout(() => {
+      console.log("Phase 3: Analyzing model values...");
+      // Still loading
+    }, 6000);
+    
+    // Finally, show the data
+    const timer4 = setTimeout(() => {
+      console.log("Data analysis complete");
+      setIsLoading(false);
+    }, 8000); // 8 seconds total loading time
+    
+    return () => {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+      clearTimeout(timer3);
+      clearTimeout(timer4);
+    };
   }, []);
   
   // Get the current profile

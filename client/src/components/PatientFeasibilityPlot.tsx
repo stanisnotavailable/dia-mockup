@@ -103,7 +103,7 @@ export default function PatientFeasibilityPlot() {
         <div className="font-medium text-lg mb-1">Patient Feasibility Plot</div>
         <div className="text-sm text-gray-500 mb-4">Visualizing trial complexity across key dimensions</div>
         
-        <div className="w-full h-[300px] relative">
+        <div className="w-full h-[350px] relative">
           {/* Display category legend inside the chart at the top */}
           <div className="absolute top-0 left-0 right-0 z-10 py-2">
             {renderCustomLegend()}

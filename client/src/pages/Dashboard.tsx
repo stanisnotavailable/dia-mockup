@@ -76,10 +76,10 @@ export default function Dashboard() {
         {/* Container with Available Elements and Feasibility Plot side by side */}
         <div className="border border-gray-100 shadow-sm rounded-lg overflow-hidden">
           <div className="flex flex-col lg:flex-row">
-            <div className="lg:w-1/2 p-4">
+            <div className="lg:w-2/5 p-4">
               <ElementsPanel />
             </div>
-            <div className="lg:w-1/2 p-4">
+            <div className="lg:w-3/5 p-4">
               <PatientFeasibilityPlot />
             </div>
           </div>

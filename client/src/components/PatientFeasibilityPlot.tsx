@@ -1,15 +1,21 @@
-import { useContext, useMemo, useEffect, useState } from "react";
+import { useContext, useMemo, useEffect, useState, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend, ResponsiveContainer } from "recharts";
-import { TrialDataContext, CATEGORIES, CategoryType, Profile } from "@/contexts/TrialDataContext";
+import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer, Tooltip } from "recharts";
+import { TrialDataContext, CATEGORIES, CategoryType } from "@/contexts/TrialDataContext";
 
-// Force component to rerender on interval (temporary fix for real-time updates)
+// Improved force update hook with better performance
 function useForceUpdate() {
-  const [, setValue] = useState(0);
+  const [, setTick] = useState(0);
+  const lastUpdateRef = useRef<number>(Date.now());
   
   useEffect(() => {
     const interval = setInterval(() => {
-      setValue(value => value + 1);
+      const now = Date.now();
+      // Only update if it's been at least 100ms since the last update
+      if (now - lastUpdateRef.current >= 100) {
+        lastUpdateRef.current = now;
+        setTick(tick => tick + 1);
+      }
     }, 100);
     
     return () => clearInterval(interval);
@@ -25,93 +31,74 @@ export default function PatientFeasibilityPlot() {
   
   // Get profile data directly from context each time
   const profileData = getCurrentProfile();
-  const trialData = profileData.trialData;
+  const categories = profileData.categories || [];
   
-  // Define colors for each category
-  const categoryColors = useMemo(() => ({
-    [CATEGORIES.LOGISTICS]: "#3b82f6", // Blue
-    [CATEGORIES.MOTIVATION]: "#ec4899", // Pink
-    [CATEGORIES.HEALTHCARE]: "#10b981", // Green
-    [CATEGORIES.QUALITY]: "#8b5cf6", // Purple
+  // Define color for the radar
+  const radarColor = "#3b82f6"; // Blue
+  
+  // Define category labels for the axes
+  const categoryLabels = useMemo(() => ({
+    [CATEGORIES.LOGISTICS]: "Logistics Challenge",
+    [CATEGORIES.MOTIVATION]: "Motivation",
+    [CATEGORIES.HEALTHCARE]: "Healthcare Engagement",
+    [CATEGORIES.QUALITY]: "Quality of Life"
   }), []);
   
   // Prepare data for the radar chart
   const radarData = useMemo(() => {
-    // Create one data point for each axis
+    // Create one data point for each category (axis)
     return Object.values(CATEGORIES).map(category => {
+      const categoryData = categories.find(c => c.name === category);
+      const score = categoryData?.averageScore || 0;
+      
       // Convert to flat data structure for the chart
-      const dataPoint: Record<string, any> = { category };
-      
-      // For each category, add a value
-      Object.values(CATEGORIES).forEach(cat => {
-        const items = trialData.complexityItems[cat as CategoryType] || [];
-        dataPoint[cat] = items.length > 0 ? Math.min(100, items.length * 20) : 0;
-      });
-      
-      return dataPoint;
+      return { 
+        category: categoryLabels[category as CategoryType],
+        score: score * 10, // Scale to 0-100 for better visualization
+        // Store original score for internal use but not display
+        originalScore: score
+      };
     });
-  }, [trialData.complexityItems]);
+  }, [categories, categoryLabels]);
   
   // Check if there's data to display
   const hasDataToDisplay = useMemo(() => {
-    return Object.values(trialData.complexityItems).some(items => items && items.length > 0);
-  }, [trialData.complexityItems]);
+    return categories.some(cat => cat.questions && cat.questions.length > 0);
+  }, [categories]);
   
-  // Get number of questions in a category
-  const getQuestionCount = (category: string) => {
-    return trialData.complexityItems[category as CategoryType]?.length || 0;
-  };
-  
-  // Legend for chart
-  const renderCustomLegend = () => {
-    if (!hasDataToDisplay) return null;
-    
-    return (
-      <div className="bg-white/90 rounded-lg shadow-sm px-3 py-2 mx-auto max-w-fit border border-gray-100">
-        <div className="flex flex-wrap justify-center items-center gap-x-4 gap-y-2">
-          {Object.entries(categoryColors).map(([category, color]) => {
-            const count = getQuestionCount(category);
-            if (count === 0) return null;
-            
-            return (
-              <div 
-                key={category} 
-                className="flex items-center text-xs" 
-              >
-                <div 
-                  className="w-2.5 h-2.5 rounded-full mr-1.5" 
-                  style={{ backgroundColor: color }} 
-                />
-                <span className="font-medium" style={{ color }}>{category}</span>
-                <span className="ml-1 bg-gray-100 px-1.5 py-0.5 rounded-full text-xs font-medium">
-                  {count}
-                </span>
-              </div>
-            );
-          })}
+  // Custom tooltip content for the radar chart
+  const CustomTooltip = ({ active, payload }: any) => {
+    if (active && payload && payload.length) {
+      const entry = payload[0];
+      return (
+        <div className="bg-white p-2 border border-gray-200 rounded shadow-sm text-xs">
+          <div className="flex items-center">
+            <div 
+              className="w-2 h-2 rounded-full mr-1.5"
+              style={{ backgroundColor: entry.color }}
+            />
+            <span className="font-medium">{entry.name}</span>
+            {/* Score is hidden but still used for calculations */}
+          </div>
         </div>
-      </div>
-    );
+      );
+    }
+    return null;
   };
   
   return (
     <Card className="bg-white shadow-sm mt-4">
       <CardContent className="p-4">
         <div className="font-medium text-lg mb-1">Patient Feasibility Plot</div>
-        <div className="text-sm text-gray-500 mb-4">Visualizing trial complexity across key dimensions</div>
+        <div className="text-sm text-gray-500 mb-4">Visual representation of patient experience categories</div>
         
-        <div className="w-full h-[350px] relative">
-          {/* Display category legend inside the chart at the top */}
-          <div className="absolute top-2 left-1/2 -translate-x-1/2 z-10">
-            {renderCustomLegend()}
-          </div>
-          
+        <div className="w-full h-[350px]">
           {hasDataToDisplay ? (
             <ResponsiveContainer width="100%" height="100%">
               <RadarChart 
                 outerRadius="70%" 
                 data={radarData}
-                margin={{ top: 30, right: 30, left: 30, bottom: 5 }}
+                margin={{ top: 30, right: 30, left: 30, bottom: 40 }}
               >
                 <PolarGrid gridType="polygon" stroke="#e5e7eb" />
                 <PolarAngleAxis 
@@ -128,24 +115,17 @@ export default function PatientFeasibilityPlot() {
                   tickLine={false}
                 />
                 
-                {/* One radar per category with respective colors */}
-                {Object.values(CATEGORIES).map(category => {
-                  const items = trialData.complexityItems[category as CategoryType] || [];
-                  if (items.length === 0) return null; // Skip empty categories
-                  
-                  return (
-                    <Radar
-                      key={category}
-                      name={category}
-                      dataKey={category}
-                      stroke={categoryColors[category as CategoryType]}
-                      fill={categoryColors[category as CategoryType]}
-                      fillOpacity={0.3}
-                      dot 
-                      activeDot={{ r: 5 }}
-                    />
-                  );
-                })}
+                <Tooltip content={<CustomTooltip />} />
+                
+                <Radar
+                  name="Category"
+                  dataKey="score"
+                  stroke={radarColor}
+                  fill={radarColor}
+                  fillOpacity={0.6}
+                  dot={true}
+                  activeDot={{ r: 5 }}
+                />
               </RadarChart>
             </ResponsiveContainer>
           ) : (

@@ -2,6 +2,39 @@ import { createContext, useState, useEffect, ReactNode } from 'react';
 
 // Import questions data from JSON file
 import questionsData from '@/data/questions.json';
+import { getQuestionById, getQuestionName, getQuestionScore, calculateAverageScore } from '@/lib/questionUtils';
+
+// Define types for JSON structure
+interface QuestionItem {
+  id: string;
+  name: string;
+  score: number;
+}
+
+interface CategoryItem {
+  name: string;
+  questions: string[];
+}
+
+interface ProfileData {
+  profile_details: {
+    origin: Array<{country: string; percentage: number}>;
+    age: string;
+    role: Array<{role_name: string; percentage: number}>;
+  };
+  categories: CategoryItem[];
+}
+
+interface QuestionsData {
+  allQuestions: QuestionItem[];
+  profile1: ProfileData;
+  profile2: ProfileData;
+  profile3: ProfileData;
+  loadingTime: number;
+}
+
+// Type assertion for our JSON data
+const typedQuestionsData = questionsData as unknown as QuestionsData;
 
 // Define the categories for complexity items
 export const CATEGORIES = {
@@ -20,6 +53,7 @@ export interface ComplexityItem {
   name: string;
   category: string;
   complexity?: number;
+  score?: number;
 }
 
 // Define the type for trial data
@@ -54,8 +88,8 @@ export interface PatientDemographic {
 // Define category data structure
 export interface CategoryData {
   name: string;
-  model_value: number;
-  questions: ComplexityItem[];
+  questions: string[];
+  averageScore?: number;
 }
 
 // Define type for profile containing trial data
@@ -83,13 +117,15 @@ interface TrialDataContextType {
 // Get all 24 questions from the JSON data
 const getAllItems = (): ComplexityItem[] => {
   // Use the allQuestions array from our JSON data
-  const allQuestions = questionsData.allQuestions || [];
+  const allQuestions = typedQuestionsData.allQuestions || [];
   
   // Map the questions to ComplexityItems
   return allQuestions.map(question => ({
-    ...question,
+    id: question.id,
+    name: question.name,
     category: '', // Initially no category assigned
-    complexity: 60 // Default complexity value
+    complexity: 60, // Default complexity value
+    score: question.score // Add the score from the JSON
   }));
 };
 
@@ -106,38 +142,40 @@ const createProfileData = (profileId: string): TrialData => {
   };
   
   // Get the profile data from our JSON
-  const profileData = questionsData[profileId as keyof typeof questionsData];
+  const profileData = typedQuestionsData[profileId as keyof typeof typedQuestionsData] as ProfileData | undefined;
   
   // Make a copy of all items to distribute
   const allItemsCopy = [...allItems.map(item => ({ ...item, category: '' }))];
   
-  // Distribute some questions to different categories
-  // Logistics: Add questions 0 and 1
-  categorizedItems[CATEGORIES.LOGISTICS].push(
-    { ...allItemsCopy[0], category: CATEGORIES.LOGISTICS },
-    { ...allItemsCopy[1], category: CATEGORIES.LOGISTICS }
-  );
+  if (profileData && profileData.categories) {
+    // Process each category
+    profileData.categories.forEach((category: CategoryItem) => {
+      const categoryName = category.name as CategoryType;
+      
+      // Get the question IDs from the questions array (now string array)
+      const questionIds = category.questions;
+      
+      // For each question ID, find the corresponding item and add to the category
+      questionIds.forEach((questionId: string) => {
+        // Find the item in our allItemsCopy
+        const itemIndex = allItemsCopy.findIndex(item => item.id === questionId);
+        
+        if (itemIndex !== -1) {
+          // Get the item and update its category
+          const item = { ...allItemsCopy[itemIndex], category: categoryName };
+          
+          // Add to the appropriate category
+          categorizedItems[categoryName].push(item);
+          
+          // Remove from allItemsCopy to avoid duplicates
+          allItemsCopy.splice(itemIndex, 1);
+        }
+      });
+    });
+  }
   
-  // Motivation: Add questions 2 and 3
-  categorizedItems[CATEGORIES.MOTIVATION].push(
-    { ...allItemsCopy[2], category: CATEGORIES.MOTIVATION },
-    { ...allItemsCopy[3], category: CATEGORIES.MOTIVATION }
-  );
-  
-  // Healthcare: Add questions 4 and 5
-  categorizedItems[CATEGORIES.HEALTHCARE].push(
-    { ...allItemsCopy[4], category: CATEGORIES.HEALTHCARE },
-    { ...allItemsCopy[5], category: CATEGORIES.HEALTHCARE }
-  );
-  
-  // Quality of Life: Add questions 6 and 7
-  categorizedItems[CATEGORIES.QUALITY].push(
-    { ...allItemsCopy[6], category: CATEGORIES.QUALITY },
-    { ...allItemsCopy[7], category: CATEGORIES.QUALITY }
-  );
-  
-  // The remaining items (8-23) go to the available items
-  const availableItems = allItemsCopy.slice(8);
+  // The remaining items go to the available items
+  const availableItems = allItemsCopy;
   
   return {
     availableItems,
@@ -165,7 +203,7 @@ const createEmptyTrialData = (): TrialData => {
 
 // Get demographic data from the JSON file
 const getDemographicData = (profileId: string): PatientDemographic => {
-  const profileData = questionsData[profileId as keyof typeof questionsData];
+  const profileData = typedQuestionsData[profileId as keyof typeof typedQuestionsData] as ProfileData | undefined;
   
   if (profileData && profileData.profile_details) {
     return {
@@ -198,6 +236,26 @@ const getDemographicData = (profileId: string): PatientDemographic => {
   };
 };
 
+// Get categories with calculated average scores
+const getCategoriesWithScores = (profileId: string): CategoryData[] => {
+  const profileData = typedQuestionsData[profileId as keyof typeof typedQuestionsData] as ProfileData | undefined;
+  
+  if (profileData && profileData.categories) {
+    return profileData.categories.map(category => {
+      // Calculate the average score for this category's questions
+      const averageScore = calculateAverageScore(category.questions);
+      
+      return {
+        name: category.name,
+        questions: category.questions,
+        averageScore
+      };
+    });
+  }
+  
+  return [];
+};
+
 // Initial profiles
 const initialProfiles: Profile[] = [
   {
@@ -205,21 +263,21 @@ const initialProfiles: Profile[] = [
     name: 'Profile 1',
     trialData: createProfile1Data(),
     patientDemographic: getDemographicData('profile1'),
-    categories: questionsData.profile1?.categories
+    categories: getCategoriesWithScores('profile1')
   },
   {
     id: 'profile2',
     name: 'Profile 2',
     trialData: createProfile2Data(),
     patientDemographic: getDemographicData('profile2'),
-    categories: questionsData.profile2?.categories
+    categories: getCategoriesWithScores('profile2')
   },
   {
     id: 'profile3',
     name: 'Profile 3',
     trialData: createProfile3Data(),
     patientDemographic: getDemographicData('profile3'),
-    categories: questionsData.profile3?.categories
+    categories: getCategoriesWithScores('profile3')
   }
 ];
 
@@ -330,11 +388,23 @@ export const TrialDataProvider = ({ children }: { children: ReactNode }) => {
       
       // Also update the categories array for the radar chart
       if (profile.categories) {
-        // First, remove the question from ALL categories to ensure it's only in one place
-        profile.categories = profile.categories.map(cat => ({
-          ...cat,
-          questions: cat.questions.filter(q => q.id !== item.id)
-        }));
+        // First, remove the question from ALL categories and track which categories were modified
+        const modifiedCategories = new Set<number>();
+        
+        profile.categories = profile.categories.map((cat, index) => {
+          const previousLength = cat.questions.length;
+          const newQuestions = cat.questions.filter(q => q !== item.id);
+          
+          // If questions were removed, track this category for score recalculation
+          if (newQuestions.length !== previousLength) {
+            modifiedCategories.add(index);
+          }
+          
+          return {
+            ...cat,
+            questions: newQuestions
+          };
+        });
         
         // Now add the question to the target category if needed
         if (targetCategory !== '') {
@@ -344,20 +414,28 @@ export const TrialDataProvider = ({ children }: { children: ReactNode }) => {
             // Create a new questions array for the category
             const questions = [...profile.categories[categoryIndex].questions];
             
-            // Add the question to the category (it shouldn't be there already since we removed it from all categories)
-            questions.push({
-              id: item.id,
-              name: item.name,
-              category: targetCategory
-            });
+            // Add the question ID to the category
+            questions.push(item.id);
             
-            // Update the category with the new questions
+            // Update the category with the new questions array
             profile.categories[categoryIndex] = {
               ...profile.categories[categoryIndex],
               questions: questions
             };
+            
+            // Track this category for score recalculation
+            modifiedCategories.add(categoryIndex);
           }
         }
+        
+        // Recalculate scores for all modified categories
+        modifiedCategories.forEach(index => {
+          const questions = profile.categories![index].questions;
+          profile.categories![index] = {
+            ...profile.categories![index],
+            averageScore: calculateAverageScore(questions)
+          };
+        });
       }
       
       profile.trialData = trialData;
@@ -384,18 +462,6 @@ export const TrialDataProvider = ({ children }: { children: ReactNode }) => {
         ...profile.patientDemographic,
         ...demographicData
       };
-      
-      // We're now using the model_value from the JSON data instead of calculating a disease burden score
-      // This block is no longer needed but kept for reference
-      /*
-      if (demographicData.age || demographicData.medicalHistory || demographicData.compliance) {
-        // Disease burden score is now derived from model_value in the JSON data
-        const profileData = questionsData[profile.id as keyof typeof questionsData];
-        if (profileData && profileData.categories && profileData.categories.length > 0) {
-          // Could calculate an average model_value across categories if needed
-        }
-      }
-      */
       
       updatedProfiles[profileIndex] = profile;
       return updatedProfiles;
@@ -433,18 +499,14 @@ export const TrialDataProvider = ({ children }: { children: ReactNode }) => {
       // Get fresh demographic data from JSON
       const freshDemographicData = getDemographicData(profileId);
       
-      // Reset the categories to have empty questions
-      const freshCategories = questionsData[profileId as keyof typeof questionsData]?.categories || [];
-      const categoriesWithEmptyQuestions = freshCategories.map(category => ({
-        ...category,
-        questions: [] // Reset questions to empty array
-      }));
+      // Get categories with calculated scores
+      const freshCategories = getCategoriesWithScores(profileId);
       
       updatedProfiles[profileIndex] = {
         ...updatedProfiles[profileIndex],
         trialData,
         patientDemographic: freshDemographicData,
-        categories: categoriesWithEmptyQuestions
+        categories: freshCategories
       };
       
       return updatedProfiles;

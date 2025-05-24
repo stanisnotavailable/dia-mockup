@@ -104,7 +104,7 @@ export default function ElementsPanel() {
         className="bg-gray-100 border-gray-300 py-1 px-2 my-1 rounded border cursor-move shadow-sm transition-all hover:shadow-md flex items-center justify-between"
       >
         <div className="font-medium text-xs">{item.name}</div>
-        <div className="text-xs text-gray-500 ml-1">{item.complexity}</div>
+        {/* Score is now hidden */}
       </div>
     );
   };

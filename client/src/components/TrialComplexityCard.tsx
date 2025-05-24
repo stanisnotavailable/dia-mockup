@@ -92,10 +92,10 @@ export default function TrialComplexityCard() {
       <div
         draggable
         onDragStart={(e) => handleDragStart(e, item)}
-        className={`${itemClass} py-1 px-2 my-1 rounded border cursor-move shadow-sm transition-all hover:shadow-md flex items-center justify-between`}
+        className={`${itemClass} py-1 px-2 my-1 rounded border cursor-move shadow-sm transition-all hover:shadow-md flex items-center`}
       >
         <div className="font-medium text-xs">{item.name}</div>
-        <div className="text-xs text-gray-500 ml-1">{item.complexity}</div>
+        {/* Complexity score is now hidden */}
       </div>
     );
   };

@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Dashboard from "@/pages/Dashboard";
 import NotFound from "@/pages/not-found";
 import { TrialDataProvider } from "@/contexts/TrialDataContext";
+import { PresentationModeProvider } from "@/contexts/PresentationModeContext";
 
 function Router() {
   return (
@@ -19,12 +20,14 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <TrialDataProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Router />
-        </TooltipProvider>
-      </TrialDataProvider>
+      <PresentationModeProvider>
+        <TrialDataProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Router />
+          </TooltipProvider>
+        </TrialDataProvider>
+      </PresentationModeProvider>
     </QueryClientProvider>
   );
 }

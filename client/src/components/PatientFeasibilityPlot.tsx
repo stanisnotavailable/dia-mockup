@@ -2,6 +2,7 @@ import { useContext, useMemo, useEffect, useState, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer, Tooltip } from "recharts";
 import { TrialDataContext, CATEGORIES, CategoryType } from "@/contexts/TrialDataContext";
+import { usePresentationMode } from "@/contexts/PresentationModeContext";
 
 // Improved force update hook with better performance
 function useForceUpdate() {
@@ -25,6 +26,7 @@ function useForceUpdate() {
 export default function PatientFeasibilityPlot() {
   // Get everything directly from context to ensure real-time updates
   const { getCurrentProfile } = useContext(TrialDataContext);
+  const { isPresentationMode } = usePresentationMode();
   
   // Force re-render to catch updates
   useForceUpdate();
@@ -86,30 +88,39 @@ export default function PatientFeasibilityPlot() {
     return null;
   };
   
+  // Calculate chart height based on presentation mode
+  const chartHeight = isPresentationMode ? 450 : 350;
+  
+  // Calculate font sizes based on presentation mode
+  const titleFontSize = isPresentationMode ? "text-xl" : "text-lg";
+  const subtitleFontSize = isPresentationMode ? "text-base" : "text-sm";
+  const tickFontSize = isPresentationMode ? 13 : 11;
+  const radiusTickFontSize = isPresentationMode ? 11 : 9;
+  
   return (
     <Card className="bg-white shadow-sm mt-4">
-      <CardContent className="p-4">
-        <div className="font-medium text-lg mb-1">Patient Feasibility Plot</div>
-        <div className="text-sm text-gray-500 mb-4">Visual representation of patient experience categories</div>
+      <CardContent className={`p-4 ${isPresentationMode ? 'p-6' : 'p-4'}`}>
+        <div className={`font-medium ${titleFontSize} mb-1`}>Patient Feasibility Plot</div>
+        <div className={`${subtitleFontSize} text-gray-500 mb-4`}>Visual representation of patient experience categories</div>
         
-        <div className="w-full h-[350px]">
+        <div className={`w-full h-[${chartHeight}px]`} style={{ height: chartHeight }}>
           {hasDataToDisplay ? (
             <ResponsiveContainer width="100%" height="100%">
               <RadarChart 
-                outerRadius="70%" 
+                outerRadius={isPresentationMode ? "75%" : "70%"}
                 data={radarData}
                 margin={{ top: 30, right: 30, left: 30, bottom: 40 }}
               >
                 <PolarGrid gridType="polygon" stroke="#e5e7eb" />
                 <PolarAngleAxis 
                   dataKey="category" 
-                  tick={{ fill: '#6b7280', fontSize: 11, fontWeight: 500 }}
+                  tick={{ fill: '#6b7280', fontSize: tickFontSize, fontWeight: 500 }}
                   tickLine={{ stroke: '#e5e7eb' }}
                   axisLine={{ stroke: '#e5e7eb' }}
                 />
                 <PolarRadiusAxis 
                   domain={[0, 100]} 
-                  tick={{ fill: '#9ca3af', fontSize: 9 }}
+                  tick={{ fill: '#9ca3af', fontSize: radiusTickFontSize }}
                   tickCount={5}
                   axisLine={false}
                   tickLine={false}
@@ -124,15 +135,16 @@ export default function PatientFeasibilityPlot() {
                   fill={radarColor}
                   fillOpacity={0.6}
                   dot={true}
-                  activeDot={{ r: 5 }}
+                  activeDot={{ r: isPresentationMode ? 7 : 5 }}
+                  strokeWidth={isPresentationMode ? 2 : 1}
                 />
               </RadarChart>
             </ResponsiveContainer>
           ) : (
             <div className="h-full flex flex-col items-center justify-center">
               <div className="text-gray-400 text-center px-2">
-                <div className="text-lg font-medium mb-2">No Data Available</div>
-                <p className="text-sm">Drag questions into the Trial Complexity Categories to generate a visualization.</p>
+                <div className={`${isPresentationMode ? 'text-xl' : 'text-lg'} font-medium mb-2`}>No Data Available</div>
+                <p className={isPresentationMode ? 'text-base' : 'text-sm'}>Drag questions into the Trial Complexity Categories to generate a visualization.</p>
               </div>
             </div>
           )}

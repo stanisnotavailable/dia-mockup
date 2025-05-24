@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import PatientDemographics from "@/components/PatientDemographics";
 import { TrialDataContext, ComplexityItem } from "@/contexts/TrialDataContext";
 import LoadingAnimation from "@/components/LoadingAnimation";
+import { PresentationModeToggle } from "@/components/PresentationModeToggle";
 import {
   getQuestionById,
   getQuestionName,
@@ -80,6 +81,9 @@ export default function Dashboard() {
       </header>
 
       <ProfileTabs />
+      
+      {/* Add the presentation mode toggle */}
+      <PresentationModeToggle />
 
       <div className="mt-4 space-y-6">
         {/* Container with Available Elements and Feasibility Plot side by side */}

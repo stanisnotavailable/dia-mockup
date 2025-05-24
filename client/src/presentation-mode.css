@@ -1,0 +1,134 @@
+/* Presentation mode styles - increases size of UI elements for stage presentations */
+
+/* Base styles are applied only when presentation-mode class is present */
+html.presentation-mode {
+  font-size: 125%; /* 25% larger than default */
+}
+
+/* Make buttons and interactive elements larger */
+html.presentation-mode button, 
+html.presentation-mode .btn,
+html.presentation-mode input,
+html.presentation-mode select,
+html.presentation-mode textarea,
+html.presentation-mode .form-control {
+  font-size: 1.1rem !important;
+  padding: 0.75rem 1.25rem !important;
+}
+
+/* Increase size of headings */
+html.presentation-mode h1 { font-size: 2.5rem !important; }
+html.presentation-mode h2 { font-size: 2rem !important; }
+html.presentation-mode h3 { font-size: 1.75rem !important; }
+html.presentation-mode h4 { font-size: 1.5rem !important; }
+html.presentation-mode h5 { font-size: 1.25rem !important; }
+html.presentation-mode h6 { font-size: 1.1rem !important; }
+
+/* Increase size of card components */
+html.presentation-mode .card {
+  padding: 1.5rem !important;
+}
+
+/* Adjust table and grid sizes */
+html.presentation-mode table, 
+html.presentation-mode .ag-theme-alpine {
+  font-size: 1.1rem !important;
+}
+
+html.presentation-mode .ag-theme-alpine .ag-header-cell,
+html.presentation-mode .ag-theme-alpine .ag-cell {
+  padding: 0.75rem !important;
+  height: auto !important;
+}
+
+/* Increase icon sizes */
+html.presentation-mode svg, 
+html.presentation-mode img.icon {
+  transform: scale(1.25);
+}
+
+/* Make tooltips larger */
+html.presentation-mode .tooltip {
+  font-size: 1rem !important;
+}
+
+/* Increase size of navigation elements */
+html.presentation-mode nav a, 
+html.presentation-mode .nav-link,
+html.presentation-mode .sidebar a {
+  font-size: 1.15rem !important;
+  padding: 0.75rem 1rem !important;
+}
+
+/* Increase size of modal dialogs */
+html.presentation-mode .dialog,
+html.presentation-mode .modal {
+  max-width: 90% !important;
+  width: 90% !important;
+}
+
+/* Increase size of form controls */
+html.presentation-mode .checkbox,
+html.presentation-mode .radio {
+  width: 1.25rem !important;
+  height: 1.25rem !important;
+}
+
+/* Make scrollbars larger */
+html.presentation-mode .custom-scrollbar::-webkit-scrollbar {
+  width: 10px !important;
+}
+
+/* Improved visibility for text */
+html.presentation-mode p, 
+html.presentation-mode span, 
+html.presentation-mode div, 
+html.presentation-mode li {
+  font-size: 1.1rem !important;
+}
+
+/* Increase chart and visualization sizes */
+html.presentation-mode .recharts-wrapper,
+html.presentation-mode .chart-container,
+html.presentation-mode .visualization {
+  transform: scale(1.2);
+  transform-origin: top left;
+  margin-bottom: 2rem;
+}
+
+/* Responsive adjustments for presentation mode */
+@media (min-width: 1024px) {
+  html.presentation-mode .container {
+    max-width: 95% !important;
+  }
+  
+  /* Adjust grid layouts for better visibility */
+  html.presentation-mode .grid {
+    gap: 1.5rem !important;
+  }
+  
+  /* Ensure cards have enough space */
+  html.presentation-mode .card, 
+  html.presentation-mode .border {
+    margin-bottom: 1.5rem !important;
+  }
+}
+
+/* Increase spacing between elements */
+html.presentation-mode .space-y-1 {
+  margin-top: 0.5rem !important;
+}
+
+html.presentation-mode .space-y-2 {
+  margin-top: 0.75rem !important;
+}
+
+html.presentation-mode .space-y-4 {
+  margin-top: 1.25rem !important;
+}
+
+/* Make drag and drop targets more visible */
+html.presentation-mode [draggable=true]:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+} 

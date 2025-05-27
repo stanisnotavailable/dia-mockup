@@ -1,7 +1,8 @@
 import { useContext, useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { TrialDataContext, ComplexityItem, CategoryType } from "@/contexts/TrialDataContext";
+import { TrialDataContext, ComplexityItem, CategoryType, CATEGORIES } from "@/contexts/TrialDataContext";
+import questionsData from '@/data/questions.json';
 
 export default function ElementsPanel() {
   const { getCurrentProfile, moveItem, resetProfile } = useContext(TrialDataContext);
@@ -53,7 +54,7 @@ export default function ElementsPanel() {
     setIsDraggedOver(false);
   };
 
-  // Handle dropping an item back to available items
+  // Handle dropping an item - keep it in the available items
   const handleDropToAvailable = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDraggedOver(false);
@@ -67,31 +68,26 @@ export default function ElementsPanel() {
         // Parse the ComplexityItem from JSON
         const complexityItem = JSON.parse(itemData) as ComplexityItem;
         
-        // Only move if not already in available items (empty category)
-        if (complexityItem.category !== '') {
-          moveItem(complexityItem, '');
-        }
+        // Move the item to the available items (empty category)
+        moveItem(complexityItem, '');
       } else {
         // Fallback to the old way with just an ID
         const itemId = itemData;
         
-        // Find the item from either availableItems or any category
-        let foundItem = trialData.availableItems.find(item => item.id === itemId);
-        
-        if (!foundItem) {
-          // Search through all categories
-          for (const category of Object.values(trialData.complexityItems)) {
-            foundItem = category.find(item => item.id === itemId);
-            if (foundItem) break;
-          }
+        // Find the item from any category
+        let foundItem = null;
+        for (const category of Object.values(trialData.complexityItems)) {
+          foundItem = category.find(item => item.id === itemId);
+          if (foundItem) break;
         }
         
-        if (foundItem && foundItem.category !== '') {
+        if (foundItem) {
+          // Move the item to the available items (empty category)
           moveItem(foundItem, '');
         }
       }
     } catch (error) {
-      console.error("Error handling drop to available:", error);
+      console.error("Error handling drop:", error);
     }
   };
 
@@ -101,20 +97,19 @@ export default function ElementsPanel() {
       <div
         draggable={isDraggable}
         onDragStart={(e) => handleDragStart(e, item)}
-        className="bg-gray-100 border-gray-300 py-1 px-2 my-1 rounded border cursor-move shadow-sm transition-all hover:shadow-md flex items-center justify-between"
+        className="bg-gray-100 border-gray-300 py-0.5 px-2 my-0.5 rounded border cursor-move shadow-sm transition-all hover:shadow-md flex items-center justify-between min-touch-target"
       >
         <div className="font-medium text-xs">{item.name}</div>
-        {/* Score is now hidden */}
       </div>
     );
   };
 
   return (
     <Card className="border border-gray-100 shadow-sm h-full">
-      <CardContent className="p-4 h-full flex flex-col">
-        <div className="flex justify-between items-center mb-2">
+      <CardContent className="p-3 h-full flex flex-col">
+        <div className="flex justify-between items-center mb-1">
           <div className="flex items-center">
-            <h2 className="text-lg font-medium text-gray-800">Available Elements</h2>
+            <h2 className="text-base font-medium text-gray-800">Available Elements</h2>
             <div className="ml-2 text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">
               {trialData.availableItems.length}
             </div>
@@ -129,8 +124,8 @@ export default function ElementsPanel() {
           </Button>
         </div>
         
-        <p className="text-xs text-gray-500 mb-3">
-          Drag elements to categories in the Trial Complexity panel below
+        <p className="text-xs text-gray-500 mb-2">
+          Items removed from categories will appear here
         </p>
         
         <div 
@@ -141,14 +136,14 @@ export default function ElementsPanel() {
           onDragLeave={handleDragLeave}
           onDrop={handleDropToAvailable}
         >
-          <div className="overflow-y-auto h-full max-h-[300px] custom-scrollbar pr-1">
+          <div className="overflow-y-auto h-full max-h-[300px] custom-scrollbar pr-1 space-compact">
             {trialData.availableItems.map((item: ComplexityItem) => (
               <ComplexityItemComponent key={`available-${item.id}`} item={item} />
             ))}
             {trialData.availableItems.length === 0 && (
-              <div className="text-gray-500 text-xs text-center py-6 border border-dashed rounded-md mt-4">
-                All elements have been categorized.<br />
-                Drag items back here to return them to the available pool.
+              <div className="text-gray-500 text-xs text-center py-4 border border-dashed rounded-md mt-2">
+                No available elements.<br />
+                Click the "✕" on items to move them here.
               </div>
             )}
           </div>

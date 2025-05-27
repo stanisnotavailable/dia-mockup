@@ -52,6 +52,47 @@
   overflow: hidden;
 }
 
+/* Compact spacing utilities that maintain accessibility */
+.space-compact > * + * {
+  margin-top: 0.25rem;
+}
+
+.space-compact-x > * + * {
+  margin-left: 0.25rem;
+}
+
+.space-compact-y > * + * {
+  margin-top: 0.25rem;
+}
+
+/* Compact padding for containers that still meets accessibility standards */
+.p-compact {
+  padding: 0.5rem;
+}
+
+.px-compact {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+.py-compact {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+/* Compact gap utilities for flex and grid layouts */
+.gap-compact {
+  gap: 0.25rem;
+}
+
+.gap-x-compact {
+  column-gap: 0.25rem;
+}
+
+.gap-y-compact {
+  row-gap: 0.25rem;
+}
+
 :root {
       --background: 0 0% 100%;
 --foreground: 20 14.3% 4.1%;
@@ -105,4 +146,16 @@
   body {
     @apply font-sans antialiased bg-background text-foreground;
   }
+}
+
+/* Ensure clickable elements have sufficient target size for accessibility */
+.min-touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Ensure proper focus styles are maintained */
+.focus-visible:focus-visible {
+  outline: 2px solid hsl(var(--primary));
+  outline-offset: 2px;
 }

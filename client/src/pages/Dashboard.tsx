@@ -1,14 +1,13 @@
 import { useTitle } from "react-use";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import TrialComplexityCard from "@/components/TrialComplexityCard";
 import PatientFeasibilityPlot from "@/components/PatientFeasibilityPlot";
 import ProfileTabs from "@/components/ProfileTabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import PatientDemographics from "@/components/PatientDemographics";
-import { TrialDataContext, ComplexityItem } from "@/contexts/TrialDataContext";
+import { TrialDataContext, ComplexityItem, CATEGORIES } from "@/contexts/TrialDataContext";
 import LoadingAnimation from "@/components/LoadingAnimation";
-import { PresentationModeToggle } from "@/components/PresentationModeToggle";
 import {
   getQuestionById,
   getQuestionName,
@@ -32,12 +31,12 @@ const CategoryElement = ({ categoryName, color }: CategoryElementProps) => {
   const averageScore = categoryData?.averageScore || 0;
 
   return (
-    <div className="p-3 border border-gray-100 rounded-md">
-      <div className="flex justify-between items-center mb-2">
+    <div className="p-2 border border-gray-100 rounded-md">
+      <div className="flex justify-between items-center mb-1">
         <h4 className="text-sm font-medium">{categoryName}</h4>
         {/* Score is now hidden */}
       </div>
-      <div className="space-y-1">
+      <div className="space-compact">
         {categoryData?.questions.slice(0, 3).map((questionId, idx) => (
           <div key={idx} className="text-xs text-gray-600 flex items-center">
             <div className="w-1 h-1 rounded-full bg-gray-400 mr-2"></div>
@@ -63,6 +62,27 @@ export default function Dashboard() {
   const currentProfile = profile; // Alias for clarity
   const trialData = currentProfile.trialData;
 
+  // Distribute uncategorized items to other categories
+  // Commented out to allow items to remain in availableItems when deleted
+  /*
+  useEffect(() => {
+    // Only run if there are uncategorized items
+    if (trialData.availableItems.length > 0) {
+      // Get the category names as an array
+      const categoryNames = Object.values(CATEGORIES);
+      
+      // Distribute each uncategorized item to a category
+      trialData.availableItems.forEach((item, index) => {
+        // Determine which category to assign this item to (round-robin distribution)
+        const targetCategory = categoryNames[index % categoryNames.length];
+        
+        // Move the item to the selected category
+        moveItem(item, targetCategory);
+      });
+    }
+  }, [trialData.availableItems.length, moveItem]);
+  */
+
   // If we're in loading state, show the "thinking" animation instead of skeletons
   if (isLoading) {
     return <LoadingAnimation />;
@@ -70,166 +90,33 @@ export default function Dashboard() {
 
   // When data is loaded, show the dashboard
   return (
-    <div className="container mx-auto px-4 py-8 max-w-7xl">
-      <header className="mb-6">
-        <h1 className="text-2xl font-semibold text-gray-800 mb-2">
-          Clinical Trial Dashboard
-        </h1>
-        <p className="text-gray-600">
-          Monitor patient experience and trial complexity metrics
-        </p>
-      </header>
+    <div className="container mx-auto px-4 py-4 max-w-7xl">
+
 
       <ProfileTabs />
-      
-      {/* Add the presentation mode toggle */}
-      <PresentationModeToggle />
 
-      <div className="mt-4 space-y-6">
+      <div className="space-y-4">
         {/* Container with Available Elements and Feasibility Plot side by side */}
-        <div className="border border-gray-100 shadow-sm rounded-lg overflow-hidden">
-          <div className="flex flex-col lg:flex-row">
-            <div className="lg:w-2/5 p-4">
+        <div className="rounded-lg overflow-hidden">
+          <div className="flex flex-col lg:flex-row gap-2">
+            <div className="lg:w-1/3 p-2 flex">
               <PatientDemographics />
             </div>
-            <div className="lg:w-3/5 p-4">
+            <div className="lg:w-2/3 p-2 flex">
               <PatientFeasibilityPlot />
             </div>
           </div>
         </div>
 
-        {/* Four-Column Trial Complexity Categories Layout with Available Elements */}
+        {/* Four-Column Trial Complexity Categories Layout */}
         <div className="border border-gray-100 shadow-sm rounded-lg overflow-hidden">
-          <div className="p-4">
-            <h3 className="text-base font-medium text-gray-800 mb-4">
+          <div className="p-3">
+            <h3 className="text-base font-medium text-gray-800 mb-2">
               Trial Complexity Categories
             </h3>
 
-            {/* Five column layout: Available Elements + 4 categories */}
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
-              {/* Available Elements Panel */}
-              <div
-                className="p-3 border rounded-md transition-colors flex flex-col h-[200px] border-gray-200"
-                onDragOver={(e) => {
-                  e.preventDefault();
-                  e.dataTransfer.dropEffect = "move";
-                  e.currentTarget.classList.add("bg-blue-50");
-                }}
-                onDragLeave={(e) => {
-                  e.currentTarget.classList.remove("bg-blue-50");
-                }}
-                onDrop={(e) => {
-                  e.preventDefault();
-                  e.currentTarget.classList.remove("bg-blue-50");
-
-                  try {
-                    // Get the item data from dataTransfer
-                    const itemData = e.dataTransfer.getData("text/plain");
-
-                    // Check if it's JSON data
-                    if (itemData.startsWith("{")) {
-                      // Parse the ComplexityItem from JSON
-                      const complexityItem = JSON.parse(
-                        itemData
-                      ) as ComplexityItem;
-
-                      // Only move if not already in available items (empty category)
-                      if (complexityItem.category !== "") {
-                        moveItem(complexityItem, "");
-                      }
-                    } else {
-                      // Fallback to the old way with just an ID
-                      const itemId = itemData;
-
-                      // Find the item from either availableItems or any category
-                      let foundItem = trialData.availableItems.find(
-                        (item) => item.id === itemId
-                      );
-
-                      if (!foundItem) {
-                        // Search through all categories
-                        for (const category of Object.values(
-                          trialData.complexityItems
-                        )) {
-                          foundItem = category.find(
-                            (item) => item.id === itemId
-                          );
-                          if (foundItem) break;
-                        }
-                      }
-
-                      if (foundItem && foundItem.category !== "") {
-                        moveItem(foundItem, "");
-                      }
-                    }
-                  } catch (error) {
-                    console.error("Error handling drop to available:", error);
-                  }
-                }}
-              >
-                {/* Category header with name and badge */}
-                <div className="flex justify-between items-center mb-2">
-                  <h4 className="text-sm font-medium">Uncategorized</h4>
-                  {/* <div className="flex items-center">
-                    <Button
-                      onClick={() => resetProfile()}
-                      variant="outline"
-                      size="sm"
-                      className="text-xs h-7 px-2"
-                    >
-                      Reset
-                    </Button>
-                  </div> */}
-                </div>
-
-                {/* Scrollable items container */}
-                <div className="flex-1 overflow-y-auto pr-1 space-y-1 custom-scrollbar mt-1">
-                  {trialData.availableItems.length > 0 ? (
-                    trialData.availableItems.map((item: ComplexityItem) => (
-                      <div
-                        key={`available-${item.id}`}
-                        draggable={true}
-                        onDragStart={(e) => {
-                          e.dataTransfer.effectAllowed = "move";
-                          // Store the full item data as JSON string
-                          e.dataTransfer.setData(
-                            "text/plain",
-                            JSON.stringify(item)
-                          );
-                          // Add a visual indicator of what is being dragged
-                          e.currentTarget.classList.add("bg-blue-50");
-
-                          // Create a drag image
-                          const dragImage = document.createElement("div");
-                          dragImage.className =
-                            "p-2 bg-white border rounded text-xs shadow-md";
-                          dragImage.textContent = item.name;
-                          document.body.appendChild(dragImage);
-                          e.dataTransfer.setDragImage(dragImage, 0, 0);
-                          setTimeout(
-                            () => document.body.removeChild(dragImage),
-                            0
-                          );
-                        }}
-                        onDragEnd={(e) => {
-                          e.currentTarget.classList.remove("bg-blue-50");
-                        }}
-                        className="text-xs text-gray-600 flex items-center justify-between py-1 px-2 rounded cursor-move hover:bg-gray-100"
-                      >
-                        <div className="flex items-center">
-                          <div className="w-1 h-1 rounded-full bg-gray-400 mr-2"></div>
-                          {item.name}
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="flex items-center justify-center text-xs text-gray-400 italic border border-dashed rounded p-2 h-full">
-                      All elements have been categorized
-                    </div>
-                  )}
-                </div>
-              </div>
-
+            {/* Four column layout for categories */}
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-3">
               {/* Fixed set of categories, each with its own column */}
               {[
                 "Logistics Challenge",
@@ -264,7 +151,7 @@ export default function Dashboard() {
                 return (
                   <div
                     key={idx}
-                    className={`p-3 border rounded-md transition-colors flex flex-col h-[200px] ${borderColor}`}
+                    className={`p-2 border rounded-md transition-colors flex flex-col h-[200px] ${borderColor}`}
                     onDragOver={(e) => {
                       e.preventDefault();
                       e.dataTransfer.dropEffect = "move";
@@ -337,13 +224,13 @@ export default function Dashboard() {
                     }}
                   >
                     {/* Category header with name and score */}
-                    <div className="flex justify-between items-center mb-2">
+                    <div className="flex justify-between items-center mb-1">
                       <h4 className="text-sm font-medium">{categoryName}</h4>
                       {/* Score is now hidden */}
                     </div>
 
                     {/* Scrollable items container */}
-                    <div className="flex-1 overflow-y-auto pr-1 space-y-1 custom-scrollbar mt-1">
+                    <div className="flex-1 overflow-y-auto pr-1 space-compact custom-scrollbar">
                       {questionIds.length > 0 ? (
                         questionIds.map((questionId, qIdx) => {
                           // Get question details from the ID
@@ -394,7 +281,17 @@ export default function Dashboard() {
                                 <div className="w-1 h-1 rounded-full bg-gray-400 mr-2"></div>
                                 {questionName}
                               </div>
-                              {/* Score is now hidden */}
+                              <div 
+                                className="ml-2 text-gray-400 hover:text-red-500 cursor-pointer" 
+                                onClick={(e) => {
+                                  e.stopPropagation(); // Prevent drag event from triggering
+                                  
+                                  // Move the item to the availableItems array (empty category)
+                                  moveItem(complexityItem, '');
+                                }}
+                              >
+                                ✕
+                              </div>
                             </div>
                           );
                         })

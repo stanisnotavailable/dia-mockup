@@ -92,33 +92,43 @@ export default function TrialComplexityCard() {
       <div
         draggable
         onDragStart={(e) => handleDragStart(e, item)}
-        className={`${itemClass} py-1 px-2 my-1 rounded border cursor-move shadow-sm transition-all hover:shadow-md flex items-center`}
+        className={`${itemClass} py-0.5 px-2 my-0.5 rounded border cursor-move shadow-sm transition-all hover:shadow-md flex items-center justify-between min-touch-target`}
       >
         <div className="font-medium text-xs">{item.name}</div>
-        {/* Complexity score is now hidden */}
+        <div 
+          className="ml-2 text-gray-400 hover:text-red-500 cursor-pointer" 
+          onClick={(e) => {
+            e.stopPropagation(); // Prevent drag event from triggering
+            
+            // Move the item to the availableItems array (empty category)
+            moveItem(item, '');
+          }}
+        >
+          ✕
+        </div>
       </div>
     );
   };
 
   return (
     <Card className="border border-gray-100 shadow-sm lg:col-span-3">
-      <CardContent className="p-4">
-        <div className="mb-2">
-          <h2 className="text-lg font-medium text-gray-800">Trial Complexity Categories</h2>
+      <CardContent className="p-3">
+        <div className="mb-1">
+          <h2 className="text-base font-medium text-gray-800">Trial Complexity Categories</h2>
           <p className="text-xs text-gray-500">
             Drag elements from the panel above into these categories to update the radar chart
           </p>
         </div>
         
         {/* Categories grid - 2x2 layout */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {Object.entries(CATEGORIES).map(([key, category]) => {
             const isDropTarget = draggedOverCategory === category;
             
             return (
               <div 
                 key={category}
-                className={`${categoryBgColors[category as CategoryType]} border rounded-md p-3 transition-all ${
+                className={`${categoryBgColors[category as CategoryType]} border rounded-md p-2 transition-all ${
                   isDropTarget 
                     ? `ring-2 ring-${key.toLowerCase()}-400 border-${key.toLowerCase()}-400` 
                     : ""
@@ -127,7 +137,7 @@ export default function TrialComplexityCard() {
                 onDragLeave={handleDragLeave}
                 onDrop={(e) => handleDrop(e, category)}
               >
-                <div className="flex justify-between items-center mb-2">
+                <div className="flex justify-between items-center mb-1">
                   <h3 className={`font-medium ${categoryColors[category as CategoryType].split(" ").slice(-1)[0]}`}>
                     {category}
                   </h3>
@@ -136,12 +146,12 @@ export default function TrialComplexityCard() {
                   </span>
                 </div>
                 
-                <div className="overflow-y-auto pr-1" style={{ height: "135px" }}>
+                <div className="overflow-y-auto pr-1 space-compact" style={{ height: "135px" }}>
                   {trialData.complexityItems[category].map((item: ComplexityItem) => (
                     <ComplexityItemComponent key={item.id} item={item} />
                   ))}
                   {trialData.complexityItems[category].length === 0 && (
-                    <div className={`text-gray-400 text-sm text-center py-8 border border-dashed rounded-md ${
+                    <div className={`text-gray-400 text-sm text-center py-6 border border-dashed rounded-md ${
                       isDropTarget ? "bg-white bg-opacity-50" : ""
                     }`}>
                       Drop elements here
@@ -153,7 +163,7 @@ export default function TrialComplexityCard() {
           })}
         </div>
         
-        <div className="text-xs text-gray-600 mt-3 p-2 bg-gray-50 rounded flex items-center">
+        <div className="text-xs text-gray-600 mt-2 p-1.5 bg-gray-50 rounded flex items-center">
           <span className="mr-1">💡</span>
           <span>Tip: The radar chart updates in real-time as you reorganize items between categories</span>
         </div>

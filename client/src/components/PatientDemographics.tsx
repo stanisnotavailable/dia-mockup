@@ -1,53 +1,89 @@
-import { useContext, useMemo } from "react";
+import { useContext, useMemo, useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { TrialDataContext } from "@/contexts/TrialDataContext";
-import { usePresentationMode } from "@/contexts/PresentationModeContext";
+import AiSummaryAnimation, { AiPulseAnimation } from "./AiSummaryAnimation";
+import { generateAiSummary } from "@/lib/aiSummaryUtils";
+import TypingAnimation from "./TypingAnimation";
 
 export default function PatientDemographics() {
-  const { getCurrentProfile } = useContext(TrialDataContext);
-  const { isPresentationMode } = usePresentationMode();
-  
+  const { getCurrentProfile, lastDataChangeTimestamp, currentProfileId } = useContext(TrialDataContext);
+  const [isGeneratingAi, setIsGeneratingAi] = useState(false);
+  const [aiSummary, setAiSummary] = useState<string>("");
+  const [lastUpdateTimestamp, setLastUpdateTimestamp] = useState<number>(0);
+
   const profile = getCurrentProfile();
   const patientDemographic = profile.patientDemographic;
-  
+
   // Calculate the average model value for the profile
   const averageModelValue = useMemo(() => {
     if (!profile.categories || profile.categories.length === 0) return 'N/A';
-    
+
     // Use averageScore instead of model_value
     const sum = profile.categories.reduce((acc, category) => acc + (category.averageScore || 0), 0);
     return (sum / profile.categories.length).toFixed(1);
   }, [profile.categories]);
-  
-  // Calculate sizes based on presentation mode
-  const titleFontSize = isPresentationMode ? "text-xl" : "text-base";
-  const contentFontSize = isPresentationMode ? "text-base" : "text-sm";
-  const labelFontSize = isPresentationMode ? "text-sm" : "text-xs";
-  const padding = isPresentationMode ? "p-6" : "p-3";
-  const barHeight = isPresentationMode ? "h-2" : "h-1.5";
-  const flagFontSize = isPresentationMode ? "text-lg" : "text-base";
-  
+
+  // Use fixed sizes instead of dynamic presentation mode sizes
+  const titleFontSize = "text-base";
+  const contentFontSize = "text-sm";
+  const labelFontSize = "text-xs";
+  const padding = "p-3";
+  const barHeight = "h-1";
+  const flagFontSize = "text-base";
+
+  // Match the chart height from PatientFeasibilityPlot
+  const chartHeight = 450;
+
+  // Generate AI summary whenever profile data changes or profile changes
+  useEffect(() => {
+    // Force regeneration when profile changes
+    const now = Date.now();
+
+    // Show animation
+    setIsGeneratingAi(true);
+
+    // Reset summary when profile changes
+    if (profile.id !== currentProfileId) {
+      setAiSummary("");
+    }
+
+    // Simulate AI thinking time - longer for more "thinking" appearance
+    const thinkingTime = Math.random() * 1500 + 1000; // 1000-2500ms
+
+    const timerId = setTimeout(() => {
+      // Generate new summary
+      const summary = generateAiSummary(profile);
+      setAiSummary(summary);
+
+      // Keep isGenerating true for the typing animation
+      // It will be set to false when typing is complete
+      // Use a much longer typing time to simulate thinking
+      const typingDuration = summary.length * 40 + 2000; // Much slower typing + pauses
+      setTimeout(() => {
+        setIsGeneratingAi(false);
+      }, typingDuration);
+
+      setLastUpdateTimestamp(now);
+    }, thinkingTime);
+
+    return () => clearTimeout(timerId);
+  }, [profile.categories, lastDataChangeTimestamp, currentProfileId]);
+
   return (
-    <Card className="border border-gray-100 shadow-sm">
-      <CardContent className={padding}>
-        <div className="flex justify-between items-center mb-2">
-          <div className="flex items-center">
-            <h2 className={`${titleFontSize} font-medium text-gray-800`}>Patient Demographics</h2>
-            {/* <div className="ml-3 text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">
-              Avg. Model Value: {averageModelValue}
-            </div> */}
-          </div>
-        </div>
-        
-        <div className={`grid grid-cols-3 gap-x-3 gap-y-3 mt-3 ${contentFontSize}`}>
-          <div>
-            <div className={`text-gray-500 ${labelFontSize} mb-1`}>Age Range</div>
+    <Card className="bg-white shadow-sm mt-2 w-full">
+      <CardContent className={`${padding} h-full`}>
+        <div className={`font-medium ${titleFontSize} mb-0.5`}>Patient Demographics</div>
+        <div className={`${contentFontSize} text-gray-500 mb-2`}>Personal and demographic information</div>
+
+        <div className={`grid grid-cols-3 gap-x-2 gap-y-2 ${contentFontSize}`}>
+          <div className="flex flex-col">
+            <div className={`text-gray-500 ${labelFontSize} mb-0.5`}>Age Range</div>
             <div className="font-medium">{patientDemographic.age}</div>
           </div>
-          
+
           <div className="col-span-2">
-            <div className={`text-gray-500 ${labelFontSize} mb-1`}>Origin</div>
-            <div className="font-medium">
+            <div className={`text-gray-500 ${labelFontSize} mb-0.5`}>Origin</div>
+            <div className="font-medium space-compact">
               {patientDemographic.origin && patientDemographic.origin.map((item, index) => {
                 // Get flag emoji for country code
                 const getFlagEmoji = (countryCode: string) => {
@@ -57,18 +93,18 @@ export default function PatientDemographics() {
                     .map(char => 127397 + char.charCodeAt(0));
                   return String.fromCodePoint(...codePoints);
                 };
-                
+
                 return (
-                  <div key={index} className="flex justify-between items-center mb-2">
+                  <div key={index} className="flex justify-between items-center mb-1">
                     <span className="flex items-center">
                       <span className={`mr-1 ${flagFontSize}`}>{getFlagEmoji(item.country)}</span>
                       <span>{item.country}:</span>
                     </span>
                     <div className="flex items-center">
-                      <span className={`mr-2 ${labelFontSize}`}>{item.percentage}%</span>
-                      <div className={`w-20 bg-gray-200 rounded-full ${barHeight}`}>
-                        <div 
-                          className={`bg-blue-600 ${barHeight} rounded-full`} 
+                      <span className={`mr-1 ${labelFontSize}`}>{item.percentage}%</span>
+                      <div className={`w-16 bg-gray-200 rounded-full ${barHeight}`}>
+                        <div
+                          className={`bg-blue-600 ${barHeight} rounded-full`}
                           style={{ width: `${item.percentage}%` }}
                         ></div>
                       </div>
@@ -78,18 +114,61 @@ export default function PatientDemographics() {
               })}
             </div>
           </div>
-          
+
           <div className="col-span-3">
-            <div className={`text-gray-500 ${labelFontSize} mb-1`}>Role</div>
-            <div className="font-medium flex gap-2 flex-wrap">
+            <div className={`text-gray-500 ${labelFontSize} mb-0.5`}>Role</div>
+            <div className="font-medium flex gap-1 flex-wrap">
               {patientDemographic.role && patientDemographic.role.map((item, index) => (
-                <div 
-                  key={index} 
-                  className={`px-3 py-1.5 bg-gray-100 rounded-full ${isPresentationMode ? 'text-sm' : 'text-xs'}`}
+                <div
+                  key={index}
+                  className="px-2 py-1 bg-gray-100 rounded-full text-xs"
                 >
                   <span>{item.role_name} {item.percentage}%</span>
                 </div>
               ))}
+            </div>
+          </div>
+
+          {/* AI Summary Section with Dark Background and High Contrast */}
+          <div className="col-span-3 mt-2 pt-2 border-t border-gray-100 relative">
+            <div className="flex items-center">
+              <div className={`text-gray-500 ${labelFontSize} mb-0.5 flex items-center`}>
+                <span className="mr-1">AI Summary</span>
+                <span className="text-blue-500 text-xs">✨</span>
+              </div>
+            </div>
+
+            {/* Show the thinking animation only during initial generation */}
+            {isGeneratingAi && !aiSummary && (
+              <div className="px-3 py-2">
+                <AiSummaryAnimation isGenerating={true} darkMode={true} />
+              </div>
+            )}
+
+            <div
+              className="font-normal text-xs rounded-md overflow-hidden"
+              style={{ backgroundColor: "#808080" }}
+            >
+              {/* Fancy AI border animation */}
+              <div className="relative">
+                <AiPulseAnimation isGenerating={isGeneratingAi} darkMode={true} />
+                <div className="relative z-10 p-3">
+                  <div className="text-white font-medium">
+                    {aiSummary ? (
+                      <TypingAnimation
+                        text={aiSummary}
+                        isGenerating={isGeneratingAi}
+                        speed={40}  // Much slower typing speed
+                        initialDelay={400}  // Longer initial delay
+                        thinkingPauses={true}  // Enable random pauses while typing
+                        darkMode={true}  // Enable dark mode styling
+                      />
+                    ) : (
+                      <span className="text-gray-200">Analyzing patient data to generate insights...</span>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

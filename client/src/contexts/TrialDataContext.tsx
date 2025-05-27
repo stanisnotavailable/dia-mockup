@@ -112,12 +112,15 @@ interface TrialDataContextType {
   resetProfile: (profileId?: string) => void;
   updatePatientDemographic: (demographicData: Partial<PatientDemographic>, profileId?: string) => void;
   isLoading: boolean;
+  lastDataChangeTimestamp: number; // Add timestamp for tracking changes
 }
 
 // Get all 24 questions from the JSON data
 const getAllItems = (): ComplexityItem[] => {
   // Use the allQuestions array from our JSON data
   const allQuestions = typedQuestionsData.allQuestions || [];
+  
+  console.log("Loading all questions:", allQuestions.length);
   
   // Map the questions to ComplexityItems
   return allQuestions.map(question => ({
@@ -133,7 +136,7 @@ const allItems = getAllItems();
 
 // Helper function to create trial data for a specific profile
 const createProfileData = (profileId: string): TrialData => {
-  // Initialize categories with some pre-distributed questions
+  // Initialize categories with empty arrays
   const categorizedItems: Record<CategoryType, ComplexityItem[]> = {
     [CATEGORIES.LOGISTICS]: [],
     [CATEGORIES.MOTIVATION]: [],
@@ -141,63 +144,40 @@ const createProfileData = (profileId: string): TrialData => {
     [CATEGORIES.QUALITY]: [],
   };
   
-  // Get the profile data from our JSON
-  const profileData = typedQuestionsData[profileId as keyof typeof typedQuestionsData] as ProfileData | undefined;
-  
-  // Make a copy of all items to distribute
+  // Make a copy of all items to distribute - this includes ALL 24 questions
   const allItemsCopy = [...allItems.map(item => ({ ...item, category: '' }))];
   
-  if (profileData && profileData.categories) {
-    // Process each category
-    profileData.categories.forEach((category: CategoryItem) => {
-      const categoryName = category.name as CategoryType;
-      
-      // Get the question IDs from the questions array (now string array)
-      const questionIds = category.questions;
-      
-      // For each question ID, find the corresponding item and add to the category
-      questionIds.forEach((questionId: string) => {
-        // Find the item in our allItemsCopy
-        const itemIndex = allItemsCopy.findIndex(item => item.id === questionId);
-        
-        if (itemIndex !== -1) {
-          // Get the item and update its category
-          const item = { ...allItemsCopy[itemIndex], category: categoryName };
-          
-          // Add to the appropriate category
-          categorizedItems[categoryName].push(item);
-          
-          // Remove from allItemsCopy to avoid duplicates
-          allItemsCopy.splice(itemIndex, 1);
-        }
-      });
-    });
-  }
+  // Get the category names as an array
+  const categoryNames = Object.values(CATEGORIES);
   
-  // The remaining items go to the available items
-  const availableItems = allItemsCopy;
+  // Randomly distribute all 24 questions across the four categories
+  allItemsCopy.forEach(item => {
+    // Select a random category
+    const randomCategoryIndex = Math.floor(Math.random() * categoryNames.length);
+    const targetCategory = categoryNames[randomCategoryIndex];
+    
+    // Update the item's category
+    const updatedItem = { ...item, category: targetCategory };
+    
+    // Add to the appropriate category
+    categorizedItems[targetCategory as CategoryType].push(updatedItem);
+  });
+  
+  // No items should remain in availableItems initially
+  const availableItems: ComplexityItem[] = [];
+  
+  // Log the distribution
+  console.log(`Profile ${profileId} distribution:`, {
+    logistics: categorizedItems[CATEGORIES.LOGISTICS].length,
+    motivation: categorizedItems[CATEGORIES.MOTIVATION].length,
+    healthcare: categorizedItems[CATEGORIES.HEALTHCARE].length,
+    quality: categorizedItems[CATEGORIES.QUALITY].length,
+    total: Object.values(categorizedItems).reduce((sum, items) => sum + items.length, 0)
+  });
   
   return {
     availableItems,
     complexityItems: categorizedItems
-  };
-};
-
-// Create data for each profile using the helper function
-const createProfile1Data = (): TrialData => createProfileData('profile1');
-const createProfile2Data = (): TrialData => createProfileData('profile2');
-const createProfile3Data = (): TrialData => createProfileData('profile3');
-
-// Create the empty trial data (all items available)
-const createEmptyTrialData = (): TrialData => {
-  return {
-    availableItems: allItems.map(item => ({ ...item, category: '' })),
-    complexityItems: {
-      [CATEGORIES.LOGISTICS]: [],
-      [CATEGORIES.MOTIVATION]: [],
-      [CATEGORIES.HEALTHCARE]: [],
-      [CATEGORIES.QUALITY]: [],
-    }
   };
 };
 
@@ -238,22 +218,26 @@ const getDemographicData = (profileId: string): PatientDemographic => {
 
 // Get categories with calculated average scores
 const getCategoriesWithScores = (profileId: string): CategoryData[] => {
-  const profileData = typedQuestionsData[profileId as keyof typeof typedQuestionsData] as ProfileData | undefined;
+  // Create a trial data instance for this profile to get the question distribution
+  const trialData = createProfileData(profileId);
   
-  if (profileData && profileData.categories) {
-    return profileData.categories.map(category => {
-      // Calculate the average score for this category's questions
-      const averageScore = calculateAverageScore(category.questions);
-      
-      return {
-        name: category.name,
-        questions: category.questions,
-        averageScore
-      };
-    });
-  }
-  
-  return [];
+  // Create category data from the trial data's complexityItems
+  return Object.entries(CATEGORIES).map(([key, categoryName]) => {
+    const categoryType = categoryName as CategoryType;
+    const items = trialData.complexityItems[categoryType];
+    
+    // Extract question IDs
+    const questionIds = items.map(item => item.id);
+    
+    // Calculate the average score for this category's questions
+    const averageScore = calculateAverageScore(questionIds);
+    
+    return {
+      name: categoryName,
+      questions: questionIds,
+      averageScore
+    };
+  });
 };
 
 // Initial profiles
@@ -261,21 +245,21 @@ const initialProfiles: Profile[] = [
   {
     id: 'profile1',
     name: 'Profile 1',
-    trialData: createProfile1Data(),
+    trialData: createProfileData('profile1'),
     patientDemographic: getDemographicData('profile1'),
     categories: getCategoriesWithScores('profile1')
   },
   {
     id: 'profile2',
     name: 'Profile 2',
-    trialData: createProfile2Data(),
+    trialData: createProfileData('profile2'),
     patientDemographic: getDemographicData('profile2'),
     categories: getCategoriesWithScores('profile2')
   },
   {
     id: 'profile3',
     name: 'Profile 3',
-    trialData: createProfile3Data(),
+    trialData: createProfileData('profile3'),
     patientDemographic: getDemographicData('profile3'),
     categories: getCategoriesWithScores('profile3')
   }
@@ -291,6 +275,7 @@ export const TrialDataContext = createContext<TrialDataContextType>({
   resetProfile: () => {},
   updatePatientDemographic: () => {},
   isLoading: true,
+  lastDataChangeTimestamp: Date.now(), // Initialize with current timestamp
 });
 
 // Create the provider component
@@ -300,6 +285,8 @@ export const TrialDataProvider = ({ children }: { children: ReactNode }) => {
   // Initialize profiles state
   const [profiles, setProfiles] = useState<Profile[]>(initialProfiles);
   const [currentProfileId, setCurrentProfileId] = useState<string>('profile1');
+  // Add timestamp to track data changes
+  const [lastDataChangeTimestamp, setLastDataChangeTimestamp] = useState<number>(Date.now());
   
   // Simulate loading data from an API with a "thinking" effect
   useEffect(() => {
@@ -443,6 +430,9 @@ export const TrialDataProvider = ({ children }: { children: ReactNode }) => {
       
       return updatedProfiles;
     });
+    
+    // Update timestamp to indicate data has changed
+    setLastDataChangeTimestamp(Date.now());
   };
   
   // Update patient demographic data
@@ -466,11 +456,16 @@ export const TrialDataProvider = ({ children }: { children: ReactNode }) => {
       updatedProfiles[profileIndex] = profile;
       return updatedProfiles;
     });
+    
+    // Update timestamp to indicate data has changed
+    setLastDataChangeTimestamp(Date.now());
   };
   
   // Reset a profile to its initial state
   const resetProfile = (profileId?: string) => {
     const targetProfileId = profileId || currentProfileId;
+    
+    console.log("Resetting profile:", targetProfileId);
     
     setProfiles(prevProfiles => {
       const updatedProfiles = [...prevProfiles];
@@ -479,27 +474,27 @@ export const TrialDataProvider = ({ children }: { children: ReactNode }) => {
       if (profileIndex === -1) return prevProfiles;
       
       const profileId = updatedProfiles[profileIndex].id;
-      let trialData: TrialData;
       
-      // Use the appropriate initial data based on profile ID
-      switch(profileId) {
-        case 'profile1':
-          trialData = createProfile1Data();
-          break;
-        case 'profile2':
-          trialData = createProfile2Data();
-          break;
-        case 'profile3':
-          trialData = createProfile3Data();
-          break;
-        default:
-          trialData = createEmptyTrialData();
-      }
+      // Create a fresh random distribution of questions
+      const trialData = createProfileData(profileId);
+      
+      console.log("Reset trialData:", {
+        availableItems: trialData.availableItems.length,
+        logistics: trialData.complexityItems[CATEGORIES.LOGISTICS].length,
+        motivation: trialData.complexityItems[CATEGORIES.MOTIVATION].length,
+        healthcare: trialData.complexityItems[CATEGORIES.HEALTHCARE].length,
+        quality: trialData.complexityItems[CATEGORIES.QUALITY].length,
+        total: trialData.availableItems.length + 
+               trialData.complexityItems[CATEGORIES.LOGISTICS].length +
+               trialData.complexityItems[CATEGORIES.MOTIVATION].length +
+               trialData.complexityItems[CATEGORIES.HEALTHCARE].length +
+               trialData.complexityItems[CATEGORIES.QUALITY].length
+      });
       
       // Get fresh demographic data from JSON
       const freshDemographicData = getDemographicData(profileId);
       
-      // Get categories with calculated scores
+      // Get categories with calculated scores based on the new distribution
       const freshCategories = getCategoriesWithScores(profileId);
       
       updatedProfiles[profileIndex] = {
@@ -511,6 +506,9 @@ export const TrialDataProvider = ({ children }: { children: ReactNode }) => {
       
       return updatedProfiles;
     });
+    
+    // Update timestamp to indicate data has changed
+    setLastDataChangeTimestamp(Date.now());
   };
   
   return (
@@ -523,7 +521,8 @@ export const TrialDataProvider = ({ children }: { children: ReactNode }) => {
         moveItem,
         resetProfile,
         updatePatientDemographic,
-        isLoading
+        isLoading,
+        lastDataChangeTimestamp
       }}
     >
       {children}

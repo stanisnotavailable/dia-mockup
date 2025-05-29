@@ -167,7 +167,7 @@ export default function PatientFeasibilityPlot() {
             <div className="h-full flex flex-col items-center justify-center">
               <div className="text-gray-400 text-center px-2">
                 <div className="text-base font-medium mb-1">No Data Available</div>
-                <p className="text-sm">Drag questions into the Trial Complexity Categories to generate a visualization.</p>
+                <p className="text-sm">Drag questions into the Patient Insights Latent Traits to generate a visualization.</p>
               </div>
             </div>
           )}

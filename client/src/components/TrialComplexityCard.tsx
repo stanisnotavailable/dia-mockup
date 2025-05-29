@@ -117,7 +117,7 @@ export default function TrialComplexityCard() {
     <Card className="border border-gray-100 lg:col-span-3">
       <CardContent className="p-3">
         <div className="mb-1">
-          <h2 className="text-base font-medium text-gray-800">Trial Complexity Categories</h2>
+          <h2 className="text-base font-medium text-gray-800">Patient Insights Latent Traits</h2>
           <p className="text-xs text-gray-500">
             Drag elements from the panel above into these categories to update the radar chart
           </p>
@@ -128,42 +128,42 @@ export default function TrialComplexityCard() {
           {Object.entries(CATEGORIES)
             .filter(([key, category]) => category !== CATEGORIES.UNCATEGORIZED)
             .map(([key, category]) => {
-            const isDropTarget = draggedOverCategory === category;
+              const isDropTarget = draggedOverCategory === category;
 
-            return (
-              <div
-                key={category}
-                className={`${categoryBgColors[category as CategoryType]} border rounded-md p-2 transition-all ${isDropTarget
+              return (
+                <div
+                  key={category}
+                  className={`${categoryBgColors[category as CategoryType]} border rounded-md p-2 transition-all ${isDropTarget
                     ? `ring-2 ring-${key.toLowerCase()}-400 border-${key.toLowerCase()}-400`
                     : ""
-                  }`}
-                onDragOver={(e) => handleDragOver(e, category)}
-                onDragLeave={handleDragLeave}
-                onDrop={(e) => handleDrop(e, category)}
-              >
-                <div className="flex justify-between items-center mb-1">
-                  <h3 className={`font-medium ${categoryColors[category as CategoryType].split(" ").slice(-1)[0]}`}>
-                    {category}
-                  </h3>
-                  <span className="text-xs bg-white rounded-full px-2 py-0.5 border">
-                    {trialData.complexityItems[category].length} items
-                  </span>
-                </div>
+                    }`}
+                  onDragOver={(e) => handleDragOver(e, category)}
+                  onDragLeave={handleDragLeave}
+                  onDrop={(e) => handleDrop(e, category)}
+                >
+                  <div className="flex justify-between items-center mb-1">
+                    <h3 className={`font-medium ${categoryColors[category as CategoryType].split(" ").slice(-1)[0]}`}>
+                      {category}
+                    </h3>
+                    <span className="text-xs bg-white rounded-full px-2 py-0.5 border">
+                      {trialData.complexityItems[category].length} items
+                    </span>
+                  </div>
 
-                <div className="overflow-y-auto pr-1 space-compact" style={{ height: "135px" }}>
-                  {trialData.complexityItems[category].map((item: ComplexityItem) => (
-                    <ComplexityItemComponent key={item.id} item={item} />
-                  ))}
-                  {trialData.complexityItems[category].length === 0 && (
-                    <div className={`text-gray-400 text-sm text-center py-6 border border-dashed rounded-md ${isDropTarget ? "bg-white bg-opacity-50" : ""
-                      }`}>
-                      Drop elements here
-                    </div>
-                  )}
+                  <div className="overflow-y-auto pr-1 space-compact" style={{ height: "135px" }}>
+                    {trialData.complexityItems[category].map((item: ComplexityItem) => (
+                      <ComplexityItemComponent key={item.id} item={item} />
+                    ))}
+                    {trialData.complexityItems[category].length === 0 && (
+                      <div className={`text-gray-400 text-sm text-center py-6 border border-dashed rounded-md ${isDropTarget ? "bg-white bg-opacity-50" : ""
+                        }`}>
+                        Drop elements here
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
         </div>
 
         {/* Uncategorized Section */}
@@ -177,15 +177,15 @@ export default function TrialComplexityCard() {
               className="mr-2 h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
             />
             <label htmlFor="show-uncategorized" className="text-sm font-medium text-gray-700 cursor-pointer">
-              Show Uncategorized ({trialData.complexityItems[CATEGORIES.UNCATEGORIZED].length} items)
+              Show Uncategorized
             </label>
           </div>
 
           {showUncategorized && (
             <div
               className={`${categoryBgColors[CATEGORIES.UNCATEGORIZED]} border rounded-md p-2 transition-all ${draggedOverCategory === CATEGORIES.UNCATEGORIZED
-                  ? "ring-2 ring-gray-400 border-gray-400"
-                  : ""
+                ? "ring-2 ring-gray-400 border-gray-400"
+                : ""
                 }`}
               onDragOver={(e) => handleDragOver(e, CATEGORIES.UNCATEGORIZED)}
               onDragLeave={handleDragLeave}

@@ -97,7 +97,7 @@ export default function ElementsPanel() {
       <div
         draggable={isDraggable}
         onDragStart={(e) => handleDragStart(e, item)}
-        className="bg-gray-100 border-gray-300 py-0.5 px-2 my-0.5 rounded border cursor-move shadow-sm transition-all hover:shadow-md flex items-center justify-between min-touch-target"
+        className="bg-gray-100 border-gray-300 py-0.5 px-2 my-0.5 rounded border cursor-move transition-all hover:shadow-md flex items-center justify-between min-touch-target"
       >
         <div className="font-medium text-xs">{item.name}</div>
       </div>
@@ -105,7 +105,6 @@ export default function ElementsPanel() {
   };
 
   return (
-    <Card className="border border-gray-100 shadow-sm h-full">
       <CardContent className="p-3 h-full flex flex-col">
         <div className="flex justify-between items-center mb-1">
           <div className="flex items-center">

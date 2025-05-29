@@ -33,8 +33,13 @@ export default function PatientFeasibilityPlot() {
   const profileData = getCurrentProfile();
   const categories = profileData.categories || [];
   
-  // Define color for the radar
-  const radarColor = "#3b82f6"; // Blue
+  // Define colors for the radar chart using the new hex colors
+  const categoryColors = {
+    [CATEGORIES.LOGISTICS]: "#3992FE",
+    [CATEGORIES.MOTIVATION]: "#12A54D",
+    [CATEGORIES.HEALTHCARE]: "#B675FF",
+    [CATEGORIES.QUALITY]: "#EF6C15"
+  };
   
   // Define category labels for the axes
   const categoryLabels = useMemo(() => ({
@@ -46,20 +51,21 @@ export default function PatientFeasibilityPlot() {
   
   // Prepare data for the radar chart
   const radarData = useMemo(() => {
-    // Create one data point for each category (axis)
-    return Object.values(CATEGORIES).map(category => {
-      const categoryData = categories.find(c => c.name === category);
-      const score = categoryData?.averageScore || 0;
-      
-      // Convert to flat data structure for the chart
-      return { 
-        category: categoryLabels[category as CategoryType],
-        score: score * 10, // Scale to 0-100 for better visualization
-        // Store original score for internal use but not display
-        originalScore: score
-      };
-    });
-  }, [categories, categoryLabels]);
+    // Create one data point for each category (axis) - exclude Uncategorized
+    return Object.values(CATEGORIES)
+      .filter(category => category !== CATEGORIES.UNCATEGORIZED)
+      .map(category => {
+        const categoryData = categories.find(c => c.name === category);
+        const score = categoryData?.averageScore || 0;
+        
+        // Convert to flat data structure for the chart
+        return { 
+          category: category,
+          score: score * 10, // Scale to 0-100 for better visualization
+          color: categoryColors[category as keyof typeof categoryColors] // Safe access to color
+        };
+      });
+  }, [categories, categoryColors]);
   
   // Check if there's data to display
   const hasDataToDisplay = useMemo(() => {
@@ -70,15 +76,17 @@ export default function PatientFeasibilityPlot() {
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       const entry = payload[0];
+      const dataPoint = radarData.find(d => d.category === entry.payload.category);
+      const color = dataPoint?.color || entry.color;
+      
       return (
-        <div className="bg-white p-2 border border-gray-200 rounded shadow-sm text-xs">
+        <div className="bg-white p-2 border border-gray-200 rounded text-xs">
           <div className="flex items-center">
             <div 
               className="w-2 h-2 rounded-full mr-1.5"
-              style={{ backgroundColor: entry.color }}
+              style={{ backgroundColor: color }}
             />
-            <span className="font-medium">{entry.name}</span>
-            {/* Score is hidden but still used for calculations */}
+            <span className="font-medium">{entry.payload.category}: {Math.round(entry.value)}</span>
           </div>
         </div>
       );
@@ -87,14 +95,14 @@ export default function PatientFeasibilityPlot() {
   };
   
   // Use fixed values for chart dimensions and styling
-  const chartHeight = 450;
+  const chartHeight = 600;
   const titleFontSize = "text-base";
   const subtitleFontSize = "text-sm";
   const tickFontSize = 11;
   const radiusTickFontSize = 9;
   
   return (
-    <Card className="bg-white shadow-sm mt-2 w-full">
+    <Card className="bg-white mt-2 w-full">
       <CardContent className="p-3 h-full">
         <div className={`font-medium ${titleFontSize} mb-0.5`}>Patient Feasibility Plot</div>
         <div className={`${subtitleFontSize} text-gray-500 mb-2`}>Visual representation of patient experience categories</div>
@@ -110,7 +118,26 @@ export default function PatientFeasibilityPlot() {
                 <PolarGrid gridType="polygon" stroke="#e5e7eb" />
                 <PolarAngleAxis 
                   dataKey="category" 
-                  tick={{ fill: '#6b7280', fontSize: tickFontSize, fontWeight: 500 }}
+                  tick={(props) => {
+                    const { x, y, textAnchor, payload } = props;
+                    // Use gray color for all labels instead of category-specific colors
+                    const color = '#6b7280'; // gray-500
+                    
+                    return (
+                      <g transform={`translate(${x},${y})`}>
+                        <text
+                          x={0}
+                          y={0}
+                          textAnchor={textAnchor}
+                          fill={color}
+                          fontSize={tickFontSize}
+                          fontWeight={500}
+                        >
+                          {payload.value}
+                        </text>
+                      </g>
+                    );
+                  }}
                   tickLine={{ stroke: '#e5e7eb' }}
                   axisLine={{ stroke: '#e5e7eb' }}
                 />
@@ -127,8 +154,8 @@ export default function PatientFeasibilityPlot() {
                 <Radar
                   name="Category"
                   dataKey="score"
-                  stroke={radarColor}
-                  fill={radarColor}
+                  stroke={categoryColors[CATEGORIES.LOGISTICS]}
+                  fill={categoryColors[CATEGORIES.LOGISTICS]}
                   fillOpacity={0.6}
                   dot={true}
                   activeDot={{ r: 5 }}

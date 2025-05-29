@@ -70,12 +70,12 @@ export default function PatientDemographics() {
   }, [profile.categories, lastDataChangeTimestamp, currentProfileId]);
 
   return (
-    <Card className="bg-white shadow-sm mt-2 w-full">
-      <CardContent className={`${padding} h-full`}>
+    <Card className="bg-white mt-2 w-full">
+      <CardContent className={`${padding} h-full flex flex-col`} style={{ minHeight: "450px" }}>
         <div className={`font-medium ${titleFontSize} mb-0.5`}>Patient Demographics</div>
         <div className={`${contentFontSize} text-gray-500 mb-2`}>Personal and demographic information</div>
 
-        <div className={`grid grid-cols-3 gap-x-2 gap-y-2 ${contentFontSize}`}>
+        <div className={`grid grid-cols-3 gap-x-2 gap-y-2 ${contentFontSize} flex-grow`}>
           <div className="flex flex-col">
             <div className={`text-gray-500 ${labelFontSize} mb-0.5`}>Age Range</div>
             <div className="font-medium">{patientDemographic.age}</div>
@@ -95,10 +95,10 @@ export default function PatientDemographics() {
                 };
 
                 return (
-                  <div key={index} className="flex justify-between items-center mb-1">
+                  <div key={index} className="flex  items-center mb-1">
                     <span className="flex items-center">
                       <span className={`mr-1 ${flagFontSize}`}>{getFlagEmoji(item.country)}</span>
-                      <span>{item.country}:</span>
+                      <span style={{ marginRight: '8px' }} >{item.country}:</span>
                     </span>
                     <div className="flex items-center">
                       <span className={`mr-1 ${labelFontSize}`}>{item.percentage}%</span>
@@ -118,21 +118,38 @@ export default function PatientDemographics() {
           <div className="col-span-3">
             <div className={`text-gray-500 ${labelFontSize} mb-0.5`}>Role</div>
             <div className="font-medium flex gap-1 flex-wrap">
-              {patientDemographic.role && patientDemographic.role.map((item, index) => (
-                <div
-                  key={index}
-                  className="px-2 py-1 bg-gray-100 rounded-full text-xs"
-                >
-                  <span>{item.role_name} {item.percentage}%</span>
-                </div>
-              ))}
+              {patientDemographic.role && patientDemographic.role.map((item, index) => {
+                // Define an array of gradient color combinations
+                const gradientColors = [
+                  'bg-gradient-to-r from-blue-400 to-purple-500',
+                  'bg-gradient-to-r from-purple-400 to-pink-500',
+                  'bg-gradient-to-r from-pink-400 to-red-500',
+                  'bg-gradient-to-r from-green-400 to-blue-500',
+                  'bg-gradient-to-r from-yellow-400 to-orange-500',
+                  'bg-gradient-to-r from-indigo-400 to-cyan-500',
+                  'bg-gradient-to-r from-teal-400 to-green-500',
+                  'bg-gradient-to-r from-orange-400 to-red-500'
+                ];
+
+                // Select a random gradient based on the index to ensure consistency
+                const selectedGradient = gradientColors[index % gradientColors.length];
+
+                return (
+                  <div
+                    key={index}
+                    className={`px-2 py-1 rounded-full text-xs text-white font-medium ${selectedGradient}`}
+                  >
+                    <span>{item.role_name} {item.percentage}%</span>
+                  </div>
+                );
+              })}
             </div>
           </div>
 
           {/* AI Summary Section with Dark Background and High Contrast */}
-          <div className="col-span-3 mt-2 pt-2 border-t border-gray-100 relative">
+          <div className="col-span-3 mt-2 pt-2 border-t border-gray-100 relative" style={{ height: "400px" }} >
             <div className="flex items-center">
-              <div className={`text-gray-500 ${labelFontSize} mb-0.5 flex items-center`}>
+              <div className={`text-gray-500 text-base mb-0.5 flex items-center`} style={{ marginBottom: '16px' }} >
                 <span className="mr-1">AI Summary</span>
                 <span className="text-blue-500 text-xs">✨</span>
               </div>
@@ -146,14 +163,14 @@ export default function PatientDemographics() {
             )}
 
             <div
-              className="font-normal text-xs rounded-md overflow-hidden"
-              style={{ backgroundColor: "#808080" }}
+              className="font-normal text-base rounded-md overflow-hidden"
+              style={{ backgroundColor: "#EDF3FD", maxHeight: "350px", minHeight: "120px" }}
             >
               {/* Fancy AI border animation */}
               <div className="relative">
                 <AiPulseAnimation isGenerating={isGeneratingAi} darkMode={true} />
                 <div className="relative z-10 p-3">
-                  <div className="text-white font-medium">
+                  <div className="font-regular overflow-y-auto" style={{ maxHeight: "350px", color: "#1A1A2E" }}>
                     {aiSummary ? (
                       <TypingAnimation
                         text={aiSummary}

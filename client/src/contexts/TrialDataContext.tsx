@@ -41,7 +41,8 @@ export const CATEGORIES = {
   LOGISTICS: 'Logistics Challenge',
   MOTIVATION: 'Motivation',
   HEALTHCARE: 'Healthcare Engagement',
-  QUALITY: 'Quality of Life'
+  QUALITY: 'Quality of Life',
+  UNCATEGORIZED: 'Uncategorized'
 } as const;
 
 // Define category type
@@ -142,6 +143,7 @@ const createProfileData = (profileId: string): TrialData => {
     [CATEGORIES.MOTIVATION]: [],
     [CATEGORIES.HEALTHCARE]: [],
     [CATEGORIES.QUALITY]: [],
+    [CATEGORIES.UNCATEGORIZED]: [],
   };
   
   // Make a copy of all items to distribute - this includes ALL 24 questions
@@ -172,6 +174,7 @@ const createProfileData = (profileId: string): TrialData => {
     motivation: categorizedItems[CATEGORIES.MOTIVATION].length,
     healthcare: categorizedItems[CATEGORIES.HEALTHCARE].length,
     quality: categorizedItems[CATEGORIES.QUALITY].length,
+    uncategorized: categorizedItems[CATEGORIES.UNCATEGORIZED].length,
     total: Object.values(categorizedItems).reduce((sum, items) => sum + items.length, 0)
   });
   
@@ -221,23 +224,25 @@ const getCategoriesWithScores = (profileId: string): CategoryData[] => {
   // Create a trial data instance for this profile to get the question distribution
   const trialData = createProfileData(profileId);
   
-  // Create category data from the trial data's complexityItems
-  return Object.entries(CATEGORIES).map(([key, categoryName]) => {
-    const categoryType = categoryName as CategoryType;
-    const items = trialData.complexityItems[categoryType];
-    
-    // Extract question IDs
-    const questionIds = items.map(item => item.id);
-    
-    // Calculate the average score for this category's questions
-    const averageScore = calculateAverageScore(questionIds);
-    
-    return {
-      name: categoryName,
-      questions: questionIds,
-      averageScore
-    };
-  });
+  // Create category data from the trial data's complexityItems, excluding Uncategorized
+  return Object.entries(CATEGORIES)
+    .filter(([key, categoryName]) => categoryName !== CATEGORIES.UNCATEGORIZED)
+    .map(([key, categoryName]) => {
+      const categoryType = categoryName as CategoryType;
+      const items = trialData.complexityItems[categoryType];
+      
+      // Extract question IDs
+      const questionIds = items.map(item => item.id);
+      
+      // Calculate the average score for this category's questions
+      const averageScore = calculateAverageScore(questionIds);
+      
+      return {
+        name: categoryName,
+        questions: questionIds,
+        averageScore
+      };
+    });
 };
 
 // Initial profiles

@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 
 export default function PatientFeasibilityPlotSkeleton() {
   return (
-    <Card className="border border-gray-100 shadow-sm h-full">
+    <Card className="border border-gray-100 h-full">
       <CardContent className="p-4 h-full">
         <div className="flex justify-between items-center mb-2">
           <Skeleton width={200} height={24} />

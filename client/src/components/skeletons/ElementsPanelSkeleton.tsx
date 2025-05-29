@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 
 export default function ElementsPanelSkeleton() {
   return (
-    <Card className="border border-gray-100 shadow-sm h-full">
+    <Card className="border border-gray-100  h-full">
       <CardContent className="p-4 h-full flex flex-col">
         <div className="flex justify-between items-center mb-2">
           <div className="flex items-center">
@@ -23,7 +23,7 @@ export default function ElementsPanelSkeleton() {
             {Array(8).fill(0).map((_, index) => (
               <div 
                 key={index}
-                className="py-1 px-2 my-1 rounded border shadow-sm flex items-center justify-between"
+                className="py-1 px-2 my-1 rounded border flex items-center justify-between"
               >
                 <Skeleton width={120} height={16} />
                 <Skeleton width={20} height={16} />

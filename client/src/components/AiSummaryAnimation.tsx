@@ -32,7 +32,7 @@ export default function AiSummaryAnimation({ isGenerating = false, darkMode = fa
           <div className={`w-5 h-5 rounded-full border-2 ${borderColor} border-t-transparent animate-spin`}></div>
         </div>
       </div>
-      <span className={`text-xs ${textColor} font-medium`}>
+      <span className={`text-base ${textColor} font-medium`}>
         AI generating summary{'.'.repeat(dots)}
       </span>
     </div>

@@ -281,75 +281,49 @@ export default function PatientDemographics() {
         <div className={`font-medium ${titleFontSize} mb-0.5`}>Origin</div>
         <div className={`${contentFontSize} text-gray-500 mb-2`}>Patient geographic distribution</div>
 
-        <div className={`grid grid-cols-3 gap-x-2 gap-y-2 ${contentFontSize} flex-grow`}>
-          <div className="flex flex-col">
-            <div className={`text-gray-500 ${labelFontSize} mb-0.5`}>Age Range</div>
-            <div className="font-medium">{patientDemographic.age}</div>
-          </div>
+        <div>
+          <div className="flex flex-row justify-between">
+            <div>
+              <div className={`text-gray-500 ${labelFontSize} mb-0.5`}>Age Range</div>
+              <div className="font-medium">{patientDemographic.age}</div>
+            </div>
 
-          <div className="col-span-2">
-            <div className={`text-gray-500 ${labelFontSize} mb-0.5`}>Countries</div>
-            <div className="font-medium space-compact">
-              {patientDemographic.origin && patientDemographic.origin.map((item, index) => {
-                const countryName = getCountryName(item.country);
-                const flagComponent = getCountryFlag(item.country, countryName);
 
-                return (
-                  <div key={index} className="flex" >
-                    <span className="flex items-center" style={{ width: '120px' }}>
-                      {flagComponent}
-                      <span style={{ marginRight: '8px' }}>{countryName}:</span>
-                    </span>
-                    <div className="flex items-center">
-                      <span className={`mr-1 ${labelFontSize}`}>{item.percentage}%</span>
-                      <div className={`w-16 bg-gray-200 rounded-full ${barHeight}`}>
-                        <div
-                          className={`bg-blue-600 ${barHeight} rounded-full`}
-                          style={{ width: `${item.percentage}%` }}
-                        ></div>
+            <div className="col-span-2">
+              <div className={`text-gray-500 ${labelFontSize} mb-0.5`}>Countries</div>
+              <div className="font-medium space-compact">
+                {patientDemographic.origin && patientDemographic.origin.map((item, index) => {
+                  const countryName = getCountryName(item.country);
+                  const flagComponent = getCountryFlag(item.country, countryName);
+
+                  return (
+                    <div key={index} className="flex justify-between" >
+                      <span className="flex items-center">
+                        {flagComponent}
+                        <span style={{ marginRight: '8px' }}>{countryName}:</span>
+                      </span>
+                      <div className="flex items-center">
+                        <span className={`mr-1 ${labelFontSize}`}>{item.percentage}%</span>
+                        <div className={`w-16 bg-gray-200 rounded-full ${barHeight}`}>
+                          <div
+                            className={`bg-blue-600 ${barHeight} rounded-full`}
+                            style={{ width: `${item.percentage}%` }}
+                          ></div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
           </div>
 
-          <div className="col-span-3">
-            <div className={`text-gray-500 ${labelFontSize} mb-0.5`}>Role</div>
-            <div className="font-medium flex gap-1 flex-wrap">
-              {patientDemographic.role && patientDemographic.role.map((item, index) => {
-                // Define an array of gradient color combinations
-                const gradientColors = [
-                  'bg-gradient-to-r from-blue-400 to-purple-500',
-                  'bg-gradient-to-r from-purple-400 to-pink-500',
-                  'bg-gradient-to-r from-pink-400 to-red-500',
-                  'bg-gradient-to-r from-green-400 to-blue-500',
-                  'bg-gradient-to-r from-yellow-400 to-orange-500',
-                  'bg-gradient-to-r from-indigo-400 to-cyan-500',
-                  'bg-gradient-to-r from-teal-400 to-green-500',
-                  'bg-gradient-to-r from-orange-400 to-red-500'
-                ];
 
-                // Select a random gradient based on the index to ensure consistency
-                const selectedGradient = gradientColors[index % gradientColors.length];
-
-                return (
-                  <div
-                    key={index}
-                    className={`px-2 py-1 rounded-full text-xs text-white font-medium ${selectedGradient}`}
-                  >
-                    <span>{item.role_name} {item.percentage}%</span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
 
           {/* AI Summary Section with Dark Background and High Contrast */}
-          <div className="col-span-3 mt-2 pt-2 border-t border-gray-100 relative" style={{ height: "400px" }} >
-            <div className="flex items-center">
-              <div className={`text-gray-500 text-base mb-0.5 flex items-center`} style={{ marginBottom: '16px' }} >
+          <div className="col-span-3 mt-4 pt-2 border-t border-gray-100 relative">
+            <div className="flex items-center mb-3">
+              <div className={`text-gray-500 text-base flex items-center`}>
                 <span className="mr-1">AI Summary</span>
                 <span className="text-blue-500 text-xs">✨</span>
               </div>
@@ -364,7 +338,7 @@ export default function PatientDemographics() {
 
             <div
               className="font-normal text-base rounded-md overflow-hidden"
-              style={{ backgroundColor: "#EDF3FD", maxHeight: "350px", minHeight: "120px" }}
+              style={{ backgroundColor: "#EDF3FD", minHeight: "120px" }}
             >
               {/* Fancy AI border animation */}
               <div className="relative">

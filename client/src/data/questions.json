@@ -1,120 +1,288 @@
 {
   "allQuestions": [
-    {"id": "q1", "name": "Insight 1", "score": 10.0},
-    {"id": "q2", "name": "Insight 2", "score": 1.0},
-    {"id": "q3", "name": "Insight 3", "score": 9.5},
-    {"id": "q4", "name": "Insight 4", "score": 1.5},
-    {"id": "q5", "name": "Insight 5", "score": 9.0},
-    {"id": "q6", "name": "Insight 6", "score": 2.0},
-    {"id": "q7", "name": "Insight 7", "score": 8.5},
-    {"id": "q8", "name": "Insight 8", "score": 2.5},
-    {"id": "q9", "name": "Insight 9", "score": 10.0},
-    {"id": "q10", "name": "Insight 10", "score": 1.0},
-    {"id": "q11", "name": "Insight 11", "score": 9.5},
-    {"id": "q12", "name": "Insight 12", "score": 1.5},
-    {"id": "q13", "name": "Insight 13", "score": 9.0},
-    {"id": "q14", "name": "Insight 14", "score": 2.0},
-    {"id": "q15", "name": "Insight 15", "score": 8.5},
-    {"id": "q16", "name": "Insight 16", "score": 2.5},
-    {"id": "q17", "name": "Insight 17", "score": 10.0},
-    {"id": "q18", "name": "Insight 18", "score": 1.0},
-    {"id": "q19", "name": "Insight 19", "score": 9.5},
-    {"id": "q20", "name": "Insight 20", "score": 1.5},
-    {"id": "q21", "name": "Insight 21", "score": 9.0},
-    {"id": "q22", "name": "Insight 22", "score": 2.0},
-    {"id": "q23", "name": "Insight 23", "score": 8.5},
-    {"id": "q24", "name": "Insight 24", "score": 2.5}
+    {
+      "id": "q1",
+      "name": "Frequent clinic visits required",
+      "score": 1.0
+    },
+    {
+      "id": "q2",
+      "name": "Easy medication scheduling",
+      "score": 1.0
+    },
+    {
+      "id": "q3",
+      "name": "Strong motivation for recovery",
+      "score": 1.0
+    },
+    {
+      "id": "q4",
+      "name": "Low treatment adherence",
+      "score": 1.0
+    },
+    {
+      "id": "q5",
+      "name": "Active healthcare communication",
+      "score": 1.0
+    },
+    {
+      "id": "q6",
+      "name": "Avoids medical appointments",
+      "score": 1.0
+    },
+    {
+      "id": "q7",
+      "name": "Can't sleep due to symptoms",
+      "score": 1.0
+    },
+    {
+      "id": "q8",
+      "name": "Good sleep quality",
+      "score": 1.0
+    },
+    {
+      "id": "q9",
+      "name": "Complex travel requirements",
+      "score": 1.0
+    },
+    {
+      "id": "q10",
+      "name": "Local treatment available",
+      "score": 1.0
+    },
+    {
+      "id": "q11",
+      "name": "Hopeful about treatment outcome",
+      "score": 1.0
+    },
+    {
+      "id": "q12",
+      "name": "Skeptical about trial benefits",
+      "score": 1.0
+    },
+    {
+      "id": "q13",
+      "name": "Engaged with research team",
+      "score": 1.0
+    },
+    {
+      "id": "q14",
+      "name": "Limited healthcare interaction",
+      "score": 1.0
+    },
+    {
+      "id": "q15",
+      "name": "Treatment fatigue from side effects",
+      "score": 1.0
+    },
+    {
+      "id": "q16",
+      "name": "Manageable side effects",
+      "score": 1.0
+    },
+    {
+      "id": "q17",
+      "name": "Multiple coordination challenges",
+      "score": 1.0
+    },
+    {
+      "id": "q18",
+      "name": "Simple logistics",
+      "score": 1.0
+    },
+    {
+      "id": "q19",
+      "name": "Family support for participation",
+      "score": 1.0
+    },
+    {
+      "id": "q20",
+      "name": "Lack of motivation",
+      "score": 1.0
+    },
+    {
+      "id": "q21",
+      "name": "Proactive health management",
+      "score": 1.0
+    },
+    {
+      "id": "q22",
+      "name": "Passive healthcare approach",
+      "score": 1.0
+    },
+    {
+      "id": "q23",
+      "name": "Significant pain impacting daily life",
+      "score": 1.0
+    },
+    {
+      "id": "q24",
+      "name": "Good physical functioning",
+      "score": 1.0
+    }
   ],
   "profile1": {
     "profile_details": {
       "origin": [
-        { "country": "US", "percentage": 78 },
-        { "country": "DE", "percentage": 22 }
+        {
+          "country": "US",
+          "percentage": 78
+        },
+        {
+          "country": "DE",
+          "percentage": 22
+        }
       ],
       "age": "45-55",
       "role": [
-        { "role_name": "Caregiver", "percentage": 57 },
-        { "role_name": "Patient", "percentage": 43 }
+        {
+          "role_name": "Caregiver",
+          "percentage": 57
+        },
+        {
+          "role_name": "Patient",
+          "percentage": 43
+        }
       ]
     },
     "categories": [
       {
         "name": "Logistics Challenge",
-        "questions": ["q1", "q2"]
+        "questions": [
+          "q1",
+          "q2"
+        ]
       },
       {
         "name": "Motivation",
-        "questions": ["q3", "q4"]
+        "questions": [
+          "q3",
+          "q4"
+        ]
       },
       {
         "name": "Healthcare Engagement",
-        "questions": ["q5", "q6"]
+        "questions": [
+          "q5",
+          "q6"
+        ]
       },
       {
         "name": "Quality of Life",
-        "questions": ["q7", "q8"]
+        "questions": [
+          "q7",
+          "q8"
+        ]
       }
     ]
   },
   "profile2": {
     "profile_details": {
       "origin": [
-        { "country": "US", "percentage": 16 },
-        { "country": "DE", "percentage": 84 }
+        {
+          "country": "US",
+          "percentage": 16
+        },
+        {
+          "country": "DE",
+          "percentage": 84
+        }
       ],
       "age": "55-65",
       "role": [
-        { "role_name": "Caregiver", "percentage": 70 },
-        { "role_name": "Patient", "percentage": 30 }
+        {
+          "role_name": "Caregiver",
+          "percentage": 70
+        },
+        {
+          "role_name": "Patient",
+          "percentage": 30
+        }
       ]
     },
     "categories": [
       {
         "name": "Logistics Challenge",
-        "questions": ["q9", "q10"]
+        "questions": [
+          "q9",
+          "q10"
+        ]
       },
       {
         "name": "Motivation",
-        "questions": ["q11", "q12"]
+        "questions": [
+          "q11",
+          "q12"
+        ]
       },
       {
         "name": "Healthcare Engagement",
-        "questions": ["q13", "q14"]
+        "questions": [
+          "q13",
+          "q14"
+        ]
       },
       {
         "name": "Quality of Life",
-        "questions": ["q15", "q16"]
+        "questions": [
+          "q15",
+          "q16"
+        ]
       }
     ]
   },
   "profile3": {
     "profile_details": {
       "origin": [
-        { "country": "US", "percentage": 44 },
-        { "country": "DE", "percentage": 56 }
+        {
+          "country": "US",
+          "percentage": 44
+        },
+        {
+          "country": "DE",
+          "percentage": 56
+        }
       ],
       "age": "60-65",
       "role": [
-        { "role_name": "Caregiver", "percentage": 82 },
-        { "role_name": "Patient", "percentage": 18 }
+        {
+          "role_name": "Caregiver",
+          "percentage": 82
+        },
+        {
+          "role_name": "Patient",
+          "percentage": 18
+        }
       ]
     },
     "categories": [
       {
         "name": "Logistics Challenge",
-        "questions": ["q17", "q18"]
+        "questions": [
+          "q17",
+          "q18"
+        ]
       },
       {
         "name": "Motivation",
-        "questions": ["q19", "q20"]
+        "questions": [
+          "q19",
+          "q20"
+        ]
       },
       {
         "name": "Healthcare Engagement",
-        "questions": ["q21", "q22"]
+        "questions": [
+          "q21",
+          "q22"
+        ]
       },
       {
         "name": "Quality of Life",
-        "questions": ["q23", "q24"]
+        "questions": [
+          "q23",
+          "q24"
+        ]
       }
     ]
   },

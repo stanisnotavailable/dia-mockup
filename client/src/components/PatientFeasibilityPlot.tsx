@@ -2,12 +2,13 @@ import { useContext, useMemo, useEffect, useState, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer, Tooltip } from "recharts";
 import { TrialDataContext, CATEGORIES, CategoryType } from "@/contexts/TrialDataContext";
+import { getQuestionScore } from "@/lib/questionUtils";
 
 // Improved force update hook with better performance
 function useForceUpdate() {
   const [, setTick] = useState(0);
   const lastUpdateRef = useRef<number>(Date.now());
-  
+
   useEffect(() => {
     const interval = setInterval(() => {
       const now = Date.now();
@@ -17,22 +18,22 @@ function useForceUpdate() {
         setTick(tick => tick + 1);
       }
     }, 100);
-    
+
     return () => clearInterval(interval);
   }, []);
 }
 
 export default function PatientFeasibilityPlot() {
   // Get everything directly from context to ensure real-time updates
-  const { getCurrentProfile } = useContext(TrialDataContext);
-  
+  const { getCurrentProfile, currentProfileId } = useContext(TrialDataContext);
+
   // Force re-render to catch updates
   useForceUpdate();
-  
+
   // Get profile data directly from context each time
   const profileData = getCurrentProfile();
   const categories = profileData.categories || [];
-  
+
   // Define colors for the radar chart using the new hex colors
   const categoryColors = {
     [CATEGORIES.LOGISTICS]: "#3992FE",
@@ -40,7 +41,7 @@ export default function PatientFeasibilityPlot() {
     [CATEGORIES.HEALTHCARE]: "#B675FF",
     [CATEGORIES.QUALITY]: "#EF6C15"
   };
-  
+
   // Define category labels for the axes
   const categoryLabels = useMemo(() => ({
     [CATEGORIES.LOGISTICS]: "Logistics Challenge",
@@ -48,7 +49,7 @@ export default function PatientFeasibilityPlot() {
     [CATEGORIES.HEALTHCARE]: "Healthcare Engagement",
     [CATEGORIES.QUALITY]: "Quality of Life"
   }), []);
-  
+
   // Prepare data for the radar chart
   const radarData = useMemo(() => {
     // Create one data point for each category (axis) - exclude Uncategorized
@@ -56,33 +57,39 @@ export default function PatientFeasibilityPlot() {
       .filter(category => category !== CATEGORIES.UNCATEGORIZED)
       .map(category => {
         const categoryData = categories.find(c => c.name === category);
-        const score = categoryData?.averageScore || 0;
-        
+
+        let score = 0;
+        if (categoryData?.questions?.length && categoryData?.questions?.length > 0) {
+          // Calculate the score based on the questions using the same logic as the context
+          // Use the averageScore that's already calculated in the context with proper multipliers
+          score = categoryData.averageScore || 0;
+        }
+
         // Convert to flat data structure for the chart
-        return { 
+        return {
           category: category,
-          score: score * 10, // Scale to 0-100 for better visualization
+          score: score * 10, // Ensure score is between 0-100
           color: categoryColors[category as keyof typeof categoryColors] // Safe access to color
         };
       });
   }, [categories, categoryColors]);
-  
+
   // Check if there's data to display
   const hasDataToDisplay = useMemo(() => {
     return categories.some(cat => cat.questions && cat.questions.length > 0);
   }, [categories]);
-  
+
   // Custom tooltip content for the radar chart
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       const entry = payload[0];
       const dataPoint = radarData.find(d => d.category === entry.payload.category);
       const color = dataPoint?.color || entry.color;
-      
+
       return (
         <div className="bg-white p-2 border border-gray-200 rounded text-xs">
           <div className="flex items-center">
-            <div 
+            <div
               className="w-2 h-2 rounded-full mr-1.5"
               style={{ backgroundColor: color }}
             />
@@ -93,36 +100,38 @@ export default function PatientFeasibilityPlot() {
     }
     return null;
   };
-  
+
   // Use fixed values for chart dimensions and styling
   const chartHeight = 600;
   const titleFontSize = "text-base";
   const subtitleFontSize = "text-sm";
   const tickFontSize = 11;
   const radiusTickFontSize = 9;
-  
+
   return (
     <Card className="bg-white mt-2 w-full">
       <CardContent className="p-3 h-full">
         <div className={`font-medium ${titleFontSize} mb-0.5`}>Patient Feasibility Plot</div>
-        <div className={`${subtitleFontSize} text-gray-500 mb-2`}>Visual representation of patient experience categories</div>
-        
+        <div className={`${subtitleFontSize} text-gray-500 mb-2`}>
+          Visual representation of patient experience categories with dynamic scoring
+        </div>
+
         <div className="w-full" style={{ height: chartHeight }}>
           {hasDataToDisplay ? (
             <ResponsiveContainer width="100%" height="100%">
-              <RadarChart 
+              <RadarChart
                 outerRadius="70%"
                 data={radarData}
                 margin={{ top: 20, right: 20, left: 20, bottom: 30 }}
               >
                 <PolarGrid gridType="polygon" stroke="#e5e7eb" />
-                <PolarAngleAxis 
-                  dataKey="category" 
+                <PolarAngleAxis
+                  dataKey="category"
                   tick={(props) => {
                     const { x, y, textAnchor, payload } = props;
                     // Use gray color for all labels instead of category-specific colors
                     const color = '#6b7280'; // gray-500
-                    
+
                     return (
                       <g transform={`translate(${x},${y})`}>
                         <text
@@ -141,16 +150,16 @@ export default function PatientFeasibilityPlot() {
                   tickLine={{ stroke: '#e5e7eb' }}
                   axisLine={{ stroke: '#e5e7eb' }}
                 />
-                <PolarRadiusAxis 
-                  domain={[0, 100]} 
+                <PolarRadiusAxis
+                  domain={[0, 100]}
                   tick={{ fill: '#9ca3af', fontSize: radiusTickFontSize }}
                   tickCount={10}
                   axisLine={false}
                   tickLine={false}
                 />
-                
+
                 <Tooltip content={<CustomTooltip />} />
-                
+
                 <Radar
                   name="Category"
                   dataKey="score"

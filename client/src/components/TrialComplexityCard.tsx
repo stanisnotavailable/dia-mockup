@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { TrialDataContext, ComplexityItem, CATEGORIES, CategoryType } from "@/contexts/TrialDataContext";
 
 export default function TrialComplexityCard() {
-  const { getCurrentProfile, moveItem } = useContext(TrialDataContext);
+  const { getCurrentProfile, moveItem, currentProfileId } = useContext(TrialDataContext);
   const [draggedItem, setDraggedItem] = useState<ComplexityItem | null>(null);
   const [draggedOverCategory, setDraggedOverCategory] = useState<string | null>(null);
   const [showUncategorized, setShowUncategorized] = useState<boolean>(true);
@@ -91,13 +91,45 @@ export default function TrialComplexityCard() {
   const ComplexityItemComponent = ({ item }: { item: ComplexityItem }) => {
     const itemClass = item.category ? categoryColors[item.category as CategoryType] || "" : "bg-gray-100 border-gray-300";
 
+    // Determine multiplier indicator for current profile
+    let multiplierIndicator = "";
+    let multiplierTooltip = "";
+
+    // Find the category data for this item
+    const categoryData = currentProfile.categories?.find(cat => cat.name === item.category);
+    const multiplierLevel = (categoryData as any)?.multiplierLevel || 'Medium';
+    const itemScore = item.score || 0;
+
+    if (item.category) {
+      const addValue = multiplierLevel === 'Low' ? itemScore * 0.5 :
+        multiplierLevel === 'Medium' ? itemScore * 1.25 :
+          itemScore * 1.75;
+      const removeValue = multiplierLevel === 'High' ? itemScore * 1.75 : itemScore * 0.5;
+
+      if (multiplierLevel === 'High') {
+        multiplierIndicator = "🔥"; // High multiplier
+        multiplierTooltip = `High multiplier: +${addValue.toFixed(1)} when added, -${removeValue.toFixed(1)} when removed`;
+      } else if (multiplierLevel === 'Medium') {
+        multiplierIndicator = "⚡"; // Medium multiplier  
+        multiplierTooltip = `Medium multiplier: +${addValue.toFixed(1)} when added, -${removeValue.toFixed(1)} when removed`;
+      } else {
+        multiplierIndicator = "🔹"; // Low multiplier
+        multiplierTooltip = `Low multiplier: +${addValue.toFixed(1)} when added, -${removeValue.toFixed(1)} when removed`;
+      }
+    }
+
     return (
       <div
         draggable
         onDragStart={(e) => handleDragStart(e, item)}
         className={`${itemClass} py-0.5 px-2 my-0.5 rounded border cursor-move transition-all hover:shadow-md flex items-center justify-between min-touch-target`}
+        title={multiplierTooltip}
       >
-        <div className="font-medium text-xs">{item.name}</div>
+        <div className="font-medium text-xs flex items-center">
+          {multiplierIndicator && <span className="mr-1">{multiplierIndicator}</span>}
+          {item.name}
+          <span className="ml-2 text-gray-500 text-xs">({itemScore})</span>
+        </div>
         <div
           className="ml-2 text-gray-400 hover:text-red-500 cursor-pointer"
           onClick={(e) => {
@@ -121,6 +153,19 @@ export default function TrialComplexityCard() {
           <p className="text-xs text-gray-500">
             Drag elements from the panel above into these categories to update the radar chart
           </p>
+          <div className="mt-1 p-2 bg-blue-50 border border-blue-200 rounded text-xs">
+            <div className="font-medium text-blue-800 mb-1">📊 {currentProfile.name} - Category Multipliers</div>
+            <div className="text-blue-700">
+              {currentProfile.categories?.map(category => (
+                <div key={category.name}>
+                  • <strong>{category.name}</strong>: {(category as any).multiplierLevel || 'Medium'}
+                  {(category as any).currentScore !== undefined && (
+                    <span className="text-gray-600"> (Score: {((category as any).currentScore).toFixed(1)}/10)</span>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
 
         {/* Main Categories grid - 2x2 layout */}
@@ -217,7 +262,16 @@ export default function TrialComplexityCard() {
 
         <div className="text-xs text-gray-600 mt-2 p-1.5 bg-gray-50 rounded flex items-center">
           <span className="mr-1">💡</span>
-          <span>Tip: The radar chart updates in real-time as you reorganize items between categories</span>
+          <span>Tip: The radar chart updates based on scoring multipliers - drag items to see real-time score changes</span>
+        </div>
+
+        <div className="text-xs text-gray-600 mt-2 p-1.5 bg-blue-50 rounded">
+          <div className="font-medium mb-1">Scoring System Rules:</div>
+          <div className="space-y-0.5">
+            <div>🔥 <strong>High</strong>: +score×1.75 when added, -score×1.75 when removed</div>
+            <div>⚡ <strong>Medium</strong>: +score×1.25 when added, -score×0.5 when removed</div>
+            <div>🔹 <strong>Low</strong>: +score×0.5 when added, -score×0.5 when removed</div>
+          </div>
         </div>
       </CardContent>
     </Card>

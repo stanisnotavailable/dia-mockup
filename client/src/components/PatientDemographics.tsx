@@ -318,7 +318,54 @@ export default function PatientDemographics() {
             </div>
           </div>
 
-
+          {/* Legend Section */}
+          <div className="mt-4 mb-2">
+            <div className={`text-gray-500 ${labelFontSize} mb-2`}>Legend</div>
+            <div className="border border-gray-300 rounded-md overflow-hidden">
+              <table className="w-full text-xs">
+                <thead>
+                  <tr className="bg-gray-50">
+                    <th className="text-left py-2 px-3 font-medium border-b border-r border-gray-300">Trait</th>
+                    <th className="text-left py-2 px-3 font-medium border-b border-gray-300">Score</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="border-b border-gray-300">
+                    <td className="py-2 px-3 border-r border-gray-300">Healthcare Engagement</td>
+                    <td className="py-2 px-3 flex items-center">
+                      <div className="w-3 h-3 rounded-full mr-2 relative bg-gray-300">
+                        <div className="w-1.5 h-3 bg-gray-700 rounded-l-full"></div>
+                      </div>
+                      <span>(Medium)</span>
+                    </td>
+                  </tr>
+                  <tr className="border-b border-gray-300">
+                    <td className="py-2 px-3 border-r border-gray-300">Logistical Challenge</td>
+                    <td className="py-2 px-3 flex items-center">
+                      <div className="w-3 h-3 rounded-full mr-2 relative bg-gray-300">
+                        <div className="w-1.5 h-3 bg-gray-700 rounded-l-full"></div>
+                      </div>
+                      <span>(Medium)</span>
+                    </td>
+                  </tr>
+                  <tr className="border-b border-gray-300">
+                    <td className="py-2 px-3 border-r border-gray-300">Quality of Life Impact</td>
+                    <td className="py-2 px-3 flex items-center">
+                      <div className="w-3 h-3 rounded-full bg-gray-700 mr-2"></div>
+                      <span>(High)</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 px-3 border-r border-gray-300">Motivation</td>
+                    <td className="py-2 px-3 flex items-center">
+                      <div className="w-3 h-3 rounded-full border border-gray-700 bg-white mr-2"></div>
+                      <span>(Low)</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
 
           {/* AI Summary Section with Dark Background and High Contrast */}
           <div className="col-span-3 mt-4 pt-2 border-t border-gray-100 relative">

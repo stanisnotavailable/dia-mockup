@@ -134,10 +134,10 @@ export default function Dashboard() {
               <div className={`grid grid-cols-1 ${showUncategorized ? 'lg:grid-cols-5' : 'lg:grid-cols-4'} gap-3`}>
                 {/* Fixed set of categories, each with its own column */}
                 {[
-                  "Logistics Challenge",
-                  "Motivation",
                   "Healthcare Engagement",
-                  "Quality of Life",
+                  "Logistical Challenge",
+                  "Quality of Life Impact",
+                  "Motivation",
                 ].map((categoryName, idx) => {
                   // Find the category data
                   const categoryData = profile.categories?.find(
@@ -147,13 +147,13 @@ export default function Dashboard() {
 
                   // Define colors for each category
                   const colors = {
-                    "Logistics Challenge":
+                    "Logistical Challenge":
                       "bg-[#3992FE]/10 text-[#3992FE] border-[#3992FE]/30",
                     "Motivation":
                       "bg-[#12A54D]/10 text-[#12A54D] border-[#12A54D]/30",
                     "Healthcare Engagement":
                       "bg-[#B675FF]/10 text-[#B675FF] border-[#B675FF]/30",
-                    "Quality of Life":
+                    "Quality of Life Impact":
                       "bg-[#EF6C15]/10 text-[#EF6C15] border-[#EF6C15]/30",
                   };
 
@@ -242,7 +242,38 @@ export default function Dashboard() {
                     >
                       {/* Category header with name and score */}
                       <div className="flex justify-between items-center mb-1">
-                        <h4 className="text-base font-medium">{categoryName}</h4>
+                        <div className="flex items-center">
+                          <h4 className="text-base font-medium mr-2">{categoryName}</h4>
+                          {/* Score indicator based on category */}
+                          {categoryName === "Healthcare Engagement" && (
+                            <div className="flex items-center">
+                              <div className="w-3 h-3 rounded-full mr-1 relative bg-gray-300">
+                                <div className="w-1.5 h-3 bg-gray-700 rounded-l-full"></div>
+                              </div>
+                              <span className="text-xs text-gray-500">(Medium)</span>
+                            </div>
+                          )}
+                          {categoryName === "Logistical Challenge" && (
+                            <div className="flex items-center">
+                              <div className="w-3 h-3 rounded-full mr-1 relative bg-gray-300">
+                                <div className="w-1.5 h-3 bg-gray-700 rounded-l-full"></div>
+                              </div>
+                              <span className="text-xs text-gray-500">(Medium)</span>
+                            </div>
+                          )}
+                          {categoryName === "Quality of Life Impact" && (
+                            <div className="flex items-center">
+                              <div className="w-3 h-3 rounded-full bg-gray-700 mr-1"></div>
+                              <span className="text-xs text-gray-500">(High)</span>
+                            </div>
+                          )}
+                          {categoryName === "Motivation" && (
+                            <div className="flex items-center">
+                              <div className="w-3 h-3 rounded-full border border-gray-700 bg-white mr-1"></div>
+                              <span className="text-xs text-gray-500">(Low)</span>
+                            </div>
+                          )}
+                        </div>
                         {/* Score is now hidden */}
                       </div>
 

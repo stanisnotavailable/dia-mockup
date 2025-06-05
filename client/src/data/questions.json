@@ -2,123 +2,1115 @@
   "allQuestions": [
     {
       "id": "q1",
-      "name": "Frequent clinic visits required",
-      "score": 1.0
+      "name": "I haven't started any therapy yet.",
+      "score": 1.0,
+      "canBeInCategories": ["Healthcare Engagement"],
+      "cannotBeInCategories": ["QoL Impact", "Logistical Challenge"],
+      "initialProfile": ["profile2"]
     },
     {
       "id": "q2",
-      "name": "Easy medication scheduling",
-      "score": 1.0
+      "name": "I started treatment recently but not consistently.",
+      "score": 1.0,
+      "canBeInCategories": ["Healthcare Engagement", "QoL Impact"],
+      "cannotBeInCategories": ["Motivation"],
+      "initialProfile": ["profile2"]
     },
     {
       "id": "q3",
-      "name": "Strong motivation for recovery",
-      "score": 1.0
+      "name": "I received radiation therapy.",
+      "score": 1.0,
+      "canBeInCategories": ["QoL Impact"],
+      "cannotBeInCategories": ["Motivation"],
+      "initialProfile": ["profile1"]
     },
     {
       "id": "q4",
-      "name": "Low treatment adherence",
-      "score": 1.0
+      "name": "I had surgery followed by chemotherapy.",
+      "score": 1.0,
+      "canBeInCategories": ["QoL Impact", "Logistical Challenge"],
+      "cannotBeInCategories": ["Motivation"],
+      "initialProfile": ["profile1"]
     },
     {
       "id": "q5",
-      "name": "Active healthcare communication",
-      "score": 1.0
+      "name": "I completed chemotherapy only.",
+      "score": 1.0,
+      "canBeInCategories": ["QoL Impact"],
+      "cannotBeInCategories": ["Motivation"],
+      "initialProfile": ["profile1"]
     },
     {
       "id": "q6",
-      "name": "Avoids medical appointments",
-      "score": 1.0
+      "name": "I had radiation and temozolomide.",
+      "score": 1.0,
+      "canBeInCategories": ["QoL Impact", "Logistical Challenge"],
+      "cannotBeInCategories": ["Motivation"],
+      "initialProfile": ["profile1"]
     },
     {
       "id": "q7",
-      "name": "Can't sleep due to symptoms",
-      "score": 1.0
+      "name": "I went through one round of treatment and paused.",
+      "score": 1.0,
+      "canBeInCategories": ["QoL Impact", "Healthcare Engagement"],
+      "cannotBeInCategories": ["Motivation"],
+      "initialProfile": ["profile1"]
     },
     {
       "id": "q8",
-      "name": "Good sleep quality",
-      "score": 1.0
+      "name": "I tried multiple treatments, but none worked well.",
+      "score": 1.0,
+      "canBeInCategories": ["QoL Impact", "Motivation"],
+      "cannotBeInCategories": ["Logistical Challenge"],
+      "initialProfile": ["profile3"]
     },
     {
       "id": "q9",
-      "name": "Complex travel requirements",
-      "score": 1.0
+      "name": "I was treated, but I don't know the details.",
+      "score": 1.0,
+      "canBeInCategories": ["Healthcare Engagement"],
+      "cannotBeInCategories": ["QoL Impact", "Motivation"],
+      "initialProfile": ["profile2"]
     },
     {
       "id": "q10",
-      "name": "Local treatment available",
-      "score": 1.0
+      "name": "I was removed from therapy due to side effects.",
+      "score": 1.0,
+      "canBeInCategories": ["QoL Impact"],
+      "cannotBeInCategories": ["Healthcare Engagement", "Motivation"],
+      "initialProfile": ["profile1"]
     },
     {
       "id": "q11",
-      "name": "Hopeful about treatment outcome",
-      "score": 1.0
+      "name": "I've just started, so no therapy yet.",
+      "score": 1.0,
+      "canBeInCategories": ["Healthcare Engagement"],
+      "cannotBeInCategories": ["QoL Impact", "Motivation"],
+      "initialProfile": ["profile2"]
     },
     {
       "id": "q12",
-      "name": "Skeptical about trial benefits",
-      "score": 1.0
+      "name": "I was on radiation for a few weeks.",
+      "score": 1.0,
+      "canBeInCategories": ["QoL Impact"],
+      "cannotBeInCategories": ["Motivation"],
+      "initialProfile": ["profile1"]
     },
     {
       "id": "q13",
-      "name": "Engaged with research team",
-      "score": 1.0
+      "name": "I've done surgery and chemotherapy for a few months.",
+      "score": 1.0,
+      "canBeInCategories": ["QoL Impact", "Logistical Challenge"],
+      "cannotBeInCategories": ["Motivation"],
+      "initialProfile": ["profile1"]
     },
     {
       "id": "q14",
-      "name": "Limited healthcare interaction",
-      "score": 1.0
+      "name": "I was treated with temozolomide over several months.",
+      "score": 1.0,
+      "canBeInCategories": ["QoL Impact"],
+      "cannotBeInCategories": ["Motivation"],
+      "initialProfile": ["profile1"]
     },
     {
       "id": "q15",
-      "name": "Treatment fatigue from side effects",
-      "score": 1.0
+      "name": "I only received short-term palliative treatment.",
+      "score": 1.0,
+      "canBeInCategories": ["QoL Impact"],
+      "cannotBeInCategories": ["Logistical Challenge"],
+      "initialProfile": ["profile1"]
     },
     {
       "id": "q16",
-      "name": "Manageable side effects",
-      "score": 1.0
+      "name": "I tried different therapies for over a year.",
+      "score": 1.0,
+      "canBeInCategories": ["QoL Impact", "Logistical Challenge"],
+      "cannotBeInCategories": ["Motivation"],
+      "initialProfile": ["profile1"]
     },
     {
       "id": "q17",
-      "name": "Multiple coordination challenges",
-      "score": 1.0
+      "name": "I received therapy but don't recall the length.",
+      "score": 1.0,
+      "canBeInCategories": ["Healthcare Engagement"],
+      "cannotBeInCategories": ["Motivation", "Logistical Challenge"],
+      "initialProfile": ["profile2"]
     },
     {
       "id": "q18",
-      "name": "Simple logistics",
-      "score": 1.0
+      "name": "I'm still on active treatment.",
+      "score": 1.0,
+      "canBeInCategories": ["QoL Impact", "Healthcare Engagement"],
+      "cannotBeInCategories": ["Motivation"],
+      "initialProfile": ["profile1"]
     },
     {
       "id": "q19",
-      "name": "Family support for participation",
-      "score": 1.0
+      "name": "I had a break between treatment cycles.",
+      "score": 1.0,
+      "canBeInCategories": ["QoL Impact"],
+      "cannotBeInCategories": ["Healthcare Engagement", "Motivation"],
+      "initialProfile": ["profile2"]
     },
     {
       "id": "q20",
-      "name": "Lack of motivation",
-      "score": 1.0
+      "name": "I was removed early due to progression or toxicity.",
+      "score": 1.0,
+      "canBeInCategories": ["QoL Impact"],
+      "cannotBeInCategories": ["Healthcare Engagement"],
+      "initialProfile": ["profile1"]
     },
     {
       "id": "q21",
-      "name": "Proactive health management",
-      "score": 1.0
+      "name": "I didn't really have time to discuss anything.",
+      "score": 1.0,
+      "canBeInCategories": ["Healthcare Engagement"],
+      "cannotBeInCategories": ["QoL Impact", "Logistical Challenge"],
+      "initialProfile": ["profile2"]
     },
     {
       "id": "q22",
-      "name": "Passive healthcare approach",
-      "score": 1.0
+      "name": "I had a quick chat, under 30 minutes.",
+      "score": 1.0,
+      "canBeInCategories": ["Healthcare Engagement"],
+      "cannotBeInCategories": ["Motivation"],
+      "initialProfile": ["profile2"]
     },
     {
       "id": "q23",
-      "name": "Significant pain impacting daily life",
-      "score": 1.0
+      "name": "I spent around an hour with my doctor.",
+      "score": 1.0,
+      "canBeInCategories": ["Healthcare Engagement"],
+      "cannotBeInCategories": ["Logistical Challenge"],
+      "initialProfile": ["profile1"]
     },
     {
       "id": "q24",
-      "name": "Good physical functioning",
-      "score": 1.0
+      "name": "I had one full appointment to go through the options.",
+      "score": 1.0,
+      "canBeInCategories": ["Healthcare Engagement"],
+      "cannotBeInCategories": ["Motivation"],
+      "initialProfile": ["profile1"]
+    },
+    {
+      "id": "q25",
+      "name": "I had multiple conversations over a few weeks.",
+      "score": 1.0,
+      "canBeInCategories": ["Healthcare Engagement"],
+      "cannotBeInCategories": ["Motivation"],
+      "initialProfile": ["profile1"]
+    },
+    {
+      "id": "q26",
+      "name": "I was given time to ask questions after the plan was proposed.",
+      "score": 1.0,
+      "canBeInCategories": ["Healthcare Engagement"],
+      "cannotBeInCategories": ["Logistical Challenge"],
+      "initialProfile": ["profile1"]
+    },
+    {
+      "id": "q27",
+      "name": "I got some basic information, but no discussion.",
+      "score": 1.0,
+      "canBeInCategories": ["Healthcare Engagement"],
+      "cannotBeInCategories": ["QoL Impact"],
+      "initialProfile": ["profile2"]
+    },
+    {
+      "id": "q28",
+      "name": "I did all my own research online.",
+      "score": 1.0,
+      "canBeInCategories": ["Healthcare Engagement"],
+      "cannotBeInCategories": ["Logistical Challenge"],
+      "initialProfile": ["profile3"]
+    },
+    {
+      "id": "q29",
+      "name": "I relied on my family or caregiver to understand the options.",
+      "score": 1.0,
+      "canBeInCategories": ["Healthcare Engagement"],
+      "cannotBeInCategories": ["Motivation"],
+      "initialProfile": ["profile2"]
+    },
+    {
+      "id": "q30",
+      "name": "I was overwhelmed and didn't fully understand the choices.",
+      "score": 1.0,
+      "canBeInCategories": ["QoL Impact", "Healthcare Engagement"],
+      "cannotBeInCategories": ["Logistical Challenge"],
+      "initialProfile": ["profile2"]
+    },
+    {
+      "id": "q31",
+      "name": "Just 1 or 2 appointments per month.",
+      "score": 1.0,
+      "canBeInCategories": ["Logistical Challenge"],
+      "cannotBeInCategories": ["Motivation"],
+      "initialProfile": ["profile2"]
+    },
+    {
+      "id": "q32",
+      "name": "Around 3 per month, fairly manageable.",
+      "score": 1.0,
+      "canBeInCategories": ["Logistical Challenge"],
+      "cannotBeInCategories": ["Motivation"],
+      "initialProfile": ["profile2"]
+    },
+    {
+      "id": "q33",
+      "name": "4 appointments a month, consistently.",
+      "score": 1.0,
+      "canBeInCategories": ["Logistical Challenge"],
+      "cannotBeInCategories": ["Motivation"],
+      "initialProfile": ["profile1"]
+    },
+    {
+      "id": "q34",
+      "name": "More than 4 appointments a month.",
+      "score": 1.0,
+      "canBeInCategories": ["Logistical Challenge", "Healthcare Engagement"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile1"]
+    },
+    {
+      "id": "q35",
+      "name": "Weekly appointments, sometimes more.",
+      "score": 1.0,
+      "canBeInCategories": ["Logistical Challenge"],
+      "cannotBeInCategories": ["Motivation"],
+      "initialProfile": ["profile1"]
+    },
+    {
+      "id": "q36",
+      "name": "It varied—some months were intense, others quiet.",
+      "score": 1.0,
+      "canBeInCategories": ["Logistical Challenge", "Healthcare Engagement"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile2"]
+    },
+    {
+      "id": "q37",
+      "name": "I had very few appointments overall.",
+      "score": 1.0,
+      "canBeInCategories": ["Logistical Challenge"],
+      "cannotBeInCategories": ["QoL Impact"],
+      "initialProfile": ["profile3"]
+    },
+    {
+      "id": "q38",
+      "name": "I was in the hospital often.",
+      "score": 1.0,
+      "canBeInCategories": ["QoL Impact", "Logistical Challenge"],
+      "cannotBeInCategories": ["Motivation"],
+      "initialProfile": ["profile1"]
+    },
+    {
+      "id": "q39",
+      "name": "I've only had one appointment so far.",
+      "score": 1.0,
+      "canBeInCategories": ["Healthcare Engagement"],
+      "cannotBeInCategories": ["Motivation"],
+      "initialProfile": ["profile2"]
+    },
+    {
+      "id": "q40",
+      "name": "I don't remember or never tracked it closely.",
+      "score": 1.0,
+      "canBeInCategories": ["Healthcare Engagement"],
+      "cannotBeInCategories": ["Logistical Challenge"],
+      "initialProfile": ["profile2"]
+    },
+    {
+      "id": "q41",
+      "name": "Less than 30 minutes.",
+      "score": 1.0,
+      "canBeInCategories": ["Logistical Challenge"],
+      "cannotBeInCategories": ["QoL Impact"],
+      "initialProfile": ["profile3"]
+    },
+    {
+      "id": "q42",
+      "name": "About an hour each way.",
+      "score": 1.0,
+      "canBeInCategories": ["Logistical Challenge"],
+      "cannotBeInCategories": ["Motivation"],
+      "initialProfile": ["profile1"]
+    },
+    {
+      "id": "q43",
+      "name": "Over an hour, but manageable.",
+      "score": 1.0,
+      "canBeInCategories": ["Logistical Challenge"],
+      "cannotBeInCategories": ["Motivation"],
+      "initialProfile": ["profile1"]
+    },
+    {
+      "id": "q44",
+      "name": "More than two hours door to door.",
+      "score": 1.0,
+      "canBeInCategories": ["Logistical Challenge"],
+      "cannotBeInCategories": ["Motivation"],
+      "initialProfile": ["profile1"]
+    },
+    {
+      "id": "q45",
+      "name": "I had to stay overnight near the facility.",
+      "score": 1.0,
+      "canBeInCategories": ["Logistical Challenge", "QoL Impact"],
+      "cannotBeInCategories": ["Healthcare Engagement"],
+      "initialProfile": ["profile1"]
+    },
+    {
+      "id": "q46",
+      "name": "Travel was exhausting and hard to organize.",
+      "score": 1.0,
+      "canBeInCategories": ["Logistical Challenge", "QoL Impact"],
+      "cannotBeInCategories": ["Healthcare Engagement"],
+      "initialProfile": ["profile1"]
+    },
+    {
+      "id": "q47",
+      "name": "I live nearby, so travel wasn't a problem.",
+      "score": 1.0,
+      "canBeInCategories": ["Logistical Challenge"],
+      "cannotBeInCategories": ["QoL Impact"],
+      "initialProfile": ["profile2"]
+    },
+    {
+      "id": "q48",
+      "name": "It depended on the appointment and location.",
+      "score": 1.0,
+      "canBeInCategories": ["Logistical Challenge"],
+      "cannotBeInCategories": ["Motivation"],
+      "initialProfile": ["profile2"]
+    },
+    {
+      "id": "q49",
+      "name": "I had to rely on others to get me there.",
+      "score": 1.0,
+      "canBeInCategories": ["Logistical Challenge"],
+      "cannotBeInCategories": ["Healthcare Engagement"],
+      "initialProfile": ["profile2"]
+    },
+    {
+      "id": "q50",
+      "name": "I haven't had to travel for treatment yet.",
+      "score": 1.0,
+      "canBeInCategories": ["Healthcare Engagement"],
+      "cannotBeInCategories": ["QoL Impact"],
+      "initialProfile": ["profile2"]
+    },
+    {
+      "id": "q51",
+      "name": "Waiting times were too long.",
+      "score": 1.0,
+      "canBeInCategories": ["Logistical Challenge"],
+      "cannotBeInCategories": ["Motivation"],
+      "initialProfile": ["profile2"]
+    },
+    {
+      "id": "q52",
+      "name": "The appointments felt rushed.",
+      "score": 1.0,
+      "canBeInCategories": ["Healthcare Engagement"],
+      "cannotBeInCategories": ["Motivation"],
+      "initialProfile": ["profile1"]
+    },
+    {
+      "id": "q53",
+      "name": "The travel was the worst part.",
+      "score": 1.0,
+      "canBeInCategories": ["Logistical Challenge"],
+      "cannotBeInCategories": ["Motivation"],
+      "initialProfile": ["profile1"]
+    },
+    {
+      "id": "q54",
+      "name": "Too many forms and check-ins.",
+      "score": 1.0,
+      "canBeInCategories": ["Logistical Challenge"],
+      "cannotBeInCategories": ["Motivation"],
+      "initialProfile": ["profile1"]
+    },
+    {
+      "id": "q55",
+      "name": "I didn't feel heard by the staff.",
+      "score": 1.0,
+      "canBeInCategories": ["Healthcare Engagement"],
+      "cannotBeInCategories": ["Logistical Challenge"],
+      "initialProfile": ["profile1"]
+    },
+    {
+      "id": "q56",
+      "name": "It was hard to coordinate with my work/life.",
+      "score": 1.0,
+      "canBeInCategories": ["Logistical Challenge"],
+      "cannotBeInCategories": ["Motivation"],
+      "initialProfile": ["profile2"]
+    },
+    {
+      "id": "q57",
+      "name": "I didn't dislike anything in particular.",
+      "score": 1.0,
+      "canBeInCategories": ["QoL Impact"],
+      "cannotBeInCategories": ["Logistical Challenge"],
+      "initialProfile": ["profile2"]
+    },
+    {
+      "id": "q58",
+      "name": "The environment made me anxious.",
+      "score": 1.0,
+      "canBeInCategories": ["QoL Impact"],
+      "cannotBeInCategories": ["Logistical Challenge"],
+      "initialProfile": ["profile2"]
+    },
+    {
+      "id": "q59",
+      "name": "Having to go alone was stressful.",
+      "score": 1.0,
+      "canBeInCategories": ["QoL Impact"],
+      "cannotBeInCategories": ["Logistical Challenge"],
+      "initialProfile": ["profile2"]
+    },
+    {
+      "id": "q60",
+      "name": "Everything about it felt overwhelming.",
+      "score": 1.0,
+      "canBeInCategories": ["QoL Impact", "Logistical Challenge"],
+      "cannotBeInCategories": ["Healthcare Engagement"],
+      "initialProfile": ["profile2"]
+    },
+    {
+      "id": "q61",
+      "name": "No, it was never mentioned.",
+      "score": 1.0,
+      "canBeInCategories": ["Healthcare Engagement"],
+      "cannotBeInCategories": ["Motivation"],
+      "initialProfile": ["profile2"]
+    },
+    {
+      "id": "q62",
+      "name": "I heard about trials from someone else, not my doctor.",
+      "score": 1.0,
+      "canBeInCategories": ["Healthcare Engagement"],
+      "cannotBeInCategories": ["Motivation"],
+      "initialProfile": ["profile2"]
+    },
+    {
+      "id": "q63",
+      "name": "It was mentioned, but not discussed in detail.",
+      "score": 1.0,
+      "canBeInCategories": ["Healthcare Engagement"],
+      "cannotBeInCategories": ["Logistical Challenge"],
+      "initialProfile": ["profile2"]
+    },
+    {
+      "id": "q64",
+      "name": "Yes, they explained the options clearly.",
+      "score": 1.0,
+      "canBeInCategories": ["Healthcare Engagement"],
+      "cannotBeInCategories": ["Logistical Challenge"],
+      "initialProfile": ["profile1"]
+    },
+    {
+      "id": "q65",
+      "name": "It came up once but wasn't revisited.",
+      "score": 1.0,
+      "canBeInCategories": ["Healthcare Engagement"],
+      "cannotBeInCategories": ["Logistical Challenge"],
+      "initialProfile": ["profile1"]
+    },
+    {
+      "id": "q66",
+      "name": "I asked about trials, but didn't get much information.",
+      "score": 1.0,
+      "canBeInCategories": ["Healthcare Engagement"],
+      "cannotBeInCategories": ["Motivation"],
+      "initialProfile": ["profile2"]
+    },
+    {
+      "id": "q67",
+      "name": "I was told I didn't qualify.",
+      "score": 1.0,
+      "canBeInCategories": ["Healthcare Engagement", "QoL Impact"],
+      "cannotBeInCategories": ["Motivation"],
+      "initialProfile": ["profile2"]
+    },
+    {
+      "id": "q68",
+      "name": "I wasn't interested, so it didn't come up.",
+      "score": 1.0,
+      "canBeInCategories": ["Motivation"],
+      "cannotBeInCategories": ["Logistical Challenge"],
+      "initialProfile": ["profile3"]
+    },
+    {
+      "id": "q69",
+      "name": "I looked into trials myself.",
+      "score": 1.0,
+      "canBeInCategories": ["Healthcare Engagement", "Motivation"],
+      "cannotBeInCategories": ["QoL Impact"],
+      "initialProfile": ["profile3"]
+    },
+    {
+      "id": "q70",
+      "name": "I can't recall if it was discussed.",
+      "score": 1.0,
+      "canBeInCategories": ["Healthcare Engagement"],
+      "cannotBeInCategories": ["Motivation"],
+      "initialProfile": ["profile2"]
+    },
+    {
+      "id": "q71",
+      "name": "No impact at all.",
+      "score": 1.0,
+      "canBeInCategories": ["QoL Impact"],
+      "cannotBeInCategories": ["Motivation"],
+      "initialProfile": ["profile2"]
+    },
+    {
+      "id": "q72",
+      "name": "Some minor costs, but manageable.",
+      "score": 1.0,
+      "canBeInCategories": ["QoL Impact"],
+      "cannotBeInCategories": ["Logistical Challenge"],
+      "initialProfile": ["profile3"]
+    },
+    {
+      "id": "q73",
+      "name": "Moderate impact—we adjusted our budget.",
+      "score": 1.0,
+      "canBeInCategories": ["QoL Impact"],
+      "cannotBeInCategories": ["Motivation"],
+      "initialProfile": ["profile3"]
+    },
+    {
+      "id": "q74",
+      "name": "It was hard, but we got through it.",
+      "score": 1.0,
+      "canBeInCategories": ["QoL Impact"],
+      "cannotBeInCategories": ["Motivation"],
+      "initialProfile": ["profile3"]
+    },
+    {
+      "id": "q75",
+      "name": "Significant burden on my finances.",
+      "score": 1.0,
+      "canBeInCategories": ["QoL Impact"],
+      "cannotBeInCategories": ["Motivation"],
+      "initialProfile": ["profile3"]
+    },
+    {
+      "id": "q76",
+      "name": "I had to stop working temporarily.",
+      "score": 1.0,
+      "canBeInCategories": ["QoL Impact"],
+      "cannotBeInCategories": ["Motivation"],
+      "initialProfile": ["profile3"]
+    },
+    {
+      "id": "q77",
+      "name": "I needed help from family or friends.",
+      "score": 1.0,
+      "canBeInCategories": ["QoL Impact"],
+      "cannotBeInCategories": ["Motivation"],
+      "initialProfile": ["profile3"]
+    },
+    {
+      "id": "q78",
+      "name": "Insurance helped, but it was still expensive.",
+      "score": 1.0,
+      "canBeInCategories": ["QoL Impact"],
+      "cannotBeInCategories": ["Logistical Challenge"],
+      "initialProfile": ["profile3"]
+    },
+    {
+      "id": "q79",
+      "name": "I avoided some care due to cost.",
+      "score": 1.0,
+      "canBeInCategories": ["QoL Impact", "Motivation"],
+      "cannotBeInCategories": ["Logistical Challenge"],
+      "initialProfile": ["profile3"]
+    },
+    {
+      "id": "q80",
+      "name": "I don't know yet—it's still unfolding.",
+      "score": 1.0,
+      "canBeInCategories": ["QoL Impact"],
+      "cannotBeInCategories": ["Motivation"],
+      "initialProfile": ["profile3"]
+    },
+    {
+      "id": "q81",
+      "name": "No side effects at all.",
+      "score": 1.0,
+      "canBeInCategories": ["QoL Impact"],
+      "cannotBeInCategories": ["Healthcare Engagement"],
+      "initialProfile": ["profile3"]
+    },
+    {
+      "id": "q82",
+      "name": "Mild side effects—manageable.",
+      "score": 1.0,
+      "canBeInCategories": ["QoL Impact"],
+      "cannotBeInCategories": ["Motivation"],
+      "initialProfile": ["profile3"]
+    },
+    {
+      "id": "q83",
+      "name": "Fatigue was a major issue.",
+      "score": 1.0,
+      "canBeInCategories": ["QoL Impact"],
+      "cannotBeInCategories": ["Motivation"],
+      "initialProfile": ["profile3"]
+    },
+    {
+      "id": "q84",
+      "name": "Nausea or vomiting affected me.",
+      "score": 1.0,
+      "canBeInCategories": ["QoL Impact"],
+      "cannotBeInCategories": ["Motivation"],
+      "initialProfile": ["profile3"]
+    },
+    {
+      "id": "q85",
+      "name": "I had cognitive or emotional changes.",
+      "score": 1.0,
+      "canBeInCategories": ["QoL Impact"],
+      "cannotBeInCategories": ["Logistical Challenge"],
+      "initialProfile": ["profile3"]
+    },
+    {
+      "id": "q86",
+      "name": "My appetite or sleep was disrupted.",
+      "score": 1.0,
+      "canBeInCategories": ["QoL Impact"],
+      "cannotBeInCategories": ["Healthcare Engagement"],
+      "initialProfile": ["profile3"]
+    },
+    {
+      "id": "q87",
+      "name": "I experienced long-term effects.",
+      "score": 1.0,
+      "canBeInCategories": ["QoL Impact"],
+      "cannotBeInCategories": ["Motivation"],
+      "initialProfile": ["profile3"]
+    },
+    {
+      "id": "q88",
+      "name": "Side effects varied by treatment.",
+      "score": 1.0,
+      "canBeInCategories": ["QoL Impact"],
+      "cannotBeInCategories": ["Motivation"],
+      "initialProfile": ["profile3"]
+    },
+    {
+      "id": "q89",
+      "name": "The side effects were worse than the disease.",
+      "score": 1.0,
+      "canBeInCategories": ["QoL Impact"],
+      "cannotBeInCategories": ["Motivation"],
+      "initialProfile": ["profile3"]
+    },
+    {
+      "id": "q90",
+      "name": "I didn't notice or can't recall any.",
+      "score": 1.0,
+      "canBeInCategories": ["Healthcare Engagement"],
+      "cannotBeInCategories": ["Motivation"],
+      "initialProfile": ["profile2"]
+    },
+    {
+      "id": "q91",
+      "name": "I'd want a chance at a cure.",
+      "score": 1.0,
+      "canBeInCategories": ["Motivation"],
+      "cannotBeInCategories": ["Logistical Challenge"],
+      "initialProfile": ["profile3"]
+    },
+    {
+      "id": "q92",
+      "name": "I'd be looking for something to improve my quality of life.",
+      "score": 1.0,
+      "canBeInCategories": ["Motivation", "QoL Impact"],
+      "cannotBeInCategories": ["Logistical Challenge"],
+      "initialProfile": ["profile3"]
+    },
+    {
+      "id": "q93",
+      "name": "I'd consider it if it could help me live longer.",
+      "score": 1.0,
+      "canBeInCategories": ["Motivation"],
+      "cannotBeInCategories": ["Logistical Challenge"],
+      "initialProfile": ["profile3"]
+    },
+    {
+      "id": "q94",
+      "name": "I'd be interested if it offered better care than I'm getting now.",
+      "score": 1.0,
+      "canBeInCategories": ["Motivation"],
+      "cannotBeInCategories": ["Logistical Challenge"],
+      "initialProfile": ["profile3"]
+    },
+    {
+      "id": "q95",
+      "name": "I'd want to help others in the future by contributing to progress.",
+      "score": 1.0,
+      "canBeInCategories": ["Motivation"],
+      "cannotBeInCategories": ["Logistical Challenge"],
+      "initialProfile": ["profile3"]
+    },
+    {
+      "id": "q96",
+      "name": "I'd feel more open to it if my medical team supported the idea.",
+      "score": 1.0,
+      "canBeInCategories": ["Motivation", "Healthcare Engagement"],
+      "cannotBeInCategories": ["Logistical Challenge"],
+      "initialProfile": ["profile3"]
+    },
+    {
+      "id": "q97",
+      "name": "I wouldn't consider anything beyond my current treatment.",
+      "score": 1.0,
+      "canBeInCategories": ["Motivation"],
+      "cannotBeInCategories": ["Logistical Challenge"],
+      "initialProfile": ["profile2"]
+    },
+    {
+      "id": "q98",
+      "name": "I'd want something that requires fewer hospital visits.",
+      "score": 1.0,
+      "canBeInCategories": ["Motivation", "Logistical Challenge"],
+      "cannotBeInCategories": ["QoL Impact"],
+      "initialProfile": ["profile2"]
+    },
+    {
+      "id": "q99",
+      "name": "If my current treatment stops working.",
+      "score": 1.0,
+      "canBeInCategories": ["Motivation"],
+      "cannotBeInCategories": ["Logistical Challenge"],
+      "initialProfile": ["profile2"]
+    },
+    {
+      "id": "q100",
+      "name": "A recommendation from my doctor.",
+      "score": 1.0,
+      "canBeInCategories": ["Motivation", "Healthcare Engagement"],
+      "cannotBeInCategories": ["Logistical Challenge"],
+      "initialProfile": ["profile2"]
+    },
+    {
+      "id": "q101",
+      "name": "If my sleep and appetite were back to normal.",
+      "score": 1.0,
+      "canBeInCategories": ["Uncategorized"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile1", "profile2", "profile3"]
+    },
+    {
+      "id": "q102",
+      "name": "If treatment side effects were less severe.",
+      "score": 1.0,
+      "canBeInCategories": ["Uncategorized"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile1", "profile2", "profile3"]
+    },
+    {
+      "id": "q103",
+      "name": "If I didn't have to stop working.",
+      "score": 1.0,
+      "canBeInCategories": ["Uncategorized"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile1", "profile2", "profile3"]
+    },
+    {
+      "id": "q104",
+      "name": "If I felt more emotionally supported.",
+      "score": 1.0,
+      "canBeInCategories": ["Uncategorized"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile1", "profile2", "profile3"]
+    },
+    {
+      "id": "q105",
+      "name": "If the treatment didn't affect my mood so much.",
+      "score": 1.0,
+      "canBeInCategories": ["Uncategorized"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile1", "profile2", "profile3"]
+    },
+    {
+      "id": "q106",
+      "name": "If I had better access to mental health care.",
+      "score": 1.0,
+      "canBeInCategories": ["Uncategorized"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile1", "profile2", "profile3"]
+    },
+    {
+      "id": "q107",
+      "name": "If I had someone to talk to during treatment.",
+      "score": 1.0,
+      "canBeInCategories": ["Uncategorized"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile1", "profile2", "profile3"]
+    },
+    {
+      "id": "q108",
+      "name": "If I could do more of my daily routines.",
+      "score": 1.0,
+      "canBeInCategories": ["Uncategorized"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile1", "profile2", "profile3"]
+    },
+    {
+      "id": "q109",
+      "name": "If my pain and discomfort were better managed.",
+      "score": 1.0,
+      "canBeInCategories": ["Uncategorized"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile1", "profile2", "profile3"]
+    },
+    {
+      "id": "q110",
+      "name": "If I didn't have to travel so far.",
+      "score": 1.0,
+      "canBeInCategories": ["Uncategorized"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile1", "profile2", "profile3"]
+    },
+    {
+      "id": "q111",
+      "name": "If my appointments were all on one day.",
+      "score": 1.0,
+      "canBeInCategories": ["Uncategorized"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile1", "profile2", "profile3"]
+    },
+    {
+      "id": "q112",
+      "name": "If I could get some of the care remotely.",
+      "score": 1.0,
+      "canBeInCategories": ["Uncategorized"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile1", "profile2", "profile3"]
+    },
+    {
+      "id": "q113",
+      "name": "If I didn't have to wait so long for results.",
+      "score": 1.0,
+      "canBeInCategories": ["Uncategorized"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile1", "profile2", "profile3"]
+    },
+    {
+      "id": "q114",
+      "name": "If someone helped organize everything.",
+      "score": 1.0,
+      "canBeInCategories": ["Uncategorized"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile1", "profile2", "profile3"]
+    },
+    {
+      "id": "q115",
+      "name": "If there were fewer forms and less paperwork.",
+      "score": 1.0,
+      "canBeInCategories": ["Uncategorized"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile1", "profile2", "profile3"]
+    },
+    {
+      "id": "q116",
+      "name": "If visits were shorter and more efficient.",
+      "score": 1.0,
+      "canBeInCategories": ["Uncategorized"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile1", "profile2", "profile3"]
+    },
+    {
+      "id": "q117",
+      "name": "If I didn't have to rely on others for transport.",
+      "score": 1.0,
+      "canBeInCategories": ["Uncategorized"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile1", "profile2", "profile3"]
+    },
+    {
+      "id": "q118",
+      "name": "If the clinic was closer to home.",
+      "score": 1.0,
+      "canBeInCategories": ["Uncategorized"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile1", "profile2", "profile3"]
+    },
+    {
+      "id": "q119",
+      "name": "If I had a case manager or care navigator.",
+      "score": 1.0,
+      "canBeInCategories": ["Uncategorized"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile1", "profile2", "profile3"]
+    },
+    {
+      "id": "q120",
+      "name": "If I had more time with my doctor.",
+      "score": 1.0,
+      "canBeInCategories": ["Uncategorized"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile1", "profile2", "profile3"]
+    },
+    {
+      "id": "q121",
+      "name": "If I better understood my treatment options.",
+      "score": 1.0,
+      "canBeInCategories": ["Uncategorized"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile1", "profile2", "profile3"]
+    },
+    {
+      "id": "q122",
+      "name": "If the doctor explained trials clearly.",
+      "score": 1.0,
+      "canBeInCategories": ["Uncategorized"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile1", "profile2", "profile3"]
+    },
+    {
+      "id": "q123",
+      "name": "If I could ask questions without feeling rushed.",
+      "score": 1.0,
+      "canBeInCategories": ["Uncategorized"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile1", "profile2", "profile3"]
+    },
+    {
+      "id": "q124",
+      "name": "If I felt like part of the decision-making.",
+      "score": 1.0,
+      "canBeInCategories": ["Uncategorized"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile1", "profile2", "profile3"]
+    },
+    {
+      "id": "q125",
+      "name": "If someone explained things in simpler language.",
+      "score": 1.0,
+      "canBeInCategories": ["Uncategorized"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile1", "profile2", "profile3"]
+    },
+    {
+      "id": "q126",
+      "name": "If I had written materials I could review later.",
+      "score": 1.0,
+      "canBeInCategories": ["Uncategorized"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile1", "profile2", "profile3"]
+    },
+    {
+      "id": "q127",
+      "name": "If my concerns were taken seriously.",
+      "score": 1.0,
+      "canBeInCategories": ["Uncategorized"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile1", "profile2", "profile3"]
+    },
+    {
+      "id": "q128",
+      "name": "If I had a chance to explore trial options.",
+      "score": 1.0,
+      "canBeInCategories": ["Uncategorized"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile1", "profile2", "profile3"]
+    },
+    {
+      "id": "q129",
+      "name": "If I was invited to share my goals and preferences.",
+      "score": 1.0,
+      "canBeInCategories": ["Uncategorized"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile1", "profile2", "profile3"]
+    },
+    {
+      "id": "q130",
+      "name": "If I believed it could improve my daily life.",
+      "score": 1.0,
+      "canBeInCategories": ["Uncategorized"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile1", "profile2", "profile3"]
+    },
+    {
+      "id": "q131",
+      "name": "If I trusted the care team's recommendation.",
+      "score": 1.0,
+      "canBeInCategories": ["Uncategorized"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile1", "profile2", "profile3"]
+    },
+    {
+      "id": "q132",
+      "name": "If I had nothing to lose with my current options.",
+      "score": 1.0,
+      "canBeInCategories": ["Uncategorized"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile1", "profile2", "profile3"]
+    },
+    {
+      "id": "q133",
+      "name": "If I felt like I was helping future patients.",
+      "score": 1.0,
+      "canBeInCategories": ["Uncategorized"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile1", "profile2", "profile3"]
+    },
+    {
+      "id": "q134",
+      "name": "If it meant fewer hospital visits.",
+      "score": 1.0,
+      "canBeInCategories": ["Uncategorized"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile1", "profile2", "profile3"]
+    },
+    {
+      "id": "q135",
+      "name": "If it gave me more time with family.",
+      "score": 1.0,
+      "canBeInCategories": ["Uncategorized"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile1", "profile2", "profile3"]
+    },
+    {
+      "id": "q136",
+      "name": "If it meant better symptom control.",
+      "score": 1.0,
+      "canBeInCategories": ["Uncategorized"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile1", "profile2", "profile3"]
+    },
+    {
+      "id": "q137",
+      "name": "If the risks were clearly explained.",
+      "score": 1.0,
+      "canBeInCategories": ["Uncategorized"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile1", "profile2", "profile3"]
+    },
+    {
+      "id": "q138",
+      "name": "If I saw stories of other patients in trials.",
+      "score": 1.0,
+      "canBeInCategories": ["Uncategorized"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile1", "profile2", "profile3"]
+    },
+    {
+      "id": "q139",
+      "name": "If I felt supported through the process.",
+      "score": 1.0,
+      "canBeInCategories": ["Uncategorized"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile1", "profile2", "profile3"]
     }
   ],
   "profile1": {
@@ -172,6 +1164,15 @@
         "questions": [
           "q7",
           "q8"
+        ]
+      },
+      {
+        "name": "Uncategorized",
+        "questions": [
+          "q101", "q102", "q103", "q104", "q105", "q106", "q107", "q108", "q109", "q110",
+          "q111", "q112", "q113", "q114", "q115", "q116", "q117", "q118", "q119", "q120",
+          "q121", "q122", "q123", "q124", "q125", "q126", "q127", "q128", "q129", "q130",
+          "q131", "q132", "q133", "q134", "q135", "q136", "q137", "q138", "q139"
         ]
       }
     ]
@@ -228,6 +1229,15 @@
           "q15",
           "q16"
         ]
+      },
+      {
+        "name": "Uncategorized",
+        "questions": [
+          "q101", "q102", "q103", "q104", "q105", "q106", "q107", "q108", "q109", "q110",
+          "q111", "q112", "q113", "q114", "q115", "q116", "q117", "q118", "q119", "q120",
+          "q121", "q122", "q123", "q124", "q125", "q126", "q127", "q128", "q129", "q130",
+          "q131", "q132", "q133", "q134", "q135", "q136", "q137", "q138", "q139"
+        ]
       }
     ]
   },
@@ -282,6 +1292,15 @@
         "questions": [
           "q23",
           "q24"
+        ]
+      },
+      {
+        "name": "Uncategorized",
+        "questions": [
+          "q101", "q102", "q103", "q104", "q105", "q106", "q107", "q108", "q109", "q110",
+          "q111", "q112", "q113", "q114", "q115", "q116", "q117", "q118", "q119", "q120",
+          "q121", "q122", "q123", "q124", "q125", "q126", "q127", "q128", "q129", "q130",
+          "q131", "q132", "q133", "q134", "q135", "q136", "q137", "q138", "q139"
         ]
       }
     ]

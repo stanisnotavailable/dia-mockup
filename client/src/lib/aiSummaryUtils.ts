@@ -7,6 +7,14 @@ export type SummaryType = 'demographic' | 'compliance' | 'risk' | 'recommendatio
 let previousProfile1State: { qualityOfLifeCount: number; healthcareEngagementCount: number } | null = null;
 let profile1SummaryIndex: number = 0; // Tracks which summary to show (0-4)
 
+// Track previous states for profile 2 categories
+let previousProfile2State: { qualityOfLifeCount: number; healthcareEngagementCount: number; motivationCount: number } | null = null;
+let profile2SummaryIndex: number = 0; // Tracks which summary to show (0-4)
+
+// Track previous states for profile 3 categories
+let previousProfile3State: { qualityOfLifeCount: number; logisticsCount: number; motivationCount: number } | null = null;
+let profile3SummaryIndex: number = 0; // Tracks which summary to show (0-4)
+
 // Generate a summary based on profile data
 export function generateAiSummary(profile: Profile): string {
   if (!profile || !profile.categories) {
@@ -16,6 +24,16 @@ export function generateAiSummary(profile: Profile): string {
   // Special logic for profile 1
   if (profile.id === 'profile1') {
     return getProfile1AiSummary(profile);
+  }
+
+  // Special logic for profile 2
+  if (profile.id === 'profile2') {
+    return getProfile2AiSummary(profile);
+  }
+
+  // Special logic for profile 3
+  if (profile.id === 'profile3') {
+    return getProfile3AiSummary(profile);
   }
 
   // Check if we have a custom summary for this profile ID
@@ -126,6 +144,123 @@ function getProfile1AiSummary(profile: Profile): string {
   return profileSummaries[profile1SummaryIndex] || profileSummaries[0];
 }
 
+// Special AI summary logic for profile 2
+function getProfile2AiSummary(profile: Profile): string {
+  const profileSummaries = getProfile2Summaries();
+  
+  // Get current counts for the relevant categories
+  const qualityOfLifeCategory = profile.categories?.find(cat => cat.name === CATEGORIES.QUALITY);
+  const healthcareEngagementCategory = profile.categories?.find(cat => cat.name === CATEGORIES.HEALTHCARE);
+  const motivationCategory = profile.categories?.find(cat => cat.name === CATEGORIES.MOTIVATION);
+  
+  const currentQualityOfLifeCount = qualityOfLifeCategory?.questions?.length || 0;
+  const currentHealthcareEngagementCount = healthcareEngagementCategory?.questions?.length || 0;
+  const currentMotivationCount = motivationCategory?.questions?.length || 0;
+
+  // Initialize previous state if it doesn't exist
+  if (previousProfile2State === null) {
+    previousProfile2State = {
+      qualityOfLifeCount: currentQualityOfLifeCount,
+      healthcareEngagementCount: currentHealthcareEngagementCount,
+      motivationCount: currentMotivationCount
+    };
+    profile2SummaryIndex = 0; // Default summary
+    return profileSummaries[0];
+  }
+
+  // Check for changes in Healthcare Engagement category
+  if (currentHealthcareEngagementCount > previousProfile2State.healthcareEngagementCount) {
+    // Healthcare Engagement items were added
+    profile2SummaryIndex = 1;
+  } else if (currentHealthcareEngagementCount < previousProfile2State.healthcareEngagementCount) {
+    // Healthcare Engagement items were removed
+    profile2SummaryIndex = 4;
+  }
+
+  // Check for changes in Motivation category
+  if (currentMotivationCount > previousProfile2State.motivationCount) {
+    // Motivation items were added
+    profile2SummaryIndex = 2;
+  } else if (currentMotivationCount < previousProfile2State.motivationCount) {
+    // Motivation items were removed
+    profile2SummaryIndex = 4;
+  }
+
+  // Check for changes in Quality of Life category
+  if (currentQualityOfLifeCount > previousProfile2State.qualityOfLifeCount) {
+    // Quality of Life items were added
+    profile2SummaryIndex = 3;
+  }
+
+  // Update previous state
+  previousProfile2State = {
+    qualityOfLifeCount: currentQualityOfLifeCount,
+    healthcareEngagementCount: currentHealthcareEngagementCount,
+    motivationCount: currentMotivationCount
+  };
+
+  // Return the appropriate summary
+  return profileSummaries[profile2SummaryIndex] || profileSummaries[0];
+}
+
+// Special AI summary logic for profile 3
+function getProfile3AiSummary(profile: Profile): string {
+  const profileSummaries = getProfile3Summaries();
+  
+  // Get current counts for the relevant categories
+  const qualityOfLifeCategory = profile.categories?.find(cat => cat.name === CATEGORIES.QUALITY);
+  const logisticsCategory = profile.categories?.find(cat => cat.name === CATEGORIES.LOGISTICS);
+  const motivationCategory = profile.categories?.find(cat => cat.name === CATEGORIES.MOTIVATION);
+  
+  const currentQualityOfLifeCount = qualityOfLifeCategory?.questions?.length || 0;
+  const currentLogisticsCount = logisticsCategory?.questions?.length || 0;
+  const currentMotivationCount = motivationCategory?.questions?.length || 0;
+
+  // Initialize previous state if it doesn't exist
+  if (previousProfile3State === null) {
+    previousProfile3State = {
+      qualityOfLifeCount: currentQualityOfLifeCount,
+      logisticsCount: currentLogisticsCount,
+      motivationCount: currentMotivationCount
+    };
+    profile3SummaryIndex = 0; // Default summary
+    return profileSummaries[0];
+  }
+
+  // Check for changes in QoL or Logistics categories (combined logic)
+  const qolOrLogisticsAdded = (currentQualityOfLifeCount > previousProfile3State.qualityOfLifeCount) ||
+                              (currentLogisticsCount > previousProfile3State.logisticsCount);
+  const qolOrLogisticsRemoved = (currentQualityOfLifeCount < previousProfile3State.qualityOfLifeCount) ||
+                                (currentLogisticsCount < previousProfile3State.logisticsCount);
+
+  if (qolOrLogisticsAdded) {
+    // QoL or Logistics items were added
+    profile3SummaryIndex = 1;
+  } else if (qolOrLogisticsRemoved) {
+    // QoL or Logistics items were removed
+    profile3SummaryIndex = 2;
+  }
+
+  // Check for changes in Motivation category (takes precedence)
+  if (currentMotivationCount > previousProfile3State.motivationCount) {
+    // Motivation items were added
+    profile3SummaryIndex = 3;
+  } else if (currentMotivationCount < previousProfile3State.motivationCount) {
+    // Motivation items were removed
+    profile3SummaryIndex = 4;
+  }
+
+  // Update previous state
+  previousProfile3State = {
+    qualityOfLifeCount: currentQualityOfLifeCount,
+    logisticsCount: currentLogisticsCount,
+    motivationCount: currentMotivationCount
+  };
+
+  // Return the appropriate summary
+  return profileSummaries[profile3SummaryIndex] || profileSummaries[0];
+}
+
 // Get profile 1 summaries array
 function getProfile1Summaries(): string[] {
   return [
@@ -134,6 +269,28 @@ function getProfile1Summaries(): string[] {
     "This patient appears to be navigating care with a moderate level of engagement and logistical complexity, but with a hidden or underreported burden. Their treatment is ongoing or recently completed, but they may not fully express the impact it has had. Clinical trial awareness and proactive care involvement are low. Logistical and emotional barriers are present but not always visible. Reported burden has decreased, but may still bemasked by limited engagement.",
     "This patient appears to be navigating care with a moderate level of engagement and logistical complexity, but with a hidden or underreported burden. Their treatment is ongoing or recently completed, but they may not fully express the impact it has had. Clinical trial awareness and proactive care involvement are low. Logistical and emotional barriers are present but not always visible. Signs of patient involvement are increasing, possibly indicating missed opportunities for support.",
     "This patient appears to be navigating care with a moderate level of engagement and logistical complexity, but with a hidden or underreported burden. Their treatment is ongoing or recently completed, but they may not fully express the impact it has had. Clinical trial awareness and proactive care involvement are low. Logistical and emotional barriers are present but not always visible. The patient continues to report low interaction with care teams."
+  ];
+}
+
+// Get profile 2 summaries array
+function getProfile2Summaries(): string[] {
+  return [
+    "This patient is newly diagnosed and has not yet engaged meaningfully with the care system. Their logistical burden is low, but they show minimal understanding of treatment options or trial availability. Emotional and financial burden may be emerging, but not yet visible in detail.",
+    "This patient is newly diagnosed and has not yet engaged meaningfully with the care system. Their logistical burden is low, but they show minimal understanding of treatment options or trial availability. Emotional and financial burden may be emerging, but not yet visible in detail. Emerging signs of patient involvement suggest a possible shift in readiness.",
+    "This patient is newly diagnosed and has not yet engaged meaningfully with the care system. Their logistical burden is low, but they show minimal understanding of treatment options or trial availability. Emotional and financial burden may be emerging, but not yet visible in detail. This patient appears increasingly open to exploring further options.",
+    "This patient is newly diagnosed and has not yet engaged meaningfully with the care system. Their logistical burden is low, but they show minimal understanding of treatment options or trial availability. Emotional and financial burden may be emerging, but not yet visible in detail. Initial signs of burden are surfacing, though not yet strongly expressed.",
+    "This patient is newly diagnosed and has not yet engaged meaningfully with the care system. Their logistical burden is low, but they show minimal understanding of treatment options or trial availability. Emotional and financial burden may be emerging, but not yet visible in detail. The patient remains disconnected from the care decision process."
+  ];
+}
+
+// Get profile 3 summaries array
+function getProfile3Summaries(): string[] {
+  return [
+    "This patient is deeply engaged in their treatment and frequently interacts with the care system. They report a high logistical burden, strong motivation to pursue new options, and significant impacts on quality of life. Despite their high involvement, they carry substantial emotional and practical strain.",
+    "This patient is deeply engaged in their treatment and frequently interacts with the care system. They report a high logistical burden, strong motivation to pursue new options, and significant impacts on quality of life. Despite their high involvement, they carry substantial emotional and practical strain. Patient's burden is increasing significantly, especially in terms of daily disruption and access to care.",
+    "This patient is deeply engaged in their treatment and frequently interacts with the care system. They report a high logistical burden, strong motivation to pursue new options, and significant impacts on quality of life. Despite their high involvement, they carry substantial emotional and practical strain. Some logistical or emotional relief is evident, though core engagement remains unchanged.",
+    "This patient is deeply engaged in their treatment and frequently interacts with the care system. They report a high logistical burden, strong motivation to pursue new options, and significant impacts on quality of life. Despite their high involvement, they carry substantial emotional and practical strain. Patient's determination to pursue further care remains strong.",
+    "This patient is deeply engaged in their treatment and frequently interacts with the care system. They report a high logistical burden, strong motivation to pursue new options, and significant impacts on quality of life. Despite their high involvement, they carry substantial emotional and practical strain. Despite high burden, motivation appears to be softening slightly."
   ];
 }
 

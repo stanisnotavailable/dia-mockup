@@ -56,12 +56,13 @@ const CategoryElement = ({ categoryName, color }: CategoryElementProps) => {
 // Dashboard component
 export default function Dashboard() {
   useTitle("Clinical Trial Dashboard");
-  const { isLoading, getCurrentProfile, moveItem, resetProfile } =
+  const { isLoading, getCurrentProfile, getQuestionsForProfile, moveItem, resetProfile } =
     useContext(TrialDataContext);
   const profile = getCurrentProfile();
   const currentProfile = profile; // Alias for clarity
   const trialData = currentProfile.trialData;
   const [showUncategorized, setShowUncategorized] = useState(false);
+  const [draggedItem, setDraggedItem] = useState<ComplexityItem | null>(null);
 
   // Distribute uncategorized items to other categories
   // Commented out to allow items to remain in availableItems when deleted
@@ -139,11 +140,17 @@ export default function Dashboard() {
                   "Quality of Life Impact",
                   "Motivation",
                 ].map((categoryName, idx) => {
-                  // Find the category data
-                  const categoryData = profile.categories?.find(
-                    (cat) => cat.name === categoryName
-                  );
-                  const questionIds = categoryData?.questions || [];
+                  // Get items from trialData.complexityItems instead of profile.categories
+                  // Map the display names to the actual category names used in the data
+                  const categoryMapping = {
+                    "Healthcare Engagement": "Healthcare Engagement",
+                    "Logistical Challenge": "Logistics Challenge",
+                    "Quality of Life Impact": "Quality of Life",
+                    "Motivation": "Motivation",
+                  };
+
+                  const actualCategoryName = categoryMapping[categoryName as keyof typeof categoryMapping];
+                  const categoryItems = trialData.complexityItems[actualCategoryName as keyof typeof trialData.complexityItems] || [];
 
                   // Define colors for each category
                   const colors = {
@@ -172,8 +179,6 @@ export default function Dashboard() {
                       onDragOver={(e) => {
                         e.preventDefault();
                         e.dataTransfer.dropEffect = "move";
-                        const hoverColor =
-                          color.split(" ")[0].replace("bg-", "bg-") + "/50";
                         e.currentTarget.classList.add("bg-blue-50");
                       }}
                       onDragLeave={(e) => {
@@ -195,16 +200,16 @@ export default function Dashboard() {
                             ) as ComplexityItem;
 
                             // Don't move if it's already in this category
-                            if (complexityItem.category !== categoryName) {
+                            if (complexityItem.category !== actualCategoryName) {
                               // Make sure it's removed from the previous category first
                               if (complexityItem.category) {
                                 console.log(
-                                  `Moving from ${complexityItem.category} to ${categoryName}`
+                                  `Moving from ${complexityItem.category} to ${actualCategoryName}`
                                 );
                               }
 
-                              // Move the item to the new category
-                              moveItem(complexityItem, categoryName);
+                              // Move the item to the new category using the actual category name
+                              moveItem(complexityItem, actualCategoryName);
                             }
                           } else {
                             // Fallback for backward compatibility - treat as ID only
@@ -230,9 +235,9 @@ export default function Dashboard() {
                             // Move the item to this category if it exists and isn't already here
                             if (
                               foundItem &&
-                              foundItem.category !== categoryName
+                              foundItem.category !== actualCategoryName
                             ) {
-                              moveItem(foundItem, categoryName);
+                              moveItem(foundItem, actualCategoryName);
                             }
                           }
                         } catch (error) {
@@ -279,19 +284,15 @@ export default function Dashboard() {
 
                       {/* Scrollable items container */}
                       <div className="flex-1 overflow-y-auto pr-1 space-compact custom-scrollbar">
-                        {questionIds.length > 0 ? (
-                          questionIds.map((questionId, qIdx) => {
-                            // Get question details from the ID
-                            const questionName = getQuestionName(questionId);
-                            const questionScore = getQuestionScore(questionId);
-
+                        {categoryItems.length > 0 ? (
+                          categoryItems.map((item, qIdx) => {
                             // Create a full ComplexityItem for dragging
                             const complexityItem = {
-                              id: questionId,
-                              name: questionName,
-                              category: categoryName,
-                              complexity: 60, // Default complexity
-                              score: questionScore, // Add the score
+                              id: item.id,
+                              name: item.name,
+                              category: actualCategoryName,
+                              complexity: item.complexity || 60,
+                              score: item.score,
                             };
 
                             return (
@@ -315,6 +316,8 @@ export default function Dashboard() {
                                     "text/plain",
                                     JSON.stringify(complexityItem)
                                   );
+                                  // Set the dragged item in state
+                                  setDraggedItem(complexityItem);
                                   // Add a visual indicator of what is being dragged
                                   e.currentTarget.classList.add("bg-blue-50");
 
@@ -332,11 +335,11 @@ export default function Dashboard() {
                                 }}
                                 onDragEnd={(e) => {
                                   e.currentTarget.classList.remove("bg-blue-50");
+                                  setDraggedItem(null);
                                 }}
                               >
                                 <div className="flex items-center">
-                                  <div className="w-1 h-1 rounded-full mr-2" style={{ backgroundColor: '#2563EB' }}></div>
-                                  {questionName}
+                                  {item.name}
                                 </div>
                                 <div
                                   className="ml-2 text-gray-400 hover:text-red-500 cursor-pointer"
@@ -467,6 +470,8 @@ export default function Dashboard() {
                                   "text/plain",
                                   JSON.stringify(complexityItem)
                                 );
+                                // Set the dragged item in state
+                                setDraggedItem(complexityItem);
                                 // Add a visual indicator of what is being dragged
                                 e.currentTarget.classList.add("bg-gray-100");
 
@@ -484,10 +489,10 @@ export default function Dashboard() {
                               }}
                               onDragEnd={(e) => {
                                 e.currentTarget.classList.remove("bg-gray-100");
+                                setDraggedItem(null);
                               }}
                             >
                               <div className="flex items-center">
-                                <div className="w-1 h-1 rounded-full mr-2" style={{ backgroundColor: '#6B7280' }}></div>
                                 {item.name}
                               </div>
                               <div

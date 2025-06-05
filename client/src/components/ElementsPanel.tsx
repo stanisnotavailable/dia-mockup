@@ -5,7 +5,7 @@ import { TrialDataContext, ComplexityItem, CategoryType, CATEGORIES } from "@/co
 import questionsData from '@/data/questions.json';
 
 export default function ElementsPanel() {
-  const { getCurrentProfile, moveItem, resetProfile } = useContext(TrialDataContext);
+  const { getCurrentProfile, getQuestionsForProfile, moveItem, resetProfile } = useContext(TrialDataContext);
   const [draggedItem, setDraggedItem] = useState<ComplexityItem | null>(null);
   const [isDraggedOver, setIsDraggedOver] = useState(false);
   
@@ -68,11 +68,28 @@ export default function ElementsPanel() {
         // Parse the ComplexityItem from JSON
         const complexityItem = JSON.parse(itemData) as ComplexityItem;
         
-        // Move the item to the available items (empty category)
-        moveItem(complexityItem, '');
+        // Validate that this item belongs to the current profile
+        const profileQuestions = getQuestionsForProfile(currentProfile.id);
+        const belongsToProfile = profileQuestions.some(q => q.id === complexityItem.id);
+        
+        if (belongsToProfile) {
+          // Move the item to the available items (empty category)
+          moveItem(complexityItem, '');
+        } else {
+          console.warn(`Item ${complexityItem.id} does not belong to profile ${currentProfile.id}`);
+        }
       } else {
         // Fallback to the old way with just an ID
         const itemId = itemData;
+        
+        // Validate that this item belongs to the current profile
+        const profileQuestions = getQuestionsForProfile(currentProfile.id);
+        const belongsToProfile = profileQuestions.some(q => q.id === itemId);
+        
+        if (!belongsToProfile) {
+          console.warn(`Item ${itemId} does not belong to profile ${currentProfile.id}`);
+          return;
+        }
         
         // Find the item from any category
         let foundItem = null;
@@ -105,6 +122,7 @@ export default function ElementsPanel() {
   };
 
   return (
+    <Card className="h-full">
       <CardContent className="p-3 h-full flex flex-col">
         <div className="flex justify-between items-center mb-1">
           <div className="flex items-center">

@@ -27,12 +27,48 @@ export default function PatientFeasibilityPlot() {
   // Get everything directly from context to ensure real-time updates
   const { getCurrentProfile, currentProfileId } = useContext(TrialDataContext);
 
+  // Track base scores per profile (initial scores when component loads) for each category
+  const [baseScoresByProfile, setBaseScoresByProfile] = useState<Record<string, Record<string, number>>>({});
+
   // Force re-render to catch updates
   useForceUpdate();
 
   // Get profile data directly from context each time
   const profileData = getCurrentProfile();
   const categories = profileData.categories || [];
+
+  // Initialize base scores on first load for each profile
+  useEffect(() => {
+    if (categories.length > 0 && !baseScoresByProfile[currentProfileId]) {
+      const initialScores: Record<string, number> = {};
+      categories.forEach(category => {
+        initialScores[category.name] = category.currentScore || 0;
+      });
+      setBaseScoresByProfile(prev => ({
+        ...prev,
+        [currentProfileId]: initialScores
+      }));
+    }
+  }, [categories, currentProfileId, baseScoresByProfile]);
+
+  // Get base scores for current profile
+  const currentBaseScores = baseScoresByProfile[currentProfileId] || {};
+
+  // Function to get score change indicator compared to base score
+  const getScoreChangeIndicator = (categoryName: string, currentScore: number) => {
+    const baseScore = currentBaseScores[categoryName];
+    if (baseScore === undefined) return "";
+    
+    const scoreDiff = currentScore - baseScore;
+    const threshold = 0.01; // Minimum difference to show arrows
+    
+    if (scoreDiff > threshold) {
+      return `↗ +${scoreDiff.toFixed(2)}`; // Green up arrow with difference
+    } else if (scoreDiff < -threshold) {
+      return `↘ ${scoreDiff.toFixed(2)}`; // Red down arrow with difference
+    }
+    return "";
+  };
 
   // Define colors for the radar chart using the new hex colors
   const categoryColors = {
@@ -66,9 +102,12 @@ export default function PatientFeasibilityPlot() {
         }
 
         // Convert to flat data structure for the chart
+        // Score is already capped at 10 in context, multiply by 10 to get 0-100 range
+        const chartScore = Math.min(score * 10, 100); // Ensure final score doesn't exceed 100
+        
         return {
           category: category,
-          score: score * 10, // Ensure score is between 0-100
+          score: chartScore,
           color: categoryColors[category as keyof typeof categoryColors] // Safe access to color
         };
       });
@@ -85,6 +124,21 @@ export default function PatientFeasibilityPlot() {
       const entry = payload[0];
       const dataPoint = radarData.find(d => d.category === entry.payload.category);
       const color = dataPoint?.color || entry.color;
+      
+      // Get score change information compared to base
+      const categoryName = entry.payload.category;
+      const currentScore = entry.value / 10; // Convert back from 0-100 to 0-10 scale
+      const baseScore = currentBaseScores[categoryName];
+      let scoreChangeText = "";
+      
+      if (baseScore !== undefined) {
+        const scoreDiff = currentScore - baseScore;
+        if (Math.abs(scoreDiff) > 0.01) {
+          const changeColor = scoreDiff > 0 ? '#10b981' : '#ef4444'; // green or red
+          const arrow = scoreDiff > 0 ? '↗' : '↘';
+          scoreChangeText = ` ${arrow} ${scoreDiff > 0 ? '+' : ''}${scoreDiff.toFixed(2)} from base (${baseScore.toFixed(2)})`;
+        }
+      }
 
       return (
         <div className="bg-white p-2 border border-gray-200 rounded text-xs">
@@ -93,7 +147,15 @@ export default function PatientFeasibilityPlot() {
               className="w-2 h-2 rounded-full mr-1.5"
               style={{ backgroundColor: color }}
             />
-            <span className="font-medium">{entry.payload.category}: {Math.round(entry.value)}</span>
+            <span className="font-medium">{categoryName}: {Math.round(entry.value)}</span>
+            {scoreChangeText && (
+              <span 
+                className="ml-1 font-bold"
+                style={{ color: scoreChangeText.includes('↗') ? '#10b981' : '#ef4444' }}
+              >
+                {scoreChangeText}
+              </span>
+            )}
           </div>
         </div>
       );
@@ -131,6 +193,14 @@ export default function PatientFeasibilityPlot() {
                     const { x, y, textAnchor, payload } = props;
                     // Use gray color for all labels instead of category-specific colors
                     const color = '#6b7280'; // gray-500
+                    
+                    // Get the current score for this category
+                    const categoryData = categories.find(cat => cat.name === payload.value);
+                    const currentScore = categoryData?.currentScore || 0;
+                    const arrow = getScoreChangeIndicator(payload.value, currentScore);
+                    
+                    // Determine arrow color
+                    const arrowColor = arrow.includes('↗') ? '#10b981' : arrow.includes('↘') ? '#ef4444' : color; // green-500 or red-500
 
                     return (
                       <g transform={`translate(${x},${y})`}>
@@ -143,6 +213,16 @@ export default function PatientFeasibilityPlot() {
                           fontWeight={500}
                         >
                           {payload.value}
+                          {arrow && (
+                            <tspan
+                              fill={arrowColor}
+                              fontSize={tickFontSize + 1}
+                              fontWeight={700}
+                              dx={5}
+                            >
+                              {arrow}
+                            </tspan>
+                          )}
                         </text>
                       </g>
                     );

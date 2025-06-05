@@ -2,7 +2,7 @@ import { createContext, useState, useEffect, ReactNode } from 'react';
 
 // Import questions data from JSON file
 import questionsData from '@/data/questions.json';
-import { getQuestionById, getQuestionName, getQuestionScore, calculateAverageScore } from '@/lib/questionUtils';
+import { getQuestionById, getQuestionName, getQuestionScore, calculateAverageScore, canQuestionBeInCategory } from '@/lib/questionUtils';
 
 // Define types for JSON structure
 interface QuestionItem {
@@ -70,7 +70,29 @@ const PROFILE_MULTIPLIERS = {
   }
 } as const;
 
-// Define scoring multipliers based on rules
+// Define profile-specific scoring multipliers - REDUCED VALUES for better scaling
+const PROFILE_SCORING_RULES = {
+  profile1: {
+    [CATEGORIES.HEALTHCARE]: { add: 0.75, remove: 1 },     // Engagement insight
+    [CATEGORIES.MOTIVATION]: { add: 0.5, remove: 0.6 },     // Motivation insight
+    [CATEGORIES.QUALITY]: { add: 0.4, remove: 0.4 },      // QoL impact insight
+    [CATEGORIES.LOGISTICS]: { add: 0.6, remove: 0.5 }       // Logistical insight
+  },
+  profile2: {
+    [CATEGORIES.HEALTHCARE]: { add: 1, remove: 0.75 },     // Engagement insight
+    [CATEGORIES.MOTIVATION]: { add: 1, remove: 0.6 },     // Motivation insight
+    [CATEGORIES.QUALITY]: { add: 0.5, remove: 0.4 },        // QoL impact insight
+    [CATEGORIES.LOGISTICS]: { add: 0.25, remove: 0.25 }     // Logistical insight
+  },
+  profile3: {
+    [CATEGORIES.HEALTHCARE]: { add: 0.5, remove: 0.4 },     // Engagement insight
+    [CATEGORIES.MOTIVATION]: { add: 0.5, remove: 0.4 },     // Motivation insight
+    [CATEGORIES.QUALITY]: { add: 0.75, remove: 0.6 },      // QoL impact insight
+    [CATEGORIES.LOGISTICS]: { add: 1, remove: 0.75 }       // Logistical insight
+  }
+} as const;
+
+// Keep the old SCORING_RULES for backward compatibility (fallback)
 const SCORING_RULES = {
   Low: {
     add: 0.5,
@@ -150,6 +172,7 @@ interface TrialDataContextType {
   currentProfileId: string;
   setCurrentProfileId: (id: string) => void;
   getCurrentProfile: () => Profile;
+  getQuestionsForProfile: (profileId: string) => ComplexityItem[];
   moveItem: (item: ComplexityItem, targetCategory: string, profileId?: string) => void;
   resetProfile: (profileId?: string) => void;
   updatePatientDemographic: (demographicData: Partial<PatientDemographic>, profileId?: string) => void;
@@ -187,30 +210,95 @@ const createProfileData = (profileId: string): TrialData => {
     [CATEGORIES.UNCATEGORIZED]: [],
   };
 
-  // Make a copy of all items to distribute - this includes ALL 24 questions
-  const allItemsCopy = [...allItems.map(item => ({ ...item, category: '' }))];
+  // Filter questions that belong to this specific profile
+  const profileQuestions = allItems.filter(item => {
+    const question = getQuestionById(item.id);
+    return question?.initialProfile && question.initialProfile.includes(profileId);
+  });
 
-  // Get the category names as an array
-  const categoryNames = Object.values(CATEGORIES);
+  // Get the category names as an array (excluding Uncategorized for initial distribution)
+  const categoryNames = [CATEGORIES.LOGISTICS, CATEGORIES.MOTIVATION, CATEGORIES.HEALTHCARE, CATEGORIES.QUALITY];
 
-  // Randomly distribute all 24 questions across the four categories
-  allItemsCopy.forEach(item => {
-    // Select a random category
-    const randomCategoryIndex = Math.floor(Math.random() * categoryNames.length);
-    const targetCategory = categoryNames[randomCategoryIndex];
+  // First, ensure every category gets at least one item by using a round-robin approach
+  const availableItems = [...profileQuestions];
+  let categoryIndex = 0;
 
-    // Update the item's category
-    const updatedItem = { ...item, category: targetCategory };
+  // Distribute items ensuring each category gets at least one item
+  while (availableItems.length > 0 && categoryIndex < categoryNames.length) {
+    const currentCategory = categoryNames[categoryIndex];
 
-    // Add to the appropriate category
-    categorizedItems[targetCategory as CategoryType].push(updatedItem);
+    // Find an item that can be placed in this category
+    const itemIndex = availableItems.findIndex(item =>
+      canQuestionBeInCategory(item.id, currentCategory)
+    );
+
+    if (itemIndex !== -1) {
+      // Remove the item from available items and add to current category
+      const item = availableItems.splice(itemIndex, 1)[0];
+      const updatedItem = { ...item, category: currentCategory };
+      categorizedItems[currentCategory as CategoryType].push(updatedItem);
+    }
+
+    categoryIndex++;
+  }
+
+  // Continue distributing remaining items using round-robin to maintain balance
+  categoryIndex = 0;
+  while (availableItems.length > 0) {
+    const currentCategory = categoryNames[categoryIndex % categoryNames.length];
+
+    // Find an item that can be placed in this category
+    const itemIndex = availableItems.findIndex(item =>
+      canQuestionBeInCategory(item.id, currentCategory)
+    );
+
+    if (itemIndex !== -1) {
+      // Remove the item from available items and add to current category
+      const item = availableItems.splice(itemIndex, 1)[0];
+      const updatedItem = { ...item, category: currentCategory };
+      categorizedItems[currentCategory as CategoryType].push(updatedItem);
+    }
+
+    categoryIndex++;
+
+    // Safety check to prevent infinite loop if no items can be placed in any category
+    if (categoryIndex > categoryNames.length * availableItems.length) {
+      // Place remaining items in uncategorized
+      availableItems.forEach(item => {
+        const updatedItem = { ...item, category: CATEGORIES.UNCATEGORIZED };
+        categorizedItems[CATEGORIES.UNCATEGORIZED].push(updatedItem);
+      });
+      break;
+    }
+  }
+
+  // If we still have empty categories, fill them with any available questions from allItems
+  // that haven't been assigned to this profile yet
+  const usedQuestionIds = new Set(profileQuestions.map(q => q.id));
+  const remainingQuestions = allItems.filter(item => !usedQuestionIds.has(item.id));
+
+  categoryNames.forEach(categoryName => {
+    if (categorizedItems[categoryName as CategoryType].length === 0 && remainingQuestions.length > 0) {
+      // Find a question that can be placed in this category
+      const itemIndex = remainingQuestions.findIndex(item =>
+        canQuestionBeInCategory(item.id, categoryName)
+      );
+
+      if (itemIndex !== -1) {
+        const item = remainingQuestions.splice(itemIndex, 1)[0];
+        const updatedItem = { ...item, category: categoryName };
+        categorizedItems[categoryName as CategoryType].push(updatedItem);
+        usedQuestionIds.add(item.id);
+      }
+    }
   });
 
   // No items should remain in availableItems initially
-  const availableItems: ComplexityItem[] = [];
+  const availableItemsArray: ComplexityItem[] = [];
 
   // Log the distribution
-  console.log(`Profile ${profileId} distribution:`, {
+  console.log(`Profile ${profileId} distribution (balanced approach ensuring all categories have items):`, {
+    profileSpecificQuestions: profileQuestions.length,
     logistics: categorizedItems[CATEGORIES.LOGISTICS].length,
     motivation: categorizedItems[CATEGORIES.MOTIVATION].length,
     healthcare: categorizedItems[CATEGORIES.HEALTHCARE].length,
@@ -220,7 +308,159 @@ const createProfileData = (profileId: string): TrialData => {
   });
 
   return {
-    availableItems,
+    availableItems: availableItemsArray,
+    complexityItems: categorizedItems
+  };
+};
+
+// Helper function to create predefined trial data for specific profiles
+const createPredefinedProfileData = (profileId: string): TrialData => {
+  // Initialize categories with empty arrays
+  const categorizedItems: Record<CategoryType, ComplexityItem[]> = {
+    [CATEGORIES.LOGISTICS]: [],
+    [CATEGORIES.MOTIVATION]: [],
+    [CATEGORIES.HEALTHCARE]: [],
+    [CATEGORIES.QUALITY]: [],
+    [CATEGORIES.UNCATEGORIZED]: [],
+  };
+
+  // Define predefined insights for each profile based on user requirements
+  const predefinedInsights = {
+    profile1: {
+      "Quality of Life": [
+        "q12", // I was on radiation for a few weeks.
+        "q13", // I've done surgery and chemotherapy for a few months.
+        "q14", // I was treated with temozolomide over several months.
+        "q74", // It was hard, but we got through it.
+        "q73", // Moderate impact—we adjusted our budget.
+        "q82", // Mild side effects—manageable.
+        "q86", // My appetite or sleep was disrupted.
+      ],
+      "Logistics Challenge": [
+        "q32", // Around 3 per month, fairly manageable.
+        "q33", // 4 appointments a month, consistently.
+        "q42", // About an hour each way.
+        "q48", // It depended on the appointment and location.
+        "q54", // Too many forms and check-ins.
+      ],
+      "Healthcare Engagement": [
+        "q24", // I had one full appointment to go through the options.
+        "q65", // It came up once but wasn't revisited.
+        "q26", // I was given time to ask questions after the plan was proposed.
+      ],
+      "Motivation": [
+        "q96", // I'd feel more open to it if my medical team supported the idea.
+        "q94", // I'd be interested if it offered better care than I'm getting now.
+      ],
+      "Uncategorized": [
+        "q101", "q102", "q103", "q104", "q105", "q106", "q107", "q108", "q109", "q110",
+        "q111", "q112", "q113", "q114", "q115", "q116", "q117", "q118", "q119", "q120",
+        "q121", "q122", "q123", "q124", "q125", "q126", "q127", "q128", "q129", "q130",
+        "q131", "q132", "q133", "q134", "q135", "q136", "q137", "q138", "q139"
+      ]
+    },
+    profile2: {
+      "Quality of Life": [
+        "q90", // I didn't notice or can't recall any.
+        "q71", // No impact at all.
+        "q1", // I haven't started any therapy yet.
+        "q11", // I've just started, so no therapy yet.
+        "q37", // I had very few appointments overall.
+        "q40", // I don't remember or never tracked it closely.
+      ],
+      "Logistics Challenge": [
+        "q41", // Less than 30 minutes.
+        "q50", // I haven't had to travel for treatment yet.
+        "q47", // I live nearby, so travel wasn't a problem.
+        "q31", // Just 1 or 2 appointments per month.
+      ],
+      "Healthcare Engagement": [
+        "q21", // I didn't really have time to discuss anything.
+        "q27", // I got some basic information, but no discussion.
+        "q29", // I relied on my family or caregiver to understand the options.
+        "q61", // No, it was never mentioned.
+        "q62", // I heard about trials from someone else, not my doctor.
+        "q70", // I can't recall if it was discussed.
+      ],
+      "Motivation": [
+        "q97", // I wouldn't consider anything beyond my current treatment.
+      ],
+      "Uncategorized": [
+        "q101", "q102", "q103", "q104", "q105", "q106", "q107", "q108", "q109", "q110",
+        "q111", "q112", "q113", "q114", "q115", "q116", "q117", "q118", "q119", "q120",
+        "q121", "q122", "q123", "q124", "q125", "q126", "q127", "q128", "q129", "q130",
+        "q131", "q132", "q133", "q134", "q135", "q136", "q137", "q138", "q139"
+      ]
+    },
+    profile3: {
+      "Quality of Life": [
+        "q83", // Fatigue was a major issue.
+        "q84", // Nausea or vomiting affected me.
+        "q87", // I experienced long-term effects.
+        "q89", // The side effects were worse than the disease.
+      ],
+      "Logistics Challenge": [
+        "q34", // More than 4 appointments a month.
+        "q35", // Weekly appointments, sometimes more.
+        "q44", // More than two hours door to door.
+        "q45", // I had to stay overnight near the facility.
+        "q46", // Travel was exhausting and hard to organize.
+      ],
+      "Healthcare Engagement": [
+        "q64", // Yes, they explained the options clearly.
+        "q69", // I looked into trials myself.
+        "q66", // I asked about trials, but didn't get much information.
+      ],
+      "Motivation": [
+        "q95", // I'd want to help others in the future by contributing to progress.
+        "q91", // I'd want a chance at a cure.
+      ],
+      "Uncategorized": [
+        "q101", "q102", "q103", "q104", "q105", "q106", "q107", "q108", "q109", "q110",
+        "q111", "q112", "q113", "q114", "q115", "q116", "q117", "q118", "q119", "q120",
+        "q121", "q122", "q123", "q124", "q125", "q126", "q127", "q128", "q129", "q130",
+        "q131", "q132", "q133", "q134", "q135", "q136", "q137", "q138", "q139"
+      ]
+    }
+  };
+
+  // Get predefined insights for this profile
+  const profileInsights = predefinedInsights[profileId as keyof typeof predefinedInsights];
+  
+  if (!profileInsights) {
+    // Fallback to original random distribution if profile not found
+    return createProfileData(profileId);
+  }
+
+  // Place predefined insights in their designated categories
+  Object.entries(profileInsights).forEach(([categoryName, questionIds]) => {
+    const categoryType = categoryName as CategoryType;
+    
+    questionIds.forEach(questionId => {
+      // Find the question in allItems
+      const item = allItems.find(q => q.id === questionId);
+      if (item) {
+        const updatedItem = { ...item, category: categoryName };
+        categorizedItems[categoryType].push(updatedItem);
+      }
+    });
+  });
+
+  // No items should remain in availableItems initially
+  const availableItemsArray: ComplexityItem[] = [];
+
+  // Log the predefined distribution
+  console.log(`Profile ${profileId} predefined distribution:`, {
+    logistics: categorizedItems[CATEGORIES.LOGISTICS].length,
+    motivation: categorizedItems[CATEGORIES.MOTIVATION].length,
+    healthcare: categorizedItems[CATEGORIES.HEALTHCARE].length,
+    quality: categorizedItems[CATEGORIES.QUALITY].length,
+    uncategorized: categorizedItems[CATEGORIES.UNCATEGORIZED].length,
+    total: Object.values(categorizedItems).reduce((sum, items) => sum + items.length, 0)
+  });
+
+  return {
+    availableItems: availableItemsArray,
     complexityItems: categorizedItems
   };
 };
@@ -261,14 +501,13 @@ const getDemographicData = (profileId: string): PatientDemographic => {
 };
 
 // Get categories with calculated average scores
-const getCategoriesWithScores = (profileId: string): CategoryData[] => {
-  // Create a trial data instance for this profile to get the question distribution
-  const trialData = createProfileData(profileId);
-
-  // Get multipliers for this profile
+const getCategoriesWithScores = (profileId: string, trialData: TrialData): CategoryData[] => {
+  // Get profile-specific scoring rules
+  const profileScoringRules = PROFILE_SCORING_RULES[profileId as keyof typeof PROFILE_SCORING_RULES] || PROFILE_SCORING_RULES.profile1;
+  // Get multipliers for this profile (for display/backward compatibility)
   const profileMultipliers = PROFILE_MULTIPLIERS[profileId as keyof typeof PROFILE_MULTIPLIERS] || PROFILE_MULTIPLIERS.profile1;
 
-  // Create category data from the trial data's complexityItems, excluding Uncategorized
+  // Create category data from the provided trial data's complexityItems, excluding Uncategorized
   return Object.entries(CATEGORIES)
     .filter(([key, categoryName]) => categoryName !== CATEGORIES.UNCATEGORIZED)
     .map(([key, categoryName]) => {
@@ -278,11 +517,12 @@ const getCategoriesWithScores = (profileId: string): CategoryData[] => {
       // Extract question IDs
       const questionIds = items.map(item => item.id);
 
-      // Get multiplier level for this category and profile
+      // Get multiplier level for this category and profile (for display)
       const multiplierLevel = profileMultipliers[categoryType as keyof typeof profileMultipliers] || 'Medium';
 
-      // Calculate initial score by applying "add" multiplier to all insights in category
-      const addMultiplier = SCORING_RULES[multiplierLevel].add;
+      // Calculate initial score using profile-specific "add" multiplier to all insights in category
+      const profileRules = profileScoringRules[categoryType as keyof typeof profileScoringRules] || { add: 0.1, remove: 0.1 };
+      const addMultiplier = profileRules.add;
       let initialScore = 0;
 
       items.forEach(item => {
@@ -290,10 +530,10 @@ const getCategoriesWithScores = (profileId: string): CategoryData[] => {
         initialScore += itemScore * addMultiplier;
       });
 
-      // Cap the score at 10
-      // initialScore = Math.min(100, initialScore);
+      // Cap the maximum score at 10 (which will display as 100 on the radar chart)
+      initialScore = Math.min(initialScore, 10);
 
-      console.log(`Initial score for ${categoryName} (${multiplierLevel}): ${initialScore.toFixed(2)} from ${items.length} items`);
+      console.log(`Initial score for ${categoryName} (Profile ${profileId}): ${initialScore.toFixed(2)} from ${items.length} items (x${addMultiplier})`);
 
       return {
         name: categoryName,
@@ -306,29 +546,27 @@ const getCategoriesWithScores = (profileId: string): CategoryData[] => {
 };
 
 // Initial profiles
-const initialProfiles: Profile[] = [
-  {
-    id: 'profile1',
-    name: 'Profile 1',
-    trialData: createProfileData('profile1'),
-    patientDemographic: getDemographicData('profile1'),
-    categories: getCategoriesWithScores('profile1')
-  },
-  {
-    id: 'profile2',
-    name: 'Profile 2',
-    trialData: createProfileData('profile2'),
-    patientDemographic: getDemographicData('profile2'),
-    categories: getCategoriesWithScores('profile2')
-  },
-  {
-    id: 'profile3',
-    name: 'Profile 3',
-    trialData: createProfileData('profile3'),
-    patientDemographic: getDemographicData('profile3'),
-    categories: getCategoriesWithScores('profile3')
-  }
-];
+const createInitialProfiles = (): Profile[] => {
+  const profiles: Profile[] = [];
+
+  ['profile1', 'profile2', 'profile3'].forEach(profileId => {
+    const trialData = createPredefinedProfileData(profileId);
+    const patientDemographic = getDemographicData(profileId);
+    const categories = getCategoriesWithScores(profileId, trialData);
+
+    profiles.push({
+      id: profileId,
+      name: profileId === 'profile1' ? 'Profile 1' : profileId === 'profile2' ? 'Profile 2' : 'Profile 3',
+      trialData,
+      patientDemographic,
+      categories
+    });
+  });
+
+  return profiles;
+};
+
+const initialProfiles = createInitialProfiles();
 
 // Create context with default values
 export const TrialDataContext = createContext<TrialDataContextType>({
@@ -336,6 +574,7 @@ export const TrialDataContext = createContext<TrialDataContextType>({
   currentProfileId: 'profile1',
   setCurrentProfileId: () => { },
   getCurrentProfile: () => initialProfiles[0],
+  getQuestionsForProfile: () => [],
   moveItem: () => { },
   resetProfile: () => { },
   updatePatientDemographic: () => { },
@@ -393,34 +632,44 @@ export const TrialDataProvider = ({ children }: { children: ReactNode }) => {
     return profile || profiles[0];
   };
 
+  // Get questions that belong to a specific profile
+  const getQuestionsForProfile = (profileId: string): ComplexityItem[] => {
+    return allItems.filter(item => {
+      const question = getQuestionById(item.id);
+      return question?.initialProfile && question.initialProfile.includes(profileId);
+    });
+  };
+
   // New Scoring System Business Logic
   const applyNewScoringLogic = (profile: Profile, item: ComplexityItem, targetCategory: string, fromCategory: string): Profile => {
     if (!profile.categories) return profile;
 
-    // Get multipliers for this profile
+    // Get profile-specific scoring rules
+    const profileScoringRules = PROFILE_SCORING_RULES[profile.id as keyof typeof PROFILE_SCORING_RULES] || PROFILE_SCORING_RULES.profile1;
+    // Get multipliers for this profile (for display/backward compatibility)
     const profileMultipliers = PROFILE_MULTIPLIERS[profile.id as keyof typeof PROFILE_MULTIPLIERS] || PROFILE_MULTIPLIERS.profile1;
 
     const updatedCategories = profile.categories.map(category => {
       const categoryType = category.name as CategoryType;
       const multiplierLevel = profileMultipliers[categoryType as keyof typeof profileMultipliers] || 'Medium';
-      const rules = SCORING_RULES[multiplierLevel];
+      const profileRules = profileScoringRules[categoryType as keyof typeof profileScoringRules] || { add: 1, remove: 1 };
 
       // Check if this category was affected by the move
       if (category.name === fromCategory || category.name === targetCategory) {
         // Get current items in this category from the updated trialData
         const currentItems = profile.trialData.complexityItems[categoryType] || [];
 
-        // Recalculate score based on all items currently in the category
+        // Recalculate score based on all items currently in the category using profile-specific rules
         let newScore = 0;
         currentItems.forEach(categoryItem => {
           const itemScore = categoryItem.score || 0;
-          newScore += itemScore * rules.add;
+          newScore += itemScore * profileRules.add;
         });
 
-        // Ensure score doesn't go below 0
-        newScore = Math.max(0, newScore);
+        // Ensure score doesn't go below 0 and cap at 10 (displays as 100 on radar chart)
+        newScore = Math.max(0, Math.min(newScore, 10));
 
-        console.log(`${category.name} (${multiplierLevel}): Recalculated score = ${newScore.toFixed(2)} from ${currentItems.length} items`);
+        console.log(`${category.name} (Profile ${profile.id}): Recalculated score = ${newScore.toFixed(2)} from ${currentItems.length} items (x${profileRules.add})`);
 
         return {
           ...category,
@@ -595,7 +844,7 @@ export const TrialDataProvider = ({ children }: { children: ReactNode }) => {
       const profileId = updatedProfiles[profileIndex].id;
 
       // Create a fresh random distribution of questions
-      const trialData = createProfileData(profileId);
+      const trialData = createPredefinedProfileData(profileId);
 
       console.log("Reset trialData:", {
         availableItems: trialData.availableItems.length,
@@ -614,7 +863,7 @@ export const TrialDataProvider = ({ children }: { children: ReactNode }) => {
       const freshDemographicData = getDemographicData(profileId);
 
       // Get categories with calculated scores based on the new distribution
-      const freshCategories = getCategoriesWithScores(profileId);
+      const freshCategories = getCategoriesWithScores(profileId, trialData);
 
       updatedProfiles[profileIndex] = {
         ...updatedProfiles[profileIndex],
@@ -637,6 +886,7 @@ export const TrialDataProvider = ({ children }: { children: ReactNode }) => {
         currentProfileId,
         setCurrentProfileId,
         getCurrentProfile,
+        getQuestionsForProfile,
         moveItem,
         resetProfile,
         updatePatientDemographic,

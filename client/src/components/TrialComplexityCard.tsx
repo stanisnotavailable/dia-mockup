@@ -7,10 +7,52 @@ export default function TrialComplexityCard() {
   const [draggedItem, setDraggedItem] = useState<ComplexityItem | null>(null);
   const [draggedOverCategory, setDraggedOverCategory] = useState<string | null>(null);
   const [showUncategorized, setShowUncategorized] = useState<boolean>(true);
+  
+  // Track base scores per profile (initial scores when component loads) for each category
+  const [baseScoresByProfile, setBaseScoresByProfile] = useState<Record<string, Record<string, number>>>({});
 
   // Get the current profile data
   const currentProfile = getCurrentProfile();
   const trialData = currentProfile.trialData;
+
+  // Initialize base scores on first load for each profile
+  useEffect(() => {
+    if (currentProfile.categories && !baseScoresByProfile[currentProfileId]) {
+      const initialScores: Record<string, number> = {};
+      currentProfile.categories.forEach(category => {
+        initialScores[category.name] = category.currentScore || 0;
+      });
+      setBaseScoresByProfile(prev => ({
+        ...prev,
+        [currentProfileId]: initialScores
+      }));
+    }
+  }, [currentProfile.categories, currentProfileId, baseScoresByProfile]);
+
+  // Get base scores for current profile
+  const currentBaseScores = baseScoresByProfile[currentProfileId] || {};
+
+  // Move item function (no need to track previous state anymore)
+  const handleItemMove = (item: ComplexityItem, targetCategory: string) => {
+    // Perform the move
+    moveItem(item, targetCategory);
+  };
+
+  // Function to get score change indicator compared to base score
+  const getScoreChangeIndicator = (categoryName: string, currentScore: number) => {
+    const baseScore = currentBaseScores[categoryName];
+    if (baseScore === undefined) return null;
+    
+    const scoreDiff = currentScore - baseScore;
+    const threshold = 0.01; // Minimum difference to show arrows
+    
+    if (scoreDiff > threshold) {
+      return <span className="text-green-500 font-bold ml-2" title={`Score increased by ${scoreDiff.toFixed(2)} from base (${baseScore.toFixed(2)})`}>↗ +{scoreDiff.toFixed(2)}</span>;
+    } else if (scoreDiff < -threshold) {
+      return <span className="text-red-500 font-bold ml-2" title={`Score decreased by ${Math.abs(scoreDiff).toFixed(2)} from base (${baseScore.toFixed(2)})`}>↘ {scoreDiff.toFixed(2)}</span>;
+    }
+    return null;
+  };
 
   // Colors for the categories - using the new hex colors
   const categoryColors = {
@@ -83,7 +125,7 @@ export default function TrialComplexityCard() {
     }
 
     if (foundItem) {
-      moveItem(foundItem, category);
+      handleItemMove(foundItem, category);
     }
   };
 
@@ -101,20 +143,41 @@ export default function TrialComplexityCard() {
     const itemScore = item.score || 0;
 
     if (item.category) {
-      const addValue = multiplierLevel === 'Low' ? itemScore * 0.5 :
-        multiplierLevel === 'Medium' ? itemScore * 1.25 :
-          itemScore * 1.75;
-      const removeValue = multiplierLevel === 'High' ? itemScore * 1.75 : itemScore * 0.5;
+      // Get profile-specific scoring rules from context (we'll need to pass this down or calculate it here)
+      // For now, calculate based on the current profile and category
+      let addMultiplier = 1;
+      let removeMultiplier = 1;
+      
+      // Profile-specific multipliers based on category - UPDATED to reflect new lower values
+      if (currentProfileId === 'profile1') {
+        if (item.category === 'Healthcare Engagement') { addMultiplier = 0.15; removeMultiplier = 0.2; }
+        else if (item.category === 'Motivation') { addMultiplier = 0.1; removeMultiplier = 0.12; }
+        else if (item.category === 'Quality of Life') { addMultiplier = 0.08; removeMultiplier = 0.08; }
+        else if (item.category === 'Logistics Challenge') { addMultiplier = 0.12; removeMultiplier = 0.1; }
+      } else if (currentProfileId === 'profile2') {
+        if (item.category === 'Healthcare Engagement') { addMultiplier = 0.2; removeMultiplier = 0.15; }
+        else if (item.category === 'Motivation') { addMultiplier = 0.2; removeMultiplier = 0.12; }
+        else if (item.category === 'Quality of Life') { addMultiplier = 0.1; removeMultiplier = 0.08; }
+        else if (item.category === 'Logistics Challenge') { addMultiplier = 0.05; removeMultiplier = 0.05; }
+      } else if (currentProfileId === 'profile3') {
+        if (item.category === 'Healthcare Engagement') { addMultiplier = 0.1; removeMultiplier = 0.08; }
+        else if (item.category === 'Motivation') { addMultiplier = 0.1; removeMultiplier = 0.08; }
+        else if (item.category === 'Quality of Life') { addMultiplier = 0.15; removeMultiplier = 0.12; }
+        else if (item.category === 'Logistics Challenge') { addMultiplier = 0.2; removeMultiplier = 0.15; }
+      }
+
+      const addValue = itemScore * addMultiplier;
+      const removeValue = itemScore * removeMultiplier;
 
       if (multiplierLevel === 'High') {
         multiplierIndicator = "🔥"; // High multiplier
-        multiplierTooltip = `High multiplier: +${addValue.toFixed(1)} when added, -${removeValue.toFixed(1)} when removed`;
+        multiplierTooltip = `Profile ${currentProfileId.slice(-1)} rules: +${addValue.toFixed(2)} when added, -${removeValue.toFixed(2)} when removed`;
       } else if (multiplierLevel === 'Medium') {
         multiplierIndicator = "⚡"; // Medium multiplier  
-        multiplierTooltip = `Medium multiplier: +${addValue.toFixed(1)} when added, -${removeValue.toFixed(1)} when removed`;
+        multiplierTooltip = `Profile ${currentProfileId.slice(-1)} rules: +${addValue.toFixed(2)} when added, -${removeValue.toFixed(2)} when removed`;
       } else {
         multiplierIndicator = "🔹"; // Low multiplier
-        multiplierTooltip = `Low multiplier: +${addValue.toFixed(1)} when added, -${removeValue.toFixed(1)} when removed`;
+        multiplierTooltip = `Profile ${currentProfileId.slice(-1)} rules: +${addValue.toFixed(2)} when added, -${removeValue.toFixed(2)} when removed`;
       }
     }
 
@@ -136,7 +199,7 @@ export default function TrialComplexityCard() {
             e.stopPropagation(); // Prevent drag event from triggering
 
             // Move the item to the availableItems array (empty category)
-            moveItem(item, '');
+            handleItemMove(item, '');
           }}
         >
           ✕
@@ -154,17 +217,56 @@ export default function TrialComplexityCard() {
             Drag elements from the panel above into these categories to update the radar chart
           </p>
           <div className="mt-1 p-2 bg-blue-50 border border-blue-200 rounded text-xs">
-            <div className="font-medium text-blue-800 mb-1">📊 {currentProfile.name} - Category Multipliers</div>
+            <div className="font-medium text-blue-800 mb-1">📊 {currentProfile.name} - Category Scores</div>
             <div className="text-blue-700">
-              {currentProfile.categories?.map(category => (
-                <div key={category.name}>
-                  • <strong>{category.name}</strong>: {(category as any).multiplierLevel || 'Medium'}
-                  {(category as any).currentScore !== undefined && (
-                    <span className="text-gray-600"> (Score: {((category as any).currentScore).toFixed(1)}/10)</span>
-                  )}
-                </div>
-              ))}
+              {currentProfile.categories?.map(category => {
+                const currentScore = (category as any).currentScore || 0;
+                const baseScore = currentBaseScores[category.name] || 0;
+                return (
+                  <div key={category.name} className="flex items-center justify-between">
+                    <span>
+                      <strong>{category.name}</strong>: {(category as any).multiplierLevel || 'Medium'}
+                      <br />
+                      <span className="text-gray-600">Current: {currentScore.toFixed(2)}/10</span>
+                      {Object.keys(currentBaseScores).length > 0 && (
+                        <span className="text-gray-500"> | Base: {baseScore.toFixed(2)}/10</span>
+                      )}
+                    </span>
+                    {getScoreChangeIndicator(category.name, currentScore)}
+                  </div>
+                );
+              })}
             </div>
+            {Object.keys(currentBaseScores).length > 0 && (
+              <div className="mt-2 pt-2 border-t border-blue-300">
+                <div className="flex justify-between items-center">
+                  <div className="text-blue-600 text-xs">
+                    <span className="font-medium">Base scores</span> captured at load. 
+                    <span className="text-green-500">↗ +X.XX</span> = increase, 
+                    <span className="text-red-500">↘ -X.XX</span> = decrease
+                  </div>
+                  <button
+                    onClick={() => {
+                      // Reset to base scores by recalculating from current state
+                      if (currentProfile.categories) {
+                        const currentScores: Record<string, number> = {};
+                        currentProfile.categories.forEach(category => {
+                          currentScores[category.name] = category.currentScore || 0;
+                        });
+                        setBaseScoresByProfile(prev => ({
+                          ...prev,
+                          [currentProfileId]: currentScores
+                        }));
+                      }
+                    }}
+                    className="text-xs bg-blue-100 hover:bg-blue-200 text-blue-700 px-2 py-1 rounded border"
+                    title="Set current scores as new base scores"
+                  >
+                    Reset Base
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -187,8 +289,12 @@ export default function TrialComplexityCard() {
                   onDrop={(e) => handleDrop(e, category)}
                 >
                   <div className="flex justify-between items-center mb-1">
-                    <h3 className={`font-medium ${categoryColors[category as CategoryType].split(" ").slice(-1)[0]}`}>
+                    <h3 className={`font-medium ${categoryColors[category as CategoryType].split(" ").slice(-1)[0]} flex items-center`}>
                       {category}
+                      {(() => {
+                        const categoryData = currentProfile.categories?.find(cat => cat.name === category);
+                        return categoryData ? getScoreChangeIndicator(category, categoryData.currentScore || 0) : null;
+                      })()}
                     </h3>
                     <span className="text-xs bg-white rounded-full px-2 py-0.5 border">
                       {trialData.complexityItems[category].length} items
@@ -237,8 +343,12 @@ export default function TrialComplexityCard() {
               onDrop={(e) => handleDrop(e, CATEGORIES.UNCATEGORIZED)}
             >
               <div className="flex justify-between items-center mb-1">
-                <h3 className={`font-medium ${categoryColors[CATEGORIES.UNCATEGORIZED].split(" ").slice(-1)[0]}`}>
+                <h3 className={`font-medium ${categoryColors[CATEGORIES.UNCATEGORIZED].split(" ").slice(-1)[0]} flex items-center`}>
                   {CATEGORIES.UNCATEGORIZED}
+                  {(() => {
+                    const categoryData = currentProfile.categories?.find(cat => cat.name === CATEGORIES.UNCATEGORIZED);
+                    return categoryData ? getScoreChangeIndicator(CATEGORIES.UNCATEGORIZED, categoryData.currentScore || 0) : null;
+                  })()}
                 </h3>
                 <span className="text-xs bg-white rounded-full px-2 py-0.5 border">
                   {trialData.complexityItems[CATEGORIES.UNCATEGORIZED].length} items
@@ -266,11 +376,32 @@ export default function TrialComplexityCard() {
         </div>
 
         <div className="text-xs text-gray-600 mt-2 p-1.5 bg-blue-50 rounded">
-          <div className="font-medium mb-1">Scoring System Rules:</div>
+          <div className="font-medium mb-1">{currentProfile.name} Scoring Rules:</div>
           <div className="space-y-0.5">
-            <div>🔥 <strong>High</strong>: +score×1.75 when added, -score×1.75 when removed</div>
-            <div>⚡ <strong>Medium</strong>: +score×1.25 when added, -score×0.5 when removed</div>
-            <div>🔹 <strong>Low</strong>: +score×0.5 when added, -score×0.5 when removed</div>
+            {currentProfileId === 'profile1' && (
+              <>
+                <div>🔥 <strong>Healthcare Engagement</strong>: +score×0.15 when added, -score×0.2 when removed</div>
+                <div>⚡ <strong>Motivation</strong>: +score×0.1 when added, -score×0.12 when removed</div>
+                <div>🔹 <strong>Quality of Life</strong>: +score×0.08 when added, -score×0.08 when removed</div>
+                <div>⚡ <strong>Logistics Challenge</strong>: +score×0.12 when added, -score×0.1 when removed</div>
+              </>
+            )}
+            {currentProfileId === 'profile2' && (
+              <>
+                <div>🔥 <strong>Healthcare Engagement</strong>: +score×0.2 when added, -score×0.15 when removed</div>
+                <div>🔥 <strong>Motivation</strong>: +score×0.2 when added, -score×0.12 when removed</div>
+                <div>⚡ <strong>Quality of Life</strong>: +score×0.1 when added, -score×0.08 when removed</div>
+                <div>🔹 <strong>Logistics Challenge</strong>: +score×0.05 when added, -score×0.05 when removed</div>
+              </>
+            )}
+            {currentProfileId === 'profile3' && (
+              <>
+                <div>🔹 <strong>Healthcare Engagement</strong>: +score×0.1 when added, -score×0.08 when removed</div>
+                <div>🔹 <strong>Motivation</strong>: +score×0.1 when added, -score×0.08 when removed</div>
+                <div>🔥 <strong>Quality of Life</strong>: +score×0.15 when added, -score×0.12 when removed</div>
+                <div>🔥 <strong>Logistics Challenge</strong>: +score×0.2 when added, -score×0.15 when removed</div>
+              </>
+            )}
           </div>
         </div>
       </CardContent>

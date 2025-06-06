@@ -55,7 +55,7 @@ const CategoryElement = ({ categoryName, color }: CategoryElementProps) => {
 
 // Dashboard component
 export default function Dashboard() {
-  useTitle("Clinical Trial Dashboard");
+  useTitle("Patient Feasibility Dashboard");
   const { isLoading, getCurrentProfile, getQuestionsForProfile, moveItem, resetProfile } =
     useContext(TrialDataContext);
   const profile = getCurrentProfile();
@@ -254,7 +254,7 @@ export default function Dashboard() {
                             // Get the multiplier level for this category
                             const categoryData = profile.categories?.find(cat => cat.name === actualCategoryName);
                             const multiplierLevel = categoryData?.multiplierLevel || 'Medium';
-                            
+
                             // Return icon based on multiplierLevel
                             if (multiplierLevel === 'High') {
                               return (

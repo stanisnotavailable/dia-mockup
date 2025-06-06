@@ -6,21 +6,21 @@ type LoadingPhase = {
 };
 
 const loadingPhases: LoadingPhase[] = [
-  { 
-    message: "Loading data structure...", 
-    detail: "Preparing trial components and patient profiles" 
+  {
+    message: "Loading data structure...",
+    detail: "Preparing trial components and patient profiles"
   },
-  { 
-    message: "Processing patient data...", 
-    detail: "Analyzing demographics and trial complexity factors" 
+  {
+    message: "Processing patient data...",
+    detail: "Analyzing demographics and trial complexity factors"
   },
-  { 
-    message: "Generating model values...", 
-    detail: "Calculating feasibility scores across categories" 
+  {
+    message: "Generating model values...",
+    detail: "Calculating feasibility scores across categories"
   },
-  { 
-    message: "Finalizing visualization...", 
-    detail: "Preparing interactive components for display" 
+  {
+    message: "Finalizing visualization...",
+    detail: "Preparing interactive components for display"
   }
 ];
 
@@ -62,7 +62,7 @@ export default function LoadingAnimation() {
       <div className="w-full max-w-lg bg-white rounded-xl shadow-lg p-6 animate-fade-in">
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-gray-800 mb-2">
-            Clinical Trial Dashboard
+            Patient Feasibility Dashboard
           </h2>
           <p className="text-gray-600">
             Please wait while we analyze the trial data
@@ -71,8 +71,8 @@ export default function LoadingAnimation() {
 
         <div className="mb-6">
           <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-blue-500 rounded-full transition-all duration-300 ease-out" 
+            <div
+              className="h-full bg-blue-500 rounded-full transition-all duration-300 ease-out"
               style={{ width: `${progress}%` }}
             />
           </div>
@@ -80,8 +80,8 @@ export default function LoadingAnimation() {
 
         <div className="space-y-4">
           {loadingPhases.map((phase, index) => (
-            <div 
-              key={index} 
+            <div
+              key={index}
               className={`flex items-start ${index === currentPhase ? 'text-blue-600 font-medium' : index < currentPhase ? 'text-gray-400' : 'text-gray-300'}`}
             >
               <div className="mr-3 mt-1">

@@ -149,7 +149,11 @@ export default function TrialComplexityCard() {
       let removeMultiplier = 1;
       
       // Profile-specific multipliers based on category - UPDATED to reflect new lower values
-      if (currentProfileId === 'profile1') {
+      if (currentProfileId === 'profile0') {
+        // Demo profile - all multipliers are 1.0 to maintain preset scores
+        addMultiplier = 1.0;
+        removeMultiplier = 1.0;
+      } else if (currentProfileId === 'profile1') {
         if (item.category === 'Healthcare Engagement') { addMultiplier = 0.15; removeMultiplier = 0.2; }
         else if (item.category === 'Motivation') { addMultiplier = 0.1; removeMultiplier = 0.12; }
         else if (item.category === 'Quality of Life') { addMultiplier = 0.08; removeMultiplier = 0.08; }
@@ -378,28 +382,37 @@ export default function TrialComplexityCard() {
         <div className="text-xs text-gray-600 mt-2 p-1.5 bg-blue-50 rounded">
           <div className="font-medium mb-1">{currentProfile.name} Scoring Rules:</div>
           <div className="space-y-0.5">
+            {currentProfileId === 'profile0' && (
+              <>
+                <div>🎯 <strong>Profile 0</strong>: Calculated scores with demo insights</div>
+                <div>🔥 <strong>Healthcare Engagement</strong>: +score×1.0 when added, -score×1.0 when removed (High)</div>
+                <div>⚡ <strong>Motivation</strong>: +score×1.0 when added, -score×1.0 when removed (Medium)</div>
+                <div>🔹 <strong>Logistics Challenge</strong>: +score×1.0 when added, -score×1.0 when removed (Low)</div>
+                <div>🔹 <strong>Quality of Life</strong>: +score×1.0 when added, -score×1.0 when removed (Low)</div>
+              </>
+            )}
             {currentProfileId === 'profile1' && (
               <>
-                <div>🔥 <strong>Healthcare Engagement</strong>: +score×0.15 when added, -score×0.2 when removed</div>
-                <div>⚡ <strong>Motivation</strong>: +score×0.1 when added, -score×0.12 when removed</div>
-                <div>🔹 <strong>Quality of Life</strong>: +score×0.08 when added, -score×0.08 when removed</div>
-                <div>⚡ <strong>Logistics Challenge</strong>: +score×0.12 when added, -score×0.1 when removed</div>
+                <div>⚡ <strong>Healthcare Engagement</strong>: +score×0.15 when added, -score×0.2 when removed (Medium)</div>
+                <div>🔹 <strong>Motivation</strong>: +score×0.1 when added, -score×0.12 when removed (Low)</div>
+                <div>🔥 <strong>Quality of Life</strong>: +score×0.08 when added, -score×0.08 when removed (High)</div>
+                <div>⚡ <strong>Logistics Challenge</strong>: +score×0.12 when added, -score×0.1 when removed (Medium)</div>
               </>
             )}
             {currentProfileId === 'profile2' && (
               <>
-                <div>🔥 <strong>Healthcare Engagement</strong>: +score×0.2 when added, -score×0.15 when removed</div>
-                <div>🔥 <strong>Motivation</strong>: +score×0.2 when added, -score×0.12 when removed</div>
-                <div>⚡ <strong>Quality of Life</strong>: +score×0.1 when added, -score×0.08 when removed</div>
-                <div>🔹 <strong>Logistics Challenge</strong>: +score×0.05 when added, -score×0.05 when removed</div>
+                <div>🔹 <strong>Healthcare Engagement</strong>: +score×0.2 when added, -score×0.15 when removed (Low)</div>
+                <div>🔹 <strong>Motivation</strong>: +score×0.2 when added, -score×0.12 when removed (Low)</div>
+                <div>⚡ <strong>Quality of Life</strong>: +score×0.1 when added, -score×0.08 when removed (Medium)</div>
+                <div>🔹 <strong>Logistics Challenge</strong>: +score×0.05 when added, -score×0.05 when removed (Low)</div>
               </>
             )}
             {currentProfileId === 'profile3' && (
               <>
-                <div>🔹 <strong>Healthcare Engagement</strong>: +score×0.1 when added, -score×0.08 when removed</div>
-                <div>🔹 <strong>Motivation</strong>: +score×0.1 when added, -score×0.08 when removed</div>
-                <div>🔥 <strong>Quality of Life</strong>: +score×0.15 when added, -score×0.12 when removed</div>
-                <div>🔥 <strong>Logistics Challenge</strong>: +score×0.2 when added, -score×0.15 when removed</div>
+                <div>🔥 <strong>Healthcare Engagement</strong>: +score×0.1 when added, -score×0.08 when removed (High)</div>
+                <div>🔥 <strong>Motivation</strong>: +score×0.1 when added, -score×0.08 when removed (High)</div>
+                <div>🔥 <strong>Quality of Life</strong>: +score×0.15 when added, -score×0.12 when removed (High)</div>
+                <div>🔥 <strong>Logistics Challenge</strong>: +score×0.2 when added, -score×0.15 when removed (High)</div>
               </>
             )}
           </div>

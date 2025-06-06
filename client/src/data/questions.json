@@ -1111,6 +1111,174 @@
       "canBeInCategories": ["Uncategorized"],
       "cannotBeInCategories": [],
       "initialProfile": ["profile1", "profile2", "profile3"]
+    },
+    {
+      "id": "demo1",
+      "name": "Demo: High engagement with healthcare team",
+      "score": 1.0,
+      "canBeInCategories": ["Healthcare Engagement"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile0"]
+    },
+    {
+      "id": "demo2",
+      "name": "Demo: Excellent communication with doctors",
+      "score": 1.0,
+      "canBeInCategories": ["Healthcare Engagement"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile0"]
+    },
+    {
+      "id": "demo3",
+      "name": "Demo: Active participation in treatment decisions",
+      "score": 1.0,
+      "canBeInCategories": ["Healthcare Engagement"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile0"]
+    },
+    {
+      "id": "demo4",
+      "name": "Demo: Regular follow-up appointments",
+      "score": 1.0,
+      "canBeInCategories": ["Healthcare Engagement"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile0"]
+    },
+    {
+      "id": "demo5",
+      "name": "Demo: Strong patient-provider relationship",
+      "score": 1.0,
+      "canBeInCategories": ["Healthcare Engagement"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile0"]
+    },
+    {
+      "id": "demo6",
+      "name": "Demo: Proactive health monitoring",
+      "score": 1.0,
+      "canBeInCategories": ["Healthcare Engagement"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile0"]
+    },
+    {
+      "id": "demo7",
+      "name": "Demo: Access to specialized care",
+      "score": 1.0,
+      "canBeInCategories": ["Healthcare Engagement"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile0"]
+    },
+    {
+      "id": "demo8",
+      "name": "Demo: Comprehensive care coordination",
+      "score": 1.0,
+      "canBeInCategories": ["Healthcare Engagement"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile0"]
+    },
+    {
+      "id": "demo9",
+      "name": "Demo: Timely medical responses",
+      "score": 1.0,
+      "canBeInCategories": ["Healthcare Engagement"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile0"]
+    },
+    {
+      "id": "demo10",
+      "name": "Demo: Strong motivation for treatment adherence",
+      "score": 1.0,
+      "canBeInCategories": ["Motivation"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile0"]
+    },
+    {
+      "id": "demo11",
+      "name": "Demo: Positive outlook on recovery",
+      "score": 1.0,
+      "canBeInCategories": ["Motivation"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile0"]
+    },
+    {
+      "id": "demo12",
+      "name": "Demo: Family support system",
+      "score": 1.0,
+      "canBeInCategories": ["Motivation"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile0"]
+    },
+    {
+      "id": "demo13",
+      "name": "Demo: Goal-oriented mindset",
+      "score": 1.0,
+      "canBeInCategories": ["Motivation"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile0"]
+    },
+    {
+      "id": "demo14",
+      "name": "Demo: Commitment to lifestyle changes",
+      "score": 1.0,
+      "canBeInCategories": ["Motivation"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile0"]
+    },
+    {
+      "id": "demo15",
+      "name": "Demo: Active participation in support groups",
+      "score": 1.0,
+      "canBeInCategories": ["Motivation"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile0"]
+    },
+    {
+      "id": "demo16",
+      "name": "Demo: Manageable travel distance to clinic",
+      "score": 1.0,
+      "canBeInCategories": ["Logistics Challenge"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile0"]
+    },
+    {
+      "id": "demo17",
+      "name": "Demo: Flexible appointment scheduling",
+      "score": 1.0,
+      "canBeInCategories": ["Logistics Challenge"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile0"]
+    },
+    {
+      "id": "demo18",
+      "name": "Demo: Minimal impact on daily functioning",
+      "score": 0.75,
+      "canBeInCategories": ["Quality of Life"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile0"]
+    },
+    {
+      "id": "demo19",
+      "name": "Demo: Maintained social connections",
+      "score": 0.75,
+      "canBeInCategories": ["Quality of Life"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile0"]
+    },
+    {
+      "id": "demo20",
+      "name": "Demo: Excellent clinical trial coordination",
+      "score": 1.0,
+      "canBeInCategories": ["Healthcare Engagement"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile0"]
+    },
+    {
+      "id": "demo21",
+      "name": "Demo: Empowered patient advocacy",
+      "score": 1.0,
+      "canBeInCategories": ["Motivation"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile0"]
     }
   ],
   "profile1": {
@@ -1293,6 +1461,54 @@
           "q23",
           "q24"
         ]
+      },
+      {
+        "name": "Uncategorized",
+        "questions": [
+          "q101", "q102", "q103", "q104", "q105", "q106", "q107", "q108", "q109", "q110",
+          "q111", "q112", "q113", "q114", "q115", "q116", "q117", "q118", "q119", "q120",
+          "q121", "q122", "q123", "q124", "q125", "q126", "q127", "q128", "q129", "q130",
+          "q131", "q132", "q133", "q134", "q135", "q136", "q137", "q138", "q139"
+        ]
+      }
+    ]
+  },
+  "profile0": {
+    "profile_details": {
+      "origin": [
+        {
+          "country": "US",
+          "percentage": 50
+        },
+        {
+          "country": "DE",
+          "percentage": 50
+        }
+      ],
+      "age": "Demo Profile",
+      "role": [
+        {
+          "role_name": "Demo",
+          "percentage": 100
+        }
+      ]
+    },
+    "categories": [
+      {
+        "name": "Logistics Challenge",
+        "questions": ["demo16", "demo17"]
+      },
+      {
+        "name": "Motivation",
+        "questions": ["demo10", "demo11", "demo12", "demo13", "demo14", "demo15", "demo21"]
+      },
+      {
+        "name": "Healthcare Engagement",
+        "questions": ["demo1", "demo2", "demo3", "demo4", "demo5", "demo6", "demo7", "demo8", "demo9", "demo20"]
+      },
+      {
+        "name": "Quality of Life",
+        "questions": ["demo18", "demo19"]
       },
       {
         "name": "Uncategorized",

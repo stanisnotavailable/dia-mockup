@@ -92,6 +92,9 @@ export function generateAiSummary(profile: Profile): string {
     parts.push(`Recommended approach: ${recommendation}.`);
   }
 
+  // Additional sentence for enhanced summary
+  parts.push(`Regular monitoring and personalized support strategies will be essential for optimal trial participation outcomes.`);
+
   return parts.join(' ');
 }
 

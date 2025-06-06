@@ -210,6 +210,9 @@ export default function PatientDemographics() {
   const profile = getCurrentProfile();
   const patientDemographic = profile.patientDemographic;
 
+  // Check if current profile is profile0 to conditionally hide sections
+  const isProfile0 = currentProfileId === 'profile0';
+
   // Calculate the average model value for the profile
   const averageModelValue = useMemo(() => {
     if (!profile.categories || profile.categories.length === 0) return 'N/A';
@@ -238,6 +241,65 @@ export default function PatientDemographics() {
   // Helper function to get country flag component or styles
   const getCountryFlag = (countryCode: string, countryName: string): JSX.Element => {
     return <FlagIcon countryCode={countryCode} countryName={countryName} />;
+  };
+
+  // Helper function to get legend data based on profile
+  const getLegendData = () => {
+    switch (currentProfileId) {
+      case 'profile0':
+        return [
+          { name: "Healthcare Engagement", level: "High", visual: "full" },
+          { name: "Logistical Challenge", level: "Low", visual: "empty" },
+          { name: "Quality of Life Impact", level: "Low", visual: "empty" },
+          { name: "Motivation", level: "Medium", visual: "half" }
+        ];
+      case 'profile1':
+        return [
+          { name: "Healthcare Engagement", level: "Medium", visual: "half" },
+          { name: "Logistical Challenge", level: "Medium", visual: "half" },
+          { name: "Quality of Life Impact", level: "High", visual: "full" },
+          { name: "Motivation", level: "Low", visual: "empty" }
+        ];
+      case 'profile2':
+        return [
+          { name: "Healthcare Engagement", level: "Low", visual: "empty" },
+          { name: "Logistical Challenge", level: "Low", visual: "empty" },
+          { name: "Quality of Life Impact", level: "Medium", visual: "half" },
+          { name: "Motivation", level: "Low", visual: "empty" }
+        ];
+      case 'profile3':
+        return [
+          { name: "Healthcare Engagement", level: "High", visual: "full" },
+          { name: "Logistical Challenge", level: "High", visual: "full" },
+          { name: "Quality of Life Impact", level: "High", visual: "full" },
+          { name: "Motivation", level: "High", visual: "full" }
+        ];
+      default:
+        return [
+          { name: "Healthcare Engagement", level: "Medium", visual: "half" },
+          { name: "Logistical Challenge", level: "Medium", visual: "half" },
+          { name: "Quality of Life Impact", level: "High", visual: "full" },
+          { name: "Motivation", level: "Low", visual: "empty" }
+        ];
+    }
+  };
+
+  // Helper function to get visual indicator based on level
+  const getVisualIndicator = (visual: string) => {
+    switch (visual) {
+      case "full":
+        return <div className="w-3 h-3 rounded-full bg-gray-700 mr-2"></div>;
+      case "half":
+        return (
+          <div className="w-3 h-3 rounded-full mr-2 relative bg-gray-300">
+            <div className="w-1.5 h-3 bg-gray-700 rounded-l-full"></div>
+          </div>
+        );
+      case "empty":
+        return <div className="w-3 h-3 rounded-full border border-gray-700 bg-white mr-2"></div>;
+      default:
+        return <div className="w-3 h-3 rounded-full border border-gray-700 bg-white mr-2"></div>;
+    }
   };
 
   // Generate AI summary whenever profile data changes or profile changes
@@ -285,7 +347,8 @@ export default function PatientDemographics() {
           <div className="flex flex-row justify-between">
             <div>
               <div className={`text-gray-500 ${labelFontSize} mb-0.5`}>Age Range</div>
-              <div className="font-medium">{patientDemographic.age}</div>
+              {isProfile0 && <div className="font-medium">&infin; - &infin;</div>}
+              <div className="font-medium" style={{ visibility: isProfile0 ? 'hidden' : 'visible' }}>{patientDemographic.age}</div>
             </div>
 
 
@@ -330,38 +393,15 @@ export default function PatientDemographics() {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr className="border-b border-gray-300">
-                    <td className="py-2 px-3 border-r border-gray-300">Healthcare Engagement</td>
-                    <td className="py-2 px-3 flex items-center">
-                      <div className="w-3 h-3 rounded-full mr-2 relative bg-gray-300">
-                        <div className="w-1.5 h-3 bg-gray-700 rounded-l-full"></div>
-                      </div>
-                      <span>(Medium)</span>
-                    </td>
-                  </tr>
-                  <tr className="border-b border-gray-300">
-                    <td className="py-2 px-3 border-r border-gray-300">Logistical Challenge</td>
-                    <td className="py-2 px-3 flex items-center">
-                      <div className="w-3 h-3 rounded-full mr-2 relative bg-gray-300">
-                        <div className="w-1.5 h-3 bg-gray-700 rounded-l-full"></div>
-                      </div>
-                      <span>(Medium)</span>
-                    </td>
-                  </tr>
-                  <tr className="border-b border-gray-300">
-                    <td className="py-2 px-3 border-r border-gray-300">Quality of Life Impact</td>
-                    <td className="py-2 px-3 flex items-center">
-                      <div className="w-3 h-3 rounded-full bg-gray-700 mr-2"></div>
-                      <span>(High)</span>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="py-2 px-3 border-r border-gray-300">Motivation</td>
-                    <td className="py-2 px-3 flex items-center">
-                      <div className="w-3 h-3 rounded-full border border-gray-700 bg-white mr-2"></div>
-                      <span>(Low)</span>
-                    </td>
-                  </tr>
+                  {getLegendData().map((item, index) => (
+                    <tr key={item.name} className={index < getLegendData().length - 1 ? "border-b border-gray-300" : ""}>
+                      <td className="py-2 px-3 border-r border-gray-300">{item.name}</td>
+                      <td className="py-2 px-3 flex items-center">
+                        {getVisualIndicator(item.visual)}
+                        <span>({item.level})</span>
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
@@ -376,34 +416,36 @@ export default function PatientDemographics() {
               </div>
             </div>
 
-            {/* Show the thinking animation only during initial generation */}
-            {isGeneratingAi && !aiSummary && (
-              <div className="px-3 py-2">
-                <AiSummaryAnimation isGenerating={true} darkMode={true} />
-              </div>
-            )}
+            <div>
+              {/* Show the thinking animation only during initial generation */}
+              {isGeneratingAi && !aiSummary && (
+                <div className="px-3 py-2">
+                  <AiSummaryAnimation isGenerating={true} darkMode={true} />
+                </div>
+              )}
 
-            <div
-              className="font-normal text-base rounded-md overflow-hidden"
-              style={{ backgroundColor: "#EDF3FD", minHeight: "120px" }}
-            >
-              {/* Fancy AI border animation */}
-              <div className="relative">
-                <AiPulseAnimation isGenerating={isGeneratingAi} darkMode={true} />
-                <div className="relative z-10 p-3">
-                  <div className="font-regular overflow-y-auto" style={{ maxHeight: "350px", color: "#1A1A2E" }}>
-                    {aiSummary ? (
-                      <TypingAnimation
-                        text={aiSummary}
-                        isGenerating={isGeneratingAi}
-                        speed={40}  // Much slower typing speed
-                        initialDelay={400}  // Longer initial delay
-                        thinkingPauses={true}  // Enable random pauses while typing
-                        darkMode={true}  // Enable dark mode styling
-                      />
-                    ) : (
-                      <span className="text-gray-200">Analyzing patient data to generate insights...</span>
-                    )}
+              <div
+                className="font-normal text-base rounded-md overflow-hidden"
+                style={{ backgroundColor: "#EDF3FD", minHeight: "120px" }}
+              >
+                {/* Fancy AI border animation */}
+                <div className="relative">
+                  <AiPulseAnimation isGenerating={isGeneratingAi} darkMode={true} />
+                  <div className="relative z-10 p-3">
+                    <div className="font-regular overflow-y-auto" style={{ maxHeight: "350px", color: "#1A1A2E", visibility: isProfile0 ? 'hidden' : 'visible' }}>
+                      {aiSummary ? (
+                        <TypingAnimation
+                          text={aiSummary}
+                          isGenerating={isGeneratingAi}
+                          speed={40}  // Much slower typing speed
+                          initialDelay={400}  // Longer initial delay
+                          thinkingPauses={true}  // Enable random pauses while typing
+                          darkMode={true}  // Enable dark mode styling
+                        />
+                      ) : (
+                        <span className="text-gray-200">Analyzing patient data to generate insights...</span>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>

@@ -249,41 +249,44 @@ export default function Dashboard() {
                       <div className="flex justify-between items-center mb-1">
                         <div className="flex items-center">
                           <h4 className="text-base font-medium mr-2">{categoryName}</h4>
-                          {/* Score indicator based on category */}
-                          {categoryName === "Healthcare Engagement" && (
-                            <div className="flex items-center">
-                              <div className="w-3 h-3 rounded-full mr-1 relative bg-gray-300">
-                                <div className="w-1.5 h-3 bg-gray-700 rounded-l-full"></div>
-                              </div>
-                              <span className="text-xs text-gray-500">(Medium)</span>
-                            </div>
-                          )}
-                          {categoryName === "Logistical Challenge" && (
-                            <div className="flex items-center">
-                              <div className="w-3 h-3 rounded-full mr-1 relative bg-gray-300">
-                                <div className="w-1.5 h-3 bg-gray-700 rounded-l-full"></div>
-                              </div>
-                              <span className="text-xs text-gray-500">(Medium)</span>
-                            </div>
-                          )}
-                          {categoryName === "Quality of Life Impact" && (
-                            <div className="flex items-center">
-                              <div className="w-3 h-3 rounded-full bg-gray-700 mr-1"></div>
-                              <span className="text-xs text-gray-500">(High)</span>
-                            </div>
-                          )}
-                          {categoryName === "Motivation" && (
-                            <div className="flex items-center">
-                              <div className="w-3 h-3 rounded-full border border-gray-700 bg-white mr-1"></div>
-                              <span className="text-xs text-gray-500">(Low)</span>
-                            </div>
-                          )}
+                          {/* Score indicator based on multiplierLevel */}
+                          {(() => {
+                            // Get the multiplier level for this category
+                            const categoryData = profile.categories?.find(cat => cat.name === actualCategoryName);
+                            const multiplierLevel = categoryData?.multiplierLevel || 'Medium';
+                            
+                            // Return icon based on multiplierLevel
+                            if (multiplierLevel === 'High') {
+                              return (
+                                <div className="flex items-center">
+                                  <div className="w-3 h-3 rounded-full bg-gray-700 mr-1"></div>
+                                  <span className="text-xs text-gray-500">({multiplierLevel})</span>
+                                </div>
+                              );
+                            } else if (multiplierLevel === 'Medium') {
+                              return (
+                                <div className="flex items-center">
+                                  <div className="w-3 h-3 rounded-full mr-1 relative bg-gray-300">
+                                    <div className="w-1.5 h-3 bg-gray-700 rounded-l-full"></div>
+                                  </div>
+                                  <span className="text-xs text-gray-500">({multiplierLevel})</span>
+                                </div>
+                              );
+                            } else { // Low
+                              return (
+                                <div className="flex items-center">
+                                  <div className="w-3 h-3 rounded-full border border-gray-700 bg-white mr-1"></div>
+                                  <span className="text-xs text-gray-500">({multiplierLevel})</span>
+                                </div>
+                              );
+                            }
+                          })()}
                         </div>
                         {/* Score is now hidden */}
                       </div>
 
                       {/* Scrollable items container */}
-                      <div className="flex-1 overflow-y-auto pr-1 space-compact custom-scrollbar">
+                      <div className="flex-1 overflow-y-auto pr-1 space-compact custom-scrollbar" style={{ overflowY: profile.id === 'profile0' ? 'hidden' : 'auto' }}  >
                         {categoryItems.length > 0 ? (
                           categoryItems.map((item, qIdx) => {
                             // Create a full ComplexityItem for dragging
@@ -300,6 +303,7 @@ export default function Dashboard() {
                                 key={qIdx}
                                 className="text-base text-gray-600 flex items-center justify-between py-1 px-2 rounded cursor-move"
                                 style={{
+                                  visibility: profile.id === 'profile0' ? 'hidden' : 'visible',
                                   transition: 'background-color 0.2s ease',
                                 }}
                                 onMouseEnter={(e) => {
@@ -437,7 +441,7 @@ export default function Dashboard() {
                     </div>
 
                     {/* Scrollable items container */}
-                    <div className="flex-1 overflow-y-auto pr-1 space-compact custom-scrollbar">
+                    <div className="flex-1 overflow-y-auto pr-1 space-compact custom-scrollbar" style={{ overflowY: profile.id === 'profile0' ? 'hidden' : 'auto' }}>
                       {(trialData.complexityItems[CATEGORIES.UNCATEGORIZED]?.length || 0) > 0 ? (
                         trialData.complexityItems[CATEGORIES.UNCATEGORIZED].map((item, qIdx) => {
                           // Create a full ComplexityItem for dragging
@@ -454,6 +458,7 @@ export default function Dashboard() {
                               key={qIdx}
                               className="text-base text-gray-600 flex items-center justify-between py-1 px-2 rounded cursor-move"
                               style={{
+                                visibility: profile.id === 'profile0' ? 'hidden' : 'visible',
                                 transition: 'background-color 0.2s ease',
                               }}
                               onMouseEnter={(e) => {

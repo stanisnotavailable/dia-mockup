@@ -27,6 +27,7 @@ interface ProfileData {
 
 interface QuestionsData {
   allQuestions: QuestionItem[];
+  profile0: ProfileData;
   profile1: ProfileData;
   profile2: ProfileData;
   profile3: ProfileData;
@@ -50,45 +51,57 @@ export type CategoryType = typeof CATEGORIES[keyof typeof CATEGORIES];
 
 // Define profile-specific category multipliers
 const PROFILE_MULTIPLIERS = {
+  profile0: {
+    [CATEGORIES.HEALTHCARE]: 'High',    // Highest -> High
+    [CATEGORIES.LOGISTICS]: 'Low',      // Low
+    [CATEGORIES.QUALITY]: 'Low',        // Low
+    [CATEGORIES.MOTIVATION]: 'Medium'   // Medium
+  },
   profile1: {
-    [CATEGORIES.HEALTHCARE]: 'Medium',
-    [CATEGORIES.LOGISTICS]: 'Medium',
-    [CATEGORIES.QUALITY]: 'High',
-    [CATEGORIES.MOTIVATION]: 'Low'
+    [CATEGORIES.HEALTHCARE]: 'Medium',  // Medium
+    [CATEGORIES.LOGISTICS]: 'Medium',   // Medium
+    [CATEGORIES.QUALITY]: 'High',       // High
+    [CATEGORIES.MOTIVATION]: 'Low'      // Low
   },
   profile2: {
-    [CATEGORIES.HEALTHCARE]: 'High',
-    [CATEGORIES.LOGISTICS]: 'Low',
-    [CATEGORIES.QUALITY]: 'Medium',
-    [CATEGORIES.MOTIVATION]: 'High'
+    [CATEGORIES.HEALTHCARE]: 'Low',     // Low
+    [CATEGORIES.LOGISTICS]: 'Low',      // Low
+    [CATEGORIES.QUALITY]: 'Medium',     // Medium
+    [CATEGORIES.MOTIVATION]: 'Low'      // Low
   },
   profile3: {
-    [CATEGORIES.HEALTHCARE]: 'Low',
-    [CATEGORIES.LOGISTICS]: 'High',
-    [CATEGORIES.QUALITY]: 'Medium',
-    [CATEGORIES.MOTIVATION]: 'Low'
+    [CATEGORIES.HEALTHCARE]: 'High',    // High
+    [CATEGORIES.LOGISTICS]: 'High',     // High
+    [CATEGORIES.QUALITY]: 'High',       // High
+    [CATEGORIES.MOTIVATION]: 'High'     // High
   }
 } as const;
 
 // Define profile-specific scoring multipliers - REDUCED VALUES for better scaling
 const PROFILE_SCORING_RULES = {
+  profile0: {
+    [CATEGORIES.HEALTHCARE]: { add: 1, remove: 1 },       // Will use base score instead
+    [CATEGORIES.MOTIVATION]: { add: 1, remove: 1 },       // Will use base score instead
+    [CATEGORIES.QUALITY]: { add: 1, remove: 1 },          // Will use base score instead
+    [CATEGORIES.LOGISTICS]: { add: 1, remove: 1 }         // Will use base score instead
+  },
   profile1: {
-    [CATEGORIES.HEALTHCARE]: { add: 0.75, remove: 1 },     // Engagement insight
-    [CATEGORIES.MOTIVATION]: { add: 0.5, remove: 0.6 },     // Motivation insight
-    [CATEGORIES.QUALITY]: { add: 0.4, remove: 0.4 },      // QoL impact insight
-    [CATEGORIES.LOGISTICS]: { add: 0.6, remove: 0.5 }       // Logistical insight
+    [CATEGORIES.HEALTHCARE]: { add: 1.5, remove: 2 },     // Engagement insight
+    [CATEGORIES.MOTIVATION]: { add: 1, remove: 1.2 },     // Motivation insight
+    [CATEGORIES.QUALITY]: { add: 0.8, remove: 0.8 },      // QoL impact insight
+    [CATEGORIES.LOGISTICS]: { add: 1.2, remove: 1 }       // Logistical insight
   },
   profile2: {
-    [CATEGORIES.HEALTHCARE]: { add: 1, remove: 0.75 },     // Engagement insight
-    [CATEGORIES.MOTIVATION]: { add: 1, remove: 0.6 },     // Motivation insight
-    [CATEGORIES.QUALITY]: { add: 0.5, remove: 0.4 },        // QoL impact insight
-    [CATEGORIES.LOGISTICS]: { add: 0.25, remove: 0.25 }     // Logistical insight
+    [CATEGORIES.HEALTHCARE]: { add: 2, remove: 1.5 },     // Engagement insight
+    [CATEGORIES.MOTIVATION]: { add: 2, remove: 1.2 },     // Motivation insight
+    [CATEGORIES.QUALITY]: { add: 1, remove: 0.8 },        // QoL impact insight
+    [CATEGORIES.LOGISTICS]: { add: 0.5, remove: 0.5 }     // Logistical insight
   },
   profile3: {
-    [CATEGORIES.HEALTHCARE]: { add: 0.5, remove: 0.4 },     // Engagement insight
-    [CATEGORIES.MOTIVATION]: { add: 0.5, remove: 0.4 },     // Motivation insight
-    [CATEGORIES.QUALITY]: { add: 0.75, remove: 0.6 },      // QoL impact insight
-    [CATEGORIES.LOGISTICS]: { add: 1, remove: 0.75 }       // Logistical insight
+    [CATEGORIES.HEALTHCARE]: { add: 1, remove: 0.8 },     // Engagement insight
+    [CATEGORIES.MOTIVATION]: { add: 1, remove: 0.8 },     // Motivation insight
+    [CATEGORIES.QUALITY]: { add: 1.5, remove: 1.2 },      // QoL impact insight
+    [CATEGORIES.LOGISTICS]: { add: 2, remove: 1.5 }       // Logistical insight
   }
 } as const;
 
@@ -326,6 +339,47 @@ const createPredefinedProfileData = (profileId: string): TrialData => {
 
   // Define predefined insights for each profile based on user requirements
   const predefinedInsights = {
+    profile0: {
+      "Quality of Life": [
+        "demo18", // Demo: Minimal impact on daily functioning (0.75)
+        "demo19"  // Demo: Maintained social connections (0.75)
+        // Total: 1.5 points = 15 on radar chart
+      ],
+      "Logistics Challenge": [
+        "demo16", // Demo: Manageable travel distance to clinic (1.0)
+        "demo17"  // Demo: Flexible appointment scheduling (1.0)
+        // Total: 2.0 points = 20 on radar chart
+      ],
+      "Healthcare Engagement": [
+        "demo1",  // Demo: High engagement with healthcare team (1.0)
+        "demo2",  // Demo: Excellent communication with doctors (1.0)
+        "demo3",  // Demo: Active participation in treatment decisions (1.0)
+        "demo4",  // Demo: Regular follow-up appointments (1.0)
+        "demo5",  // Demo: Strong patient-provider relationship (1.0)
+        "demo6",  // Demo: Proactive health monitoring (1.0)
+        "demo7",  // Demo: Access to specialized care (1.0)
+        "demo8",  // Demo: Comprehensive care coordination (1.0)
+        "demo9",  // Demo: Timely medical responses (1.0)
+        "demo20"  // Demo: Excellent clinical trial coordination (1.0)
+        // Total: 10.0 points = 100 on radar chart (close to target of 95)
+      ],
+      "Motivation": [
+        "demo10", // Demo: Strong motivation for treatment adherence (1.0)
+        "demo11", // Demo: Positive outlook on recovery (1.0)
+        "demo12", // Demo: Family support system (1.0)
+        "demo13", // Demo: Goal-oriented mindset (1.0)
+        "demo14", // Demo: Commitment to lifestyle changes (1.0)
+        "demo15", // Demo: Active participation in support groups (1.0)
+        "demo21"  // Demo: Empowered patient advocacy (1.0)
+        // Total: 7.0 points = 70 on radar chart (close to target of 65)
+      ],
+      "Uncategorized": [
+        "q101", "q102", "q103", "q104", "q105", "q106", "q107", "q108", "q109", "q110",
+        "q111", "q112", "q113", "q114", "q115", "q116", "q117", "q118", "q119", "q120",
+        "q121", "q122", "q123", "q124", "q125", "q126", "q127", "q128", "q129", "q130",
+        "q131", "q132", "q133", "q134", "q135", "q136", "q137", "q138", "q139"
+      ]
+    },
     profile1: {
       "Quality of Life": [
         "q12", // I was on radiation for a few weeks.
@@ -426,7 +480,7 @@ const createPredefinedProfileData = (profileId: string): TrialData => {
 
   // Get predefined insights for this profile
   const profileInsights = predefinedInsights[profileId as keyof typeof predefinedInsights];
-  
+
   if (!profileInsights) {
     // Fallback to original random distribution if profile not found
     return createProfileData(profileId);
@@ -435,7 +489,7 @@ const createPredefinedProfileData = (profileId: string): TrialData => {
   // Place predefined insights in their designated categories
   Object.entries(profileInsights).forEach(([categoryName, questionIds]) => {
     const categoryType = categoryName as CategoryType;
-    
+
     questionIds.forEach(questionId => {
       // Find the question in allItems
       const item = allItems.find(q => q.id === questionId);
@@ -502,6 +556,7 @@ const getDemographicData = (profileId: string): PatientDemographic => {
 
 // Get categories with calculated average scores
 const getCategoriesWithScores = (profileId: string, trialData: TrialData): CategoryData[] => {
+
   // Get profile-specific scoring rules
   const profileScoringRules = PROFILE_SCORING_RULES[profileId as keyof typeof PROFILE_SCORING_RULES] || PROFILE_SCORING_RULES.profile1;
   // Get multipliers for this profile (for display/backward compatibility)
@@ -549,14 +604,18 @@ const getCategoriesWithScores = (profileId: string, trialData: TrialData): Categ
 const createInitialProfiles = (): Profile[] => {
   const profiles: Profile[] = [];
 
-  ['profile1', 'profile2', 'profile3'].forEach(profileId => {
+  ['profile0', 'profile1', 'profile2', 'profile3'].forEach(profileId => {
     const trialData = createPredefinedProfileData(profileId);
     const patientDemographic = getDemographicData(profileId);
     const categories = getCategoriesWithScores(profileId, trialData);
 
+    const profileName = profileId === 'profile0' ? 'Profile 0' : 
+                       profileId === 'profile1' ? 'Profile 1' : 
+                       profileId === 'profile2' ? 'Profile 2' : 'Profile 3';
+
     profiles.push({
       id: profileId,
-      name: profileId === 'profile1' ? 'Profile 1' : profileId === 'profile2' ? 'Profile 2' : 'Profile 3',
+      name: profileName,
       trialData,
       patientDemographic,
       categories
@@ -571,7 +630,7 @@ const initialProfiles = createInitialProfiles();
 // Create context with default values
 export const TrialDataContext = createContext<TrialDataContextType>({
   profiles: initialProfiles,
-  currentProfileId: 'profile1',
+  currentProfileId: 'profile0',
   setCurrentProfileId: () => { },
   getCurrentProfile: () => initialProfiles[0],
   getQuestionsForProfile: () => [],
@@ -588,7 +647,7 @@ export const TrialDataProvider = ({ children }: { children: ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
   // Initialize profiles state
   const [profiles, setProfiles] = useState<Profile[]>(initialProfiles);
-  const [currentProfileId, setCurrentProfileId] = useState<string>('profile1');
+  const [currentProfileId, setCurrentProfileId] = useState<string>('profile0');
   // Add timestamp to track data changes
   const [lastDataChangeTimestamp, setLastDataChangeTimestamp] = useState<number>(Date.now());
 

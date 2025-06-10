@@ -40,7 +40,7 @@ const typedQuestionsData = questionsData as unknown as QuestionsData;
 // Define the categories for complexity items
 export const CATEGORIES = {
   LOGISTICS: 'Logistics Challenge',
-  MOTIVATION: 'Motivation',
+  MOTIVATION: 'Motivation', 
   HEALTHCARE: 'Healthcare Engagement',
   QUALITY: 'Quality of Life',
   UNCATEGORIZED: 'Uncategorized'
@@ -77,31 +77,31 @@ const PROFILE_MULTIPLIERS = {
   }
 } as const;
 
-// Define profile-specific scoring multipliers - REDUCED VALUES for better scaling
+// Define profile-specific scoring rules with base scores and fixed add/remove amounts
 const PROFILE_SCORING_RULES = {
   profile0: {
-    [CATEGORIES.HEALTHCARE]: { add: 1, remove: 1 },       // Will use base score instead
-    [CATEGORIES.MOTIVATION]: { add: 1, remove: 1 },       // Will use base score instead
-    [CATEGORIES.QUALITY]: { add: 1, remove: 1 },          // Will use base score instead
-    [CATEGORIES.LOGISTICS]: { add: 1, remove: 1 }         // Will use base score instead
+    [CATEGORIES.HEALTHCARE]: { base: 0, add: 1, remove: 1 },       // Will use base score instead
+    [CATEGORIES.MOTIVATION]: { base: 0, add: 1, remove: 1 },       // Will use base score instead
+    [CATEGORIES.QUALITY]: { base: 0, add: 1, remove: 1 },          // Will use base score instead
+    [CATEGORIES.LOGISTICS]: { base: 0, add: 1, remove: 1 }         // Will use base score instead
   },
   profile1: {
-    [CATEGORIES.HEALTHCARE]: { add: 1.5, remove: 2 },     // Engagement insight
-    [CATEGORIES.MOTIVATION]: { add: 1, remove: 1.2 },     // Motivation insight
-    [CATEGORIES.QUALITY]: { add: 0.8, remove: 0.8 },      // QoL impact insight
-    [CATEGORIES.LOGISTICS]: { add: 1.2, remove: 1 }       // Logistical insight
+    [CATEGORIES.HEALTHCARE]: { base: 55, add: 15, remove: 15 },    // Healthcare Engagement: base 55, ±15
+    [CATEGORIES.MOTIVATION]: { base: 30, add: 10, remove: 10 },    // Motivation: base 30, ±10
+    [CATEGORIES.QUALITY]: { base: 25, add: 15, remove: 15 },       // Quality of Life: base 25, ±15
+    [CATEGORIES.LOGISTICS]: { base: 45, add: 10, remove: 10 }      // Logistics Challenge: base 45, ±10
   },
   profile2: {
-    [CATEGORIES.HEALTHCARE]: { add: 2, remove: 1.5 },     // Engagement insight
-    [CATEGORIES.MOTIVATION]: { add: 2, remove: 1.2 },     // Motivation insight
-    [CATEGORIES.QUALITY]: { add: 1, remove: 0.8 },        // QoL impact insight
-    [CATEGORIES.LOGISTICS]: { add: 0.5, remove: 0.5 }     // Logistical insight
+    [CATEGORIES.HEALTHCARE]: { base: 60, add: 20, remove: 20 },    // Healthcare Engagement: base 60, ±20
+    [CATEGORIES.MOTIVATION]: { base: 35, add: 25, remove: 25 },    // Motivation: base 35, ±25
+    [CATEGORIES.QUALITY]: { base: 20, add: 30, remove: 30 },       // Quality of Life: base 20, ±30
+    [CATEGORIES.LOGISTICS]: { base: 40, add: 25, remove: 25 }      // Logistics Challenge: base 40, ±25
   },
   profile3: {
-    [CATEGORIES.HEALTHCARE]: { add: 1, remove: 0.8 },     // Engagement insight
-    [CATEGORIES.MOTIVATION]: { add: 1, remove: 0.8 },     // Motivation insight
-    [CATEGORIES.QUALITY]: { add: 1.5, remove: 1.2 },      // QoL impact insight
-    [CATEGORIES.LOGISTICS]: { add: 2, remove: 1.5 }       // Logistical insight
+    [CATEGORIES.HEALTHCARE]: { base: 90, add: 5, remove: 5 },      // Healthcare Engagement: base 90, ±5
+    [CATEGORIES.MOTIVATION]: { base: 90, add: 10, remove: 10 },    // Motivation: base 90, ±10
+    [CATEGORIES.QUALITY]: { base: 95, add: 0, remove: 0 },         // Quality of Life: base 95, ±0
+    [CATEGORIES.LOGISTICS]: { base: 85, add: 15, remove: 15 }      // Logistics Challenge: base 85, ±15
   }
 } as const;
 
@@ -407,6 +407,7 @@ const createPredefinedProfileData = (profileId: string): TrialData => {
         "q94", // I'd be interested if it offered better care than I'm getting now.
       ],
       "Uncategorized": [
+        "custom1", "custom2",
         "q101", "q102", "q103", "q104", "q105", "q106", "q107", "q108", "q109", "q110",
         "q111", "q112", "q113", "q114", "q115", "q116", "q117", "q118", "q119", "q120",
         "q121", "q122", "q123", "q124", "q125", "q126", "q127", "q128", "q129", "q130",
@@ -440,6 +441,7 @@ const createPredefinedProfileData = (profileId: string): TrialData => {
         "q97", // I wouldn't consider anything beyond my current treatment.
       ],
       "Uncategorized": [
+        "custom3", "custom4",
         "q101", "q102", "q103", "q104", "q105", "q106", "q107", "q108", "q109", "q110",
         "q111", "q112", "q113", "q114", "q115", "q116", "q117", "q118", "q119", "q120",
         "q121", "q122", "q123", "q124", "q125", "q126", "q127", "q128", "q129", "q130",
@@ -470,6 +472,7 @@ const createPredefinedProfileData = (profileId: string): TrialData => {
         "q91", // I'd want a chance at a cure.
       ],
       "Uncategorized": [
+        "custom5", "custom6", "custom7",
         "q101", "q102", "q103", "q104", "q105", "q106", "q107", "q108", "q109", "q110",
         "q111", "q112", "q113", "q114", "q115", "q116", "q117", "q118", "q119", "q120",
         "q121", "q122", "q123", "q124", "q125", "q126", "q127", "q128", "q129", "q130",
@@ -575,20 +578,28 @@ const getCategoriesWithScores = (profileId: string, trialData: TrialData): Categ
       // Get multiplier level for this category and profile (for display)
       const multiplierLevel = profileMultipliers[categoryType as keyof typeof profileMultipliers] || 'Medium';
 
-      // Calculate initial score using profile-specific "add" multiplier to all insights in category
+      // Calculate initial score - for profile1, always use base score on initial load
       const profileRules = profileScoringRules[categoryType as keyof typeof profileScoringRules] || { add: 0.1, remove: 0.1 };
-      const addMultiplier = profileRules.add;
       let initialScore = 0;
 
-      items.forEach(item => {
-        const itemScore = item.score || 0;
-        initialScore += itemScore * addMultiplier;
-      });
+      if ((profileId === 'profile1' || profileId === 'profile2' || profileId === 'profile3') && 'base' in profileRules) {
+        // New scoring system: Always start with base score on initial load
+        const baseScore = (profileRules as any).base || 0;
+        initialScore = baseScore;
+        console.log(`${categoryName} (Profile ${profileId}): Initial load with base score ${baseScore} (${items.length} insights present but not counted)`);
+      } else {
+        // Old scoring system: sum of (item score × multiplier)
+        const addMultiplier = profileRules.add;
+        items.forEach(item => {
+          const itemScore = item.score || 0;
+          initialScore += itemScore * addMultiplier;
+        });
+        console.log(`Initial score for ${categoryName} (Profile ${profileId}): ${initialScore.toFixed(2)} from ${items.length} items (x${addMultiplier})`);
+      }
 
-      // Cap the maximum score at 10 (which will display as 100 on the radar chart)
-      initialScore = Math.min(initialScore, 10);
-
-      console.log(`Initial score for ${categoryName} (Profile ${profileId}): ${initialScore.toFixed(2)} from ${items.length} items (x${addMultiplier})`);
+      // Cap the maximum score at 100 for profile1, profile2, and profile3 (since they use different scale), 10 for others
+      const maxScore = (profileId === 'profile1' || profileId === 'profile2' || profileId === 'profile3') ? 100 : 10;
+      initialScore = Math.min(initialScore, maxScore);
 
       return {
         name: categoryName,
@@ -713,33 +724,471 @@ export const TrialDataProvider = ({ children }: { children: ReactNode }) => {
       const multiplierLevel = profileMultipliers[categoryType as keyof typeof profileMultipliers] || 'Medium';
       const profileRules = profileScoringRules[categoryType as keyof typeof profileScoringRules] || { add: 1, remove: 1 };
 
-      // Check if this category was affected by the move
-      if (category.name === fromCategory || category.name === targetCategory) {
-        // Get current items in this category from the updated trialData
-        const currentItems = profile.trialData.complexityItems[categoryType] || [];
+      let newScore = category.currentScore || category.averageScore || 0;
 
-        // Recalculate score based on all items currently in the category using profile-specific rules
-        let newScore = 0;
-        currentItems.forEach(categoryItem => {
-          const itemScore = categoryItem.score || 0;
-          newScore += itemScore * profileRules.add;
-        });
+      if ((profile.id === 'profile1' || profile.id === 'profile2' || profile.id === 'profile3') && 'base' in profileRules) {
+        // New scoring system: Use add/subtract logic instead of recalculating from scratch
+        const addAmount = (profileRules as any).add || 0;
+        const removeAmount = (profileRules as any).remove || 0;
 
-        // Ensure score doesn't go below 0 and cap at 10 (displays as 100 on radar chart)
-        newScore = Math.max(0, Math.min(newScore, 10));
+        // Apply custom logic for specific insights in profile1 only
+        if (profile.id === 'profile1') {
+          // Custom logic for "I usually just go to appointments and follow what they say" (custom1)
+          if (item.id === 'custom1') {
+            // When adding this insight to Healthcare Engagement or Motivation
+            if (category.name === targetCategory && targetCategory !== '') {
+              if (targetCategory === 'Healthcare Engagement') {
+                // Apply both Healthcare Engagement AND Motivation bonuses when added to Healthcare Engagement
+                if (category.name === 'Healthcare Engagement') {
+                  newScore += 20; // +20 to Healthcare Engagement
+                  console.log(`${category.name} (Profile ${profile.id}): Custom insight custom1 added to Healthcare Engagement, +20 = ${newScore}`);
+                }
+              } else if (targetCategory === 'Motivation') {
+                // Apply both Healthcare Engagement AND Motivation bonuses when added to Motivation
+                if (category.name === 'Motivation') {
+                  newScore += 10; // +10 to Motivation
+                  console.log(`${category.name} (Profile ${profile.id}): Custom insight custom1 added to Motivation, +10 = ${newScore}`);
+                }
+              } else {
+                newScore += addAmount; // Default amount for other categories
+                console.log(`${category.name} (Profile ${profile.id}): Custom insight custom1 added (default), +${addAmount} = ${newScore}`);
+              }
+            }
+            // Handle the cross-category effects when adding custom1
+            if (targetCategory === 'Healthcare Engagement' && category.name === 'Motivation') {
+              newScore += 10; // +10 to Motivation when added to Healthcare Engagement
+              console.log(`${category.name} (Profile ${profile.id}): Custom insight custom1 cross-effect (add to HC->Motivation), +10 = ${newScore}`);
+            } else if (targetCategory === 'Motivation' && category.name === 'Healthcare Engagement') {
+              newScore += 20; // +20 to Healthcare Engagement when added to Motivation
+              console.log(`${category.name} (Profile ${profile.id}): Custom insight custom1 cross-effect (add to Motivation->HC), +20 = ${newScore}`);
+            }
+            
+            // When removing this insight from Healthcare Engagement or Motivation
+            if (category.name === fromCategory && fromCategory !== '') {
+              if (fromCategory === 'Healthcare Engagement') {
+                if (category.name === 'Healthcare Engagement') {
+                  newScore -= 20; // -20 from Healthcare Engagement
+                  console.log(`${category.name} (Profile ${profile.id}): Custom insight custom1 removed from Healthcare Engagement, -20 = ${newScore}`);
+                }
+              } else if (fromCategory === 'Motivation') {
+                if (category.name === 'Motivation') {
+                  newScore -= 10; // -10 from Motivation
+                  console.log(`${category.name} (Profile ${profile.id}): Custom insight custom1 removed from Motivation, -10 = ${newScore}`);
+                }
+              } else {
+                newScore -= removeAmount; // Default amount for other categories
+                console.log(`${category.name} (Profile ${profile.id}): Custom insight custom1 removed (default), -${removeAmount} = ${newScore}`);
+              }
+            }
+            // Handle the cross-category effects when removing custom1
+            if (fromCategory === 'Healthcare Engagement' && category.name === 'Motivation') {
+              newScore -= 10; // -10 from Motivation when removed from Healthcare Engagement
+              console.log(`${category.name} (Profile ${profile.id}): Custom insight custom1 cross-effect (remove from HC->Motivation), -10 = ${newScore}`);
+            } else if (fromCategory === 'Motivation' && category.name === 'Healthcare Engagement') {
+              newScore -= 20; // -20 from Healthcare Engagement when removed from Motivation
+              console.log(`${category.name} (Profile ${profile.id}): Custom insight custom1 cross-effect (remove from Motivation->HC), -20 = ${newScore}`);
+            }
+          }
+          // Custom logic for "I'm not sure if I could ask about other options." (custom2)
+          else if (item.id === 'custom2') {
+            // When adding this insight to Healthcare Engagement or Quality of Life
+            if (category.name === targetCategory && targetCategory !== '') {
+              if (targetCategory === 'Healthcare Engagement') {
+                if (category.name === 'Healthcare Engagement') {
+                  newScore += 20; // +20 to Healthcare Engagement
+                  console.log(`${category.name} (Profile ${profile.id}): Custom insight custom2 added to Healthcare Engagement, +20 = ${newScore}`);
+                }
+              } else if (targetCategory === 'Quality of Life') {
+                if (category.name === 'Quality of Life') {
+                  newScore += 15; // +15 to Quality of Life
+                  console.log(`${category.name} (Profile ${profile.id}): Custom insight custom2 added to Quality of Life, +15 = ${newScore}`);
+                }
+              } else {
+                newScore += addAmount; // Default amount for other categories
+                console.log(`${category.name} (Profile ${profile.id}): Custom insight custom2 added (default), +${addAmount} = ${newScore}`);
+              }
+            }
+            // Handle the cross-category effects when adding custom2
+            if (targetCategory === 'Healthcare Engagement' && category.name === 'Quality of Life') {
+              newScore += 15; // +15 to Quality of Life when added to Healthcare Engagement
+              console.log(`${category.name} (Profile ${profile.id}): Custom insight custom2 cross-effect (add to HC->QoL), +15 = ${newScore}`);
+            } else if (targetCategory === 'Quality of Life' && category.name === 'Healthcare Engagement') {
+              newScore += 20; // +20 to Healthcare Engagement when added to Quality of Life
+              console.log(`${category.name} (Profile ${profile.id}): Custom insight custom2 cross-effect (add to QoL->HC), +20 = ${newScore}`);
+            }
+            
+            // When removing this insight from Healthcare Engagement or Quality of Life
+            if (category.name === fromCategory && fromCategory !== '') {
+              if (fromCategory === 'Healthcare Engagement') {
+                if (category.name === 'Healthcare Engagement') {
+                  newScore -= 20; // -20 from Healthcare Engagement
+                  console.log(`${category.name} (Profile ${profile.id}): Custom insight custom2 removed from Healthcare Engagement, -20 = ${newScore}`);
+                }
+              } else if (fromCategory === 'Quality of Life') {
+                if (category.name === 'Quality of Life') {
+                  newScore -= 15; // -15 from Quality of Life
+                  console.log(`${category.name} (Profile ${profile.id}): Custom insight custom2 removed from Quality of Life, -15 = ${newScore}`);
+                }
+              } else {
+                newScore -= removeAmount; // Default amount for other categories
+                console.log(`${category.name} (Profile ${profile.id}): Custom insight custom2 removed (default), -${removeAmount} = ${newScore}`);
+              }
+            }
+            // Handle the cross-category effects when removing custom2
+            if (fromCategory === 'Healthcare Engagement' && category.name === 'Quality of Life') {
+              newScore -= 15; // -15 from Quality of Life when removed from Healthcare Engagement
+              console.log(`${category.name} (Profile ${profile.id}): Custom insight custom2 cross-effect (remove from HC->QoL), -15 = ${newScore}`);
+            } else if (fromCategory === 'Quality of Life' && category.name === 'Healthcare Engagement') {
+              newScore -= 20; // -20 from Healthcare Engagement when removed from Quality of Life
+              console.log(`${category.name} (Profile ${profile.id}): Custom insight custom2 cross-effect (remove from QoL->HC), -20 = ${newScore}`);
+            }
+          }
+          // Default logic for other insights in profile1
+          else {
+            if (category.name === targetCategory && targetCategory !== '') {
+              // Add to target category
+              newScore += addAmount;
+              console.log(`${category.name} (Profile ${profile.id}): Added insight, +${addAmount} = ${newScore}`);
+            } else if (category.name === fromCategory && fromCategory !== '') {
+              // Subtract from source category
+              newScore -= removeAmount;
+              console.log(`${category.name} (Profile ${profile.id}): Removed insight, -${removeAmount} = ${newScore}`);
+            }
+          }
+        } else if (profile.id === 'profile2') {
+          // Apply custom logic for specific insights in profile2
+          // Custom logic for "I don't really understand what's going on with my treatment." (custom3)
+          if (item.id === 'custom3') {
+            // When adding this insight to Healthcare Engagement or Quality of Life Impact
+            if (category.name === targetCategory && targetCategory !== '') {
+              if (targetCategory === 'Healthcare Engagement') {
+                if (category.name === 'Healthcare Engagement') {
+                  newScore += 30; // +30 to Healthcare Engagement
+                  console.log(`${category.name} (Profile ${profile.id}): Custom insight custom3 added to Healthcare Engagement, +30 = ${newScore}`);
+                }
+              } else if (targetCategory === 'Quality of Life') {
+                if (category.name === 'Quality of Life') {
+                  newScore += 20; // +20 to Quality of Life Impact
+                  console.log(`${category.name} (Profile ${profile.id}): Custom insight custom3 added to Quality of Life, +20 = ${newScore}`);
+                }
+              } else {
+                newScore += addAmount; // Default amount for other categories
+                console.log(`${category.name} (Profile ${profile.id}): Custom insight custom3 added (default), +${addAmount} = ${newScore}`);
+              }
+            }
+            // Handle the cross-category effects when adding custom3
+            if (targetCategory === 'Healthcare Engagement' && category.name === 'Quality of Life') {
+              newScore += 20; // +20 to Quality of Life when added to Healthcare Engagement
+              console.log(`${category.name} (Profile ${profile.id}): Custom insight custom3 cross-effect (add to HC->QoL), +20 = ${newScore}`);
+            } else if (targetCategory === 'Quality of Life' && category.name === 'Healthcare Engagement') {
+              newScore += 30; // +30 to Healthcare Engagement when added to Quality of Life
+              console.log(`${category.name} (Profile ${profile.id}): Custom insight custom3 cross-effect (add to QoL->HC), +30 = ${newScore}`);
+            }
+            
+            // When removing this insight from Healthcare Engagement or Quality of Life Impact
+            if (category.name === fromCategory && fromCategory !== '') {
+              if (fromCategory === 'Healthcare Engagement') {
+                if (category.name === 'Healthcare Engagement') {
+                  newScore -= 30; // -30 from Healthcare Engagement
+                  console.log(`${category.name} (Profile ${profile.id}): Custom insight custom3 removed from Healthcare Engagement, -30 = ${newScore}`);
+                }
+              } else if (fromCategory === 'Quality of Life') {
+                if (category.name === 'Quality of Life') {
+                  newScore -= 20; // -20 from Quality of Life Impact
+                  console.log(`${category.name} (Profile ${profile.id}): Custom insight custom3 removed from Quality of Life, -20 = ${newScore}`);
+                }
+              } else {
+                newScore -= removeAmount; // Default amount for other categories
+                console.log(`${category.name} (Profile ${profile.id}): Custom insight custom3 removed (default), -${removeAmount} = ${newScore}`);
+              }
+            }
+            // Handle the cross-category effects when removing custom3
+            if (fromCategory === 'Healthcare Engagement' && category.name === 'Quality of Life') {
+              newScore -= 20; // -20 from Quality of Life when removed from Healthcare Engagement
+              console.log(`${category.name} (Profile ${profile.id}): Custom insight custom3 cross-effect (remove from HC->QoL), -20 = ${newScore}`);
+            } else if (fromCategory === 'Quality of Life' && category.name === 'Healthcare Engagement') {
+              newScore -= 30; // -30 from Healthcare Engagement when removed from Quality of Life
+              console.log(`${category.name} (Profile ${profile.id}): Custom insight custom3 cross-effect (remove from QoL->HC), -30 = ${newScore}`);
+            }
+          }
+          // Custom logic for "I'm starting to worry about how I'll manage work." (custom4)
+          else if (item.id === 'custom4') {
+            // When adding this insight to Quality of Life Impact or Logistical Challenge
+            if (category.name === targetCategory && targetCategory !== '') {
+              if (targetCategory === 'Quality of Life') {
+                if (category.name === 'Quality of Life') {
+                  newScore += 20; // +20 to Quality of Life Impact
+                  console.log(`${category.name} (Profile ${profile.id}): Custom insight custom4 added to Quality of Life, +20 = ${newScore}`);
+                }
+              } else if (targetCategory === 'Logistics Challenge') {
+                if (category.name === 'Logistics Challenge') {
+                  newScore += 25; // +25 to Logistical Challenge
+                  console.log(`${category.name} (Profile ${profile.id}): Custom insight custom4 added to Logistics Challenge, +25 = ${newScore}`);
+                }
+              } else {
+                newScore += addAmount; // Default amount for other categories
+                console.log(`${category.name} (Profile ${profile.id}): Custom insight custom4 added (default), +${addAmount} = ${newScore}`);
+              }
+            }
+            // Handle the cross-category effects when adding custom4
+            if (targetCategory === 'Quality of Life' && category.name === 'Logistics Challenge') {
+              newScore += 25; // +25 to Logistics Challenge when added to Quality of Life
+              console.log(`${category.name} (Profile ${profile.id}): Custom insight custom4 cross-effect (add to QoL->LC), +25 = ${newScore}`);
+            } else if (targetCategory === 'Logistics Challenge' && category.name === 'Quality of Life') {
+              newScore += 20; // +20 to Quality of Life when added to Logistics Challenge
+              console.log(`${category.name} (Profile ${profile.id}): Custom insight custom4 cross-effect (add to LC->QoL), +20 = ${newScore}`);
+            }
+            
+            // When removing this insight from Quality of Life Impact or Logistical Challenge
+            if (category.name === fromCategory && fromCategory !== '') {
+              if (fromCategory === 'Quality of Life') {
+                if (category.name === 'Quality of Life') {
+                  newScore -= 20; // -20 from Quality of Life Impact
+                  console.log(`${category.name} (Profile ${profile.id}): Custom insight custom4 removed from Quality of Life, -20 = ${newScore}`);
+                }
+              } else if (fromCategory === 'Logistics Challenge') {
+                if (category.name === 'Logistics Challenge') {
+                  newScore -= 25; // -25 from Logistical Challenge
+                  console.log(`${category.name} (Profile ${profile.id}): Custom insight custom4 removed from Logistics Challenge, -25 = ${newScore}`);
+                }
+              } else {
+                newScore -= removeAmount; // Default amount for other categories
+                console.log(`${category.name} (Profile ${profile.id}): Custom insight custom4 removed (default), -${removeAmount} = ${newScore}`);
+              }
+            }
+            // Handle the cross-category effects when removing custom4
+            if (fromCategory === 'Quality of Life' && category.name === 'Logistics Challenge') {
+              newScore -= 25; // -25 from Logistics Challenge when removed from Quality of Life
+              console.log(`${category.name} (Profile ${profile.id}): Custom insight custom4 cross-effect (remove from QoL->LC), -25 = ${newScore}`);
+            } else if (fromCategory === 'Logistics Challenge' && category.name === 'Quality of Life') {
+              newScore -= 20; // -20 from Quality of Life when removed from Logistics Challenge
+              console.log(`${category.name} (Profile ${profile.id}): Custom insight custom4 cross-effect (remove from LC->QoL), -20 = ${newScore}`);
+            }
+          }
+          // Default logic for other insights in profile2
+          else {
+            if (category.name === targetCategory && targetCategory !== '') {
+              // Add to target category
+              newScore += addAmount;
+              console.log(`${category.name} (Profile ${profile.id}): Added insight, +${addAmount} = ${newScore}`);
+            } else if (category.name === fromCategory && fromCategory !== '') {
+              // Subtract from source category
+              newScore -= removeAmount;
+              console.log(`${category.name} (Profile ${profile.id}): Removed insight, -${removeAmount} = ${newScore}`);
+            }
+          }
+        } else if (profile.id === 'profile3') {
+          // Apply custom logic for specific insights in profile3
+          // Custom logic for "I have to schedule everything myself and it's exhausting." (custom5)
+          if (item.id === 'custom5') {
+            // When adding this insight to Logistical Challenge or Quality of Life Impact
+            if (category.name === targetCategory && targetCategory !== '') {
+              if (targetCategory === 'Logistics Challenge') {
+                if (category.name === 'Logistics Challenge') {
+                  newScore += 15; // +15 to Logistical Challenge
+                  console.log(`${category.name} (Profile ${profile.id}): Custom insight custom5 added to Logistics Challenge, +15 = ${newScore}`);
+                }
+              } else if (targetCategory === 'Quality of Life') {
+                if (category.name === 'Quality of Life') {
+                  newScore += 5; // +5 to Quality of Life Impact
+                  console.log(`${category.name} (Profile ${profile.id}): Custom insight custom5 added to Quality of Life, +5 = ${newScore}`);
+                }
+              } else {
+                newScore += addAmount; // Default amount for other categories
+                console.log(`${category.name} (Profile ${profile.id}): Custom insight custom5 added (default), +${addAmount} = ${newScore}`);
+              }
+            }
+            // Handle the cross-category effects when adding custom5
+            if (targetCategory === 'Logistics Challenge' && category.name === 'Quality of Life') {
+              newScore += 5; // +5 to Quality of Life when added to Logistics Challenge
+              console.log(`${category.name} (Profile ${profile.id}): Custom insight custom5 cross-effect (add to LC->QoL), +5 = ${newScore}`);
+            } else if (targetCategory === 'Quality of Life' && category.name === 'Logistics Challenge') {
+              newScore += 15; // +15 to Logistics Challenge when added to Quality of Life
+              console.log(`${category.name} (Profile ${profile.id}): Custom insight custom5 cross-effect (add to QoL->LC), +15 = ${newScore}`);
+            }
+            
+            // When removing this insight from Logistical Challenge or Quality of Life Impact
+            if (category.name === fromCategory && fromCategory !== '') {
+              if (fromCategory === 'Logistics Challenge') {
+                if (category.name === 'Logistics Challenge') {
+                  newScore -= 15; // -15 from Logistical Challenge
+                  console.log(`${category.name} (Profile ${profile.id}): Custom insight custom5 removed from Logistics Challenge, -15 = ${newScore}`);
+                }
+              } else if (fromCategory === 'Quality of Life') {
+                if (category.name === 'Quality of Life') {
+                  newScore -= 5; // -5 from Quality of Life Impact
+                  console.log(`${category.name} (Profile ${profile.id}): Custom insight custom5 removed from Quality of Life, -5 = ${newScore}`);
+                }
+              } else {
+                newScore -= removeAmount; // Default amount for other categories
+                console.log(`${category.name} (Profile ${profile.id}): Custom insight custom5 removed (default), -${removeAmount} = ${newScore}`);
+              }
+            }
+            // Handle the cross-category effects when removing custom5
+            if (fromCategory === 'Logistics Challenge' && category.name === 'Quality of Life') {
+              newScore -= 5; // -5 from Quality of Life when removed from Logistics Challenge
+              console.log(`${category.name} (Profile ${profile.id}): Custom insight custom5 cross-effect (remove from LC->QoL), -5 = ${newScore}`);
+            } else if (fromCategory === 'Quality of Life' && category.name === 'Logistics Challenge') {
+              newScore -= 15; // -15 from Logistics Challenge when removed from Quality of Life
+              console.log(`${category.name} (Profile ${profile.id}): Custom insight custom5 cross-effect (remove from QoL->LC), -15 = ${newScore}`);
+            }
+          }
+          // Custom logic for "I'm constantly coordinating between doctors and pharmacies." (custom6)
+          else if (item.id === 'custom6') {
+            // When adding this insight to Logistical Challenge or Healthcare Engagement
+            if (category.name === targetCategory && targetCategory !== '') {
+              if (targetCategory === 'Logistics Challenge') {
+                if (category.name === 'Logistics Challenge') {
+                  newScore += 15; // +15 to Logistical Challenge
+                  console.log(`${category.name} (Profile ${profile.id}): Custom insight custom6 added to Logistics Challenge, +15 = ${newScore}`);
+                }
+              } else if (targetCategory === 'Healthcare Engagement') {
+                if (category.name === 'Healthcare Engagement') {
+                  newScore += 0; // +0 to Healthcare Engagement
+                  console.log(`${category.name} (Profile ${profile.id}): Custom insight custom6 added to Healthcare Engagement, +0 = ${newScore}`);
+                }
+              } else {
+                newScore += addAmount; // Default amount for other categories
+                console.log(`${category.name} (Profile ${profile.id}): Custom insight custom6 added (default), +${addAmount} = ${newScore}`);
+              }
+            }
+            // Handle the cross-category effects when adding custom6
+            if (targetCategory === 'Logistics Challenge' && category.name === 'Healthcare Engagement') {
+              newScore += 0; // +0 to Healthcare Engagement when added to Logistics Challenge
+              console.log(`${category.name} (Profile ${profile.id}): Custom insight custom6 cross-effect (add to LC->HC), +0 = ${newScore}`);
+            } else if (targetCategory === 'Healthcare Engagement' && category.name === 'Logistics Challenge') {
+              newScore += 15; // +15 to Logistics Challenge when added to Healthcare Engagement
+              console.log(`${category.name} (Profile ${profile.id}): Custom insight custom6 cross-effect (add to HC->LC), +15 = ${newScore}`);
+            }
+            
+            // When removing this insight from Logistical Challenge or Healthcare Engagement
+            if (category.name === fromCategory && fromCategory !== '') {
+              if (fromCategory === 'Logistics Challenge') {
+                if (category.name === 'Logistics Challenge') {
+                  newScore -= 15; // -15 from Logistical Challenge
+                  console.log(`${category.name} (Profile ${profile.id}): Custom insight custom6 removed from Logistics Challenge, -15 = ${newScore}`);
+                }
+              } else if (fromCategory === 'Healthcare Engagement') {
+                if (category.name === 'Healthcare Engagement') {
+                  newScore -= 0; // -0 from Healthcare Engagement
+                  console.log(`${category.name} (Profile ${profile.id}): Custom insight custom6 removed from Healthcare Engagement, -0 = ${newScore}`);
+                }
+              } else {
+                newScore -= removeAmount; // Default amount for other categories
+                console.log(`${category.name} (Profile ${profile.id}): Custom insight custom6 removed (default), -${removeAmount} = ${newScore}`);
+              }
+            }
+            // Handle the cross-category effects when removing custom6
+            if (fromCategory === 'Logistics Challenge' && category.name === 'Healthcare Engagement') {
+              newScore -= 0; // -0 from Healthcare Engagement when removed from Logistics Challenge
+              console.log(`${category.name} (Profile ${profile.id}): Custom insight custom6 cross-effect (remove from LC->HC), -0 = ${newScore}`);
+            } else if (fromCategory === 'Healthcare Engagement' && category.name === 'Logistics Challenge') {
+              newScore -= 15; // -15 from Logistics Challenge when removed from Healthcare Engagement
+              console.log(`${category.name} (Profile ${profile.id}): Custom insight custom6 cross-effect (remove from HC->LC), -15 = ${newScore}`);
+            }
+          }
+          // Custom logic for "I'm trying to stay positive but it's becoming too much." (custom7)
+          else if (item.id === 'custom7') {
+            // When adding this insight to Motivation or Quality of Life Impact
+            if (category.name === targetCategory && targetCategory !== '') {
+              if (targetCategory === 'Motivation') {
+                if (category.name === 'Motivation') {
+                  newScore += 10; // +10 to Motivation
+                  console.log(`${category.name} (Profile ${profile.id}): Custom insight custom7 added to Motivation, +10 = ${newScore}`);
+                }
+              } else if (targetCategory === 'Quality of Life') {
+                if (category.name === 'Quality of Life') {
+                  newScore += 5; // +5 to Quality of Life Impact
+                  console.log(`${category.name} (Profile ${profile.id}): Custom insight custom7 added to Quality of Life, +5 = ${newScore}`);
+                }
+              } else {
+                newScore += addAmount; // Default amount for other categories
+                console.log(`${category.name} (Profile ${profile.id}): Custom insight custom7 added (default), +${addAmount} = ${newScore}`);
+              }
+            }
+            // Handle the cross-category effects when adding custom7
+            if (targetCategory === 'Motivation' && category.name === 'Quality of Life') {
+              newScore += 5; // +5 to Quality of Life when added to Motivation
+              console.log(`${category.name} (Profile ${profile.id}): Custom insight custom7 cross-effect (add to Motivation->QoL), +5 = ${newScore}`);
+            } else if (targetCategory === 'Quality of Life' && category.name === 'Motivation') {
+              newScore += 10; // +10 to Motivation when added to Quality of Life
+              console.log(`${category.name} (Profile ${profile.id}): Custom insight custom7 cross-effect (add to QoL->Motivation), +10 = ${newScore}`);
+            }
+            
+            // When removing this insight from Motivation or Quality of Life Impact
+            if (category.name === fromCategory && fromCategory !== '') {
+              if (fromCategory === 'Motivation') {
+                if (category.name === 'Motivation') {
+                  newScore -= 10; // -10 from Motivation
+                  console.log(`${category.name} (Profile ${profile.id}): Custom insight custom7 removed from Motivation, -10 = ${newScore}`);
+                }
+              } else if (fromCategory === 'Quality of Life') {
+                if (category.name === 'Quality of Life') {
+                  newScore -= 5; // -5 from Quality of Life Impact
+                  console.log(`${category.name} (Profile ${profile.id}): Custom insight custom7 removed from Quality of Life, -5 = ${newScore}`);
+                }
+              } else {
+                newScore -= removeAmount; // Default amount for other categories
+                console.log(`${category.name} (Profile ${profile.id}): Custom insight custom7 removed (default), -${removeAmount} = ${newScore}`);
+              }
+            }
+            // Handle the cross-category effects when removing custom7
+            if (fromCategory === 'Motivation' && category.name === 'Quality of Life') {
+              newScore -= 5; // -5 from Quality of Life when removed from Motivation
+              console.log(`${category.name} (Profile ${profile.id}): Custom insight custom7 cross-effect (remove from Motivation->QoL), -5 = ${newScore}`);
+            } else if (fromCategory === 'Quality of Life' && category.name === 'Motivation') {
+              newScore -= 10; // -10 from Motivation when removed from Quality of Life
+              console.log(`${category.name} (Profile ${profile.id}): Custom insight custom7 cross-effect (remove from QoL->Motivation), -10 = ${newScore}`);
+            }
+          }
+          // Default logic for other insights in profile3
+          else {
+            if (category.name === targetCategory && targetCategory !== '') {
+              // Add to target category
+              newScore += addAmount;
+              console.log(`${category.name} (Profile ${profile.id}): Added insight, +${addAmount} = ${newScore}`);
+            } else if (category.name === fromCategory && fromCategory !== '') {
+              // Subtract from source category
+              newScore -= removeAmount;
+              console.log(`${category.name} (Profile ${profile.id}): Removed insight, -${removeAmount} = ${newScore}`);
+            }
+          }
+        } else {
+          // Default logic for other profiles
+          if (category.name === targetCategory && targetCategory !== '') {
+            // Add to target category
+            newScore += addAmount;
+            console.log(`${category.name} (Profile ${profile.id}): Added insight, +${addAmount} = ${newScore}`);
+          } else if (category.name === fromCategory && fromCategory !== '') {
+            // Subtract from source category
+            newScore -= removeAmount;
+            console.log(`${category.name} (Profile ${profile.id}): Removed insight, -${removeAmount} = ${newScore}`);
+          }
+        }
+      } else {
+        // Old scoring system: Check if this category was affected by the move
+        if (category.name === fromCategory || category.name === targetCategory) {
+          // Get current items in this category from the updated trialData
+          const currentItems = profile.trialData.complexityItems[categoryType] || [];
 
-        console.log(`${category.name} (Profile ${profile.id}): Recalculated score = ${newScore.toFixed(2)} from ${currentItems.length} items (x${profileRules.add})`);
-
-        return {
-          ...category,
-          currentScore: newScore,
-          averageScore: newScore, // Update display score
-          multiplierLevel: multiplierLevel
-        };
+          // Recalculate score based on all items currently in the category using profile-specific rules
+          newScore = 0;
+          currentItems.forEach(categoryItem => {
+            const itemScore = categoryItem.score || 0;
+            newScore += itemScore * profileRules.add;
+          });
+          console.log(`${category.name} (Profile ${profile.id}): Recalculated score = ${newScore.toFixed(2)} from ${currentItems.length} items (x${profileRules.add})`);
+        }
       }
+
+      // Ensure score doesn't go below 0 and cap appropriately
+      const maxScore = (profile.id === 'profile1' || profile.id === 'profile2' || profile.id === 'profile3') ? 100 : 10;
+      newScore = Math.max(0, Math.min(newScore, maxScore));
 
       return {
         ...category,
+        currentScore: newScore,
+        averageScore: newScore, // Update display score
         multiplierLevel: multiplierLevel
       };
     });

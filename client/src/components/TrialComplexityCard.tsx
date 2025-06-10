@@ -154,24 +154,28 @@ export default function TrialComplexityCard() {
         addMultiplier = 1.0;
         removeMultiplier = 1.0;
       } else if (currentProfileId === 'profile1') {
-        if (item.category === 'Healthcare Engagement') { addMultiplier = 0.15; removeMultiplier = 0.2; }
-        else if (item.category === 'Motivation') { addMultiplier = 0.1; removeMultiplier = 0.12; }
-        else if (item.category === 'Quality of Life') { addMultiplier = 0.08; removeMultiplier = 0.08; }
-        else if (item.category === 'Logistics Challenge') { addMultiplier = 0.12; removeMultiplier = 0.1; }
+        // Profile1 uses fixed add/remove amounts instead of multipliers
+        if (item.category === 'Healthcare Engagement') { addMultiplier = 15; removeMultiplier = 15; }
+        else if (item.category === 'Motivation') { addMultiplier = 10; removeMultiplier = 10; }
+        else if (item.category === 'Quality of Life') { addMultiplier = 15; removeMultiplier = 15; }
+        else if (item.category === 'Logistics Challenge') { addMultiplier = 10; removeMultiplier = 10; }
       } else if (currentProfileId === 'profile2') {
-        if (item.category === 'Healthcare Engagement') { addMultiplier = 0.2; removeMultiplier = 0.15; }
-        else if (item.category === 'Motivation') { addMultiplier = 0.2; removeMultiplier = 0.12; }
-        else if (item.category === 'Quality of Life') { addMultiplier = 0.1; removeMultiplier = 0.08; }
-        else if (item.category === 'Logistics Challenge') { addMultiplier = 0.05; removeMultiplier = 0.05; }
+        // Profile2 uses fixed add/remove amounts instead of multipliers
+        if (item.category === 'Healthcare Engagement') { addMultiplier = 20; removeMultiplier = 20; }
+        else if (item.category === 'Motivation') { addMultiplier = 25; removeMultiplier = 25; }
+        else if (item.category === 'Quality of Life') { addMultiplier = 30; removeMultiplier = 30; }
+        else if (item.category === 'Logistics Challenge') { addMultiplier = 25; removeMultiplier = 25; }
       } else if (currentProfileId === 'profile3') {
-        if (item.category === 'Healthcare Engagement') { addMultiplier = 0.1; removeMultiplier = 0.08; }
-        else if (item.category === 'Motivation') { addMultiplier = 0.1; removeMultiplier = 0.08; }
-        else if (item.category === 'Quality of Life') { addMultiplier = 0.15; removeMultiplier = 0.12; }
-        else if (item.category === 'Logistics Challenge') { addMultiplier = 0.2; removeMultiplier = 0.15; }
+        // Profile3 uses fixed add/remove amounts instead of multipliers
+        if (item.category === 'Healthcare Engagement') { addMultiplier = 5; removeMultiplier = 5; }
+        else if (item.category === 'Motivation') { addMultiplier = 10; removeMultiplier = 10; }
+        else if (item.category === 'Quality of Life') { addMultiplier = 0; removeMultiplier = 0; }
+        else if (item.category === 'Logistics Challenge') { addMultiplier = 15; removeMultiplier = 15; }
       }
 
-      const addValue = itemScore * addMultiplier;
-      const removeValue = itemScore * removeMultiplier;
+      // For profile1, profile2, and profile3, use fixed amounts; for others, use multipliers
+      const addValue = (currentProfileId === 'profile1' || currentProfileId === 'profile2' || currentProfileId === 'profile3') ? addMultiplier : itemScore * addMultiplier;
+      const removeValue = (currentProfileId === 'profile1' || currentProfileId === 'profile2' || currentProfileId === 'profile3') ? removeMultiplier : itemScore * removeMultiplier;
 
       if (multiplierLevel === 'High') {
         multiplierIndicator = "🔥"; // High multiplier
@@ -393,26 +397,29 @@ export default function TrialComplexityCard() {
             )}
             {currentProfileId === 'profile1' && (
               <>
-                <div>⚡ <strong>Healthcare Engagement</strong>: +score×0.15 when added, -score×0.2 when removed (Medium)</div>
-                <div>🔹 <strong>Motivation</strong>: +score×0.1 when added, -score×0.12 when removed (Low)</div>
-                <div>🔥 <strong>Quality of Life</strong>: +score×0.08 when added, -score×0.08 when removed (High)</div>
-                <div>⚡ <strong>Logistics Challenge</strong>: +score×0.12 when added, -score×0.1 when removed (Medium)</div>
+                <div>⚡ <strong>Healthcare Engagement</strong>: Base 55, +15 when added, -15 when removed (Medium)</div>
+                <div>🔹 <strong>Motivation</strong>: Base 30, +10 when added, -10 when removed (Low)</div>
+                <div>🔥 <strong>Quality of Life</strong>: Base 25, +15 when added, -15 when removed (High)</div>
+                <div>⚡ <strong>Logistics Challenge</strong>: Base 45, +10 when added, -10 when removed (Medium)</div>
               </>
             )}
             {currentProfileId === 'profile2' && (
               <>
-                <div>🔹 <strong>Healthcare Engagement</strong>: +score×0.2 when added, -score×0.15 when removed (Low)</div>
-                <div>🔹 <strong>Motivation</strong>: +score×0.2 when added, -score×0.12 when removed (Low)</div>
-                <div>⚡ <strong>Quality of Life</strong>: +score×0.1 when added, -score×0.08 when removed (Medium)</div>
-                <div>🔹 <strong>Logistics Challenge</strong>: +score×0.05 when added, -score×0.05 when removed (Low)</div>
+                <div>🔹 <strong>Healthcare Engagement</strong>: Base 60, +20 when added, -20 when removed (Low)</div>
+                <div>🔹 <strong>Motivation</strong>: Base 35, +25 when added, -25 when removed (Low)</div>
+                <div>⚡ <strong>Quality of Life</strong>: Base 20, +30 when added, -30 when removed (Medium)</div>
+                <div>🔹 <strong>Logistics Challenge</strong>: Base 40, +25 when added, -25 when removed (Low)</div>
+                <div>🎯 <strong>Custom Insights</strong>:</div>
+                <div>📝 "I don't really understand...": +30 HC, +20 QoL when added to HC/QoL; -30 HC, -20 QoL when removed</div>
+                <div>📝 "I'm starting to worry about work...": +20 QoL, +25 LC when added to QoL/LC; -20 QoL, -25 LC when removed</div>
               </>
             )}
             {currentProfileId === 'profile3' && (
               <>
-                <div>🔥 <strong>Healthcare Engagement</strong>: +score×0.1 when added, -score×0.08 when removed (High)</div>
-                <div>🔥 <strong>Motivation</strong>: +score×0.1 when added, -score×0.08 when removed (High)</div>
-                <div>🔥 <strong>Quality of Life</strong>: +score×0.15 when added, -score×0.12 when removed (High)</div>
-                <div>🔥 <strong>Logistics Challenge</strong>: +score×0.2 when added, -score×0.15 when removed (High)</div>
+                <div>🔥 <strong>Healthcare Engagement</strong>: Base 90, +5 when added, -5 when removed (High)</div>
+                <div>🔥 <strong>Motivation</strong>: Base 90, +10 when added, -10 when removed (High)</div>
+                <div>🔥 <strong>Quality of Life</strong>: Base 95, +0 when added, -0 when removed (High)</div>
+                <div>🔥 <strong>Logistics Challenge</strong>: Base 85, +15 when added, -15 when removed (High)</div>
               </>
             )}
           </div>

@@ -1279,6 +1279,62 @@
       "canBeInCategories": ["Motivation"],
       "cannotBeInCategories": [],
       "initialProfile": ["profile0"]
+    },
+    {
+      "id": "custom1",
+      "name": "I usually just go to appointments and follow what they say",
+      "score": 1.0,
+      "canBeInCategories": ["Healthcare Engagement", "Motivation"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile1"]
+    },
+    {
+      "id": "custom2",
+      "name": "I'm not sure if I could ask about other options.",
+      "score": 1.0,
+      "canBeInCategories": ["Healthcare Engagement", "Quality of Life"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile1"]
+    },
+    {
+      "id": "custom3",
+      "name": "I don't really understand what's going on with my treatment.",
+      "score": 1.0,
+      "canBeInCategories": ["Healthcare Engagement", "Quality of Life Impact"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile2"]
+    },
+    {
+      "id": "custom4",
+      "name": "I'm starting to worry about how I'll manage work.",
+      "score": 1.0,
+      "canBeInCategories": ["Quality of Life Impact", "Logistical Challenge"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile2"]
+    },
+    {
+      "id": "custom5",
+      "name": "I have to schedule everything myself and it's exhausting.",
+      "score": 1.0,
+      "canBeInCategories": ["Logistical Challenge", "Quality of Life Impact"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile3"]
+    },
+    {
+      "id": "custom6",
+      "name": "I'm constantly coordinating between doctors and pharmacies.",
+      "score": 1.0,
+      "canBeInCategories": ["Logistical Challenge", "Healthcare Engagement"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile3"]
+    },
+    {
+      "id": "custom7",
+      "name": "I'm trying to stay positive but it's becoming too much.",
+      "score": 1.0,
+      "canBeInCategories": ["Motivation", "Quality of Life Impact"],
+      "cannotBeInCategories": [],
+      "initialProfile": ["profile3"]
     }
   ],
   "profile1": {
@@ -1337,6 +1393,7 @@
       {
         "name": "Uncategorized",
         "questions": [
+          "custom1", "custom2",
           "q101", "q102", "q103", "q104", "q105", "q106", "q107", "q108", "q109", "q110",
           "q111", "q112", "q113", "q114", "q115", "q116", "q117", "q118", "q119", "q120",
           "q121", "q122", "q123", "q124", "q125", "q126", "q127", "q128", "q129", "q130",
@@ -1465,6 +1522,7 @@
       {
         "name": "Uncategorized",
         "questions": [
+          "custom5", "custom6", "custom7",
           "q101", "q102", "q103", "q104", "q105", "q106", "q107", "q108", "q109", "q110",
           "q111", "q112", "q113", "q114", "q115", "q116", "q117", "q118", "q119", "q120",
           "q121", "q122", "q123", "q124", "q125", "q126", "q127", "q128", "q129", "q130",

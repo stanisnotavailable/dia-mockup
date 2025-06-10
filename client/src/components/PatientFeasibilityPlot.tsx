@@ -102,8 +102,8 @@ export default function PatientFeasibilityPlot() {
         }
 
         // Convert to flat data structure for the chart
-        // Score is already capped at 10 in context, multiply by 10 to get 0-100 range
-        const chartScore = Math.min(score * 10, 100); // Ensure final score doesn't exceed 100
+        // For profile1, profile2, and profile3, score is already 0-100, for others multiply by 10 to get 0-100 range
+        const chartScore = (profileData.id === 'profile1' || profileData.id === 'profile2' || profileData.id === 'profile3') ? Math.min(score, 100) : Math.min(score * 10, 100);
         
         return {
           category: category,
@@ -127,7 +127,7 @@ export default function PatientFeasibilityPlot() {
       
       // Get score change information compared to base
       const categoryName = entry.payload.category;
-      const currentScore = entry.value / 10; // Convert back from 0-100 to 0-10 scale
+      const currentScore = (profileData.id === 'profile1' || profileData.id === 'profile2' || profileData.id === 'profile3') ? entry.value : entry.value / 10; // Keep 0-100 for profile1/profile2/profile3, convert back to 0-10 for others
       const baseScore = currentBaseScores[categoryName];
       let scoreChangeText = "";
       
@@ -170,10 +170,24 @@ export default function PatientFeasibilityPlot() {
   const tickFontSize = 11;
   const radiusTickFontSize = 9;
 
+  // Get profile-specific title
+  const getProfileTitle = (profileId: string) => {
+    switch (profileId) {
+      case 'profile1':
+        return 'Under-supported Veteran';
+      case 'profile2':
+        return 'Uninformed Newcomer';
+      case 'profile3':
+        return 'Overloaded Advocate';
+      default:
+        return 'Patient Feasibility Plot';
+    }
+  };
+
   return (
     <Card className="bg-white mt-2 w-full">
       <CardContent className="p-3 h-full">
-        <div className={`font-medium ${titleFontSize} mb-0.5`}>Patient Feasibility Plot</div>
+        <div className={`font-medium ${titleFontSize} mb-0.5`}>{getProfileTitle(profileData.id)}</div>
         <div className={`${subtitleFontSize} text-gray-500 mb-2`}>
           Visual representation of patient experience categories with dynamic scoring
         </div>

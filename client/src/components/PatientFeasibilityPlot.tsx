@@ -77,7 +77,7 @@ export default function PatientFeasibilityPlot() {
   // Function to get arrow color based on profile-specific rules
   const getArrowColor = (profileId: string, categoryName: string, isUpArrow: boolean): string => {
     const defaultColor = '#6b7280'; // gray-500 fallback
-    
+
     switch (profileId) {
       case 'profile1': // Under-supported Veteran
         switch (categoryName) {
@@ -92,7 +92,7 @@ export default function PatientFeasibilityPlot() {
           default:
             return defaultColor;
         }
-      
+
       case 'profile2': // Uninformed Newcomer
         switch (categoryName) {
           case 'Quality of Life':
@@ -106,7 +106,7 @@ export default function PatientFeasibilityPlot() {
           default:
             return defaultColor;
         }
-      
+
       case 'profile3': // Overloaded Advocate
         switch (categoryName) {
           case 'Quality of Life':
@@ -120,7 +120,7 @@ export default function PatientFeasibilityPlot() {
           default:
             return defaultColor;
         }
-      
+
       default:
         // For other profiles, use the old logic (green for up, red for down)
         return isUpArrow ? '#10b981' : '#ef4444';
@@ -201,11 +201,11 @@ export default function PatientFeasibilityPlot() {
           } else {
             arrow = '↓';
           }
-          
+
           // Use the new arrow color logic
           const isUpArrow = arrow.includes('↑');
           const changeColor = getArrowColor(profileData.id, categoryName, isUpArrow);
-          
+
           scoreChangeText = ` ${arrow} ${scoreDiff > 0 ? '+' : ''}${scoreDiff.toFixed(2)} from base (${baseScore.toFixed(2)})`;
         }
       }
@@ -287,11 +287,33 @@ export default function PatientFeasibilityPlot() {
                     const isUpArrow = arrow.includes('↑');
                     const arrowColor = arrow ? getArrowColor(profileData.id, payload.value, isUpArrow) : color;
 
+                    let horizontalOffset = 0;
+                    let verticalOffset = 0;
+                    switch (payload.value) {
+                      case 'Logistics Challenge':
+                        horizontalOffset = 0;
+                        verticalOffset = -10;
+                        break;
+                      case 'Motivation':
+                        horizontalOffset = 10;
+                        verticalOffset = 0;
+                        break;
+                      case 'Healthcare Engagement':
+                        horizontalOffset = 0;
+                        verticalOffset = 20;
+                        break;
+                      case 'Quality of Life':
+                        horizontalOffset = 0;
+                        verticalOffset = 0;
+                        break;
+                      default:
+                    }
+
                     return (
                       <g transform={`translate(${x},${y})`}>
                         <text
-                          x={0}
-                          y={0}
+                          x={horizontalOffset}
+                          y={verticalOffset}
                           textAnchor={textAnchor}
                           fill={color}
                           fontSize={tickFontSize}

@@ -74,6 +74,59 @@ export default function PatientFeasibilityPlot() {
     return "";
   };
 
+  // Function to get arrow color based on profile-specific rules
+  const getArrowColor = (profileId: string, categoryName: string, isUpArrow: boolean): string => {
+    const defaultColor = '#6b7280'; // gray-500 fallback
+    
+    switch (profileId) {
+      case 'profile1': // Under-supported Veteran
+        switch (categoryName) {
+          case 'Quality of Life':
+            return isUpArrow ? '#ef4444' : '#10b981'; // up=red, down=green
+          case 'Motivation':
+            return isUpArrow ? '#ef4444' : '#10b981'; // up=red, down=green
+          case 'Healthcare Engagement':
+            return isUpArrow ? '#10b981' : '#ef4444'; // up=green, down=red
+          case 'Logistics Challenge':
+            return isUpArrow ? '#ef4444' : '#10b981'; // up=red, down=green
+          default:
+            return defaultColor;
+        }
+      
+      case 'profile2': // Uninformed Newcomer
+        switch (categoryName) {
+          case 'Quality of Life':
+            return isUpArrow ? '#ef4444' : '#10b981'; // up=red, down=green
+          case 'Motivation':
+            return isUpArrow ? '#10b981' : '#ef4444'; // up=green, down=red
+          case 'Healthcare Engagement':
+            return isUpArrow ? '#10b981' : '#ef4444'; // up=green, down=red
+          case 'Logistics Challenge':
+            return isUpArrow ? '#ef4444' : '#10b981'; // up=red, down=green
+          default:
+            return defaultColor;
+        }
+      
+      case 'profile3': // Overloaded Advocate
+        switch (categoryName) {
+          case 'Quality of Life':
+            return isUpArrow ? '#ef4444' : '#10b981'; // up=red, down=green
+          case 'Motivation':
+            return isUpArrow ? '#ef4444' : '#10b981'; // up=red, down=green
+          case 'Healthcare Engagement':
+            return '#ef4444'; // both up=red and down=red
+          case 'Logistics Challenge':
+            return isUpArrow ? '#ef4444' : '#10b981'; // up=red, down=green
+          default:
+            return defaultColor;
+        }
+      
+      default:
+        // For other profiles, use the old logic (green for up, red for down)
+        return isUpArrow ? '#10b981' : '#ef4444';
+    }
+  };
+
   // Define colors for the radar chart using the new hex colors
   const categoryColors = {
     [CATEGORIES.LOGISTICS]: "#3992FE",
@@ -138,7 +191,6 @@ export default function PatientFeasibilityPlot() {
       if (baseScore !== undefined) {
         const scoreDiff = currentScore - baseScore;
         if (Math.abs(scoreDiff) > 0.01) {
-          const changeColor = scoreDiff > 0 ? '#10b981' : '#ef4444'; // green or red
           let arrow;
           if (scoreDiff >= 15) {
             arrow = '↑↑';
@@ -149,6 +201,11 @@ export default function PatientFeasibilityPlot() {
           } else {
             arrow = '↓';
           }
+          
+          // Use the new arrow color logic
+          const isUpArrow = arrow.includes('↑');
+          const changeColor = getArrowColor(profileData.id, categoryName, isUpArrow);
+          
           scoreChangeText = ` ${arrow} ${scoreDiff > 0 ? '+' : ''}${scoreDiff.toFixed(2)} from base (${baseScore.toFixed(2)})`;
         }
       }
@@ -164,7 +221,7 @@ export default function PatientFeasibilityPlot() {
             {scoreChangeText && (
               <span
                 className="ml-1 font-bold"
-                style={{ color: scoreChangeText.includes('↑') ? '#10b981' : '#ef4444' }}
+                style={{ color: getArrowColor(profileData.id, categoryName, scoreChangeText.includes('↑')) }}
               >
                 {scoreChangeText}
               </span>
@@ -226,8 +283,9 @@ export default function PatientFeasibilityPlot() {
                     const currentScore = categoryData?.currentScore || 0;
                     const arrow = getScoreChangeIndicator(payload.value, currentScore);
 
-                    // Determine arrow color
-                    const arrowColor = arrow.includes('↑') ? '#10b981' : arrow.includes('↓') ? '#ef4444' : color; // green-500 or red-500
+                    // Determine arrow color using the new profile-specific logic
+                    const isUpArrow = arrow.includes('↑');
+                    const arrowColor = arrow ? getArrowColor(profileData.id, payload.value, isUpArrow) : color;
 
                     return (
                       <g transform={`translate(${x},${y})`}>

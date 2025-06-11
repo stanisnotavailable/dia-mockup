@@ -234,11 +234,11 @@ export default function PatientFeasibilityPlot() {
   };
 
   // Use fixed values for chart dimensions and styling
-  const chartHeight = 600;
+  const chartHeight = 800;
   const titleFontSize = "text-base";
   const subtitleFontSize = "text-sm";
-  const tickFontSize = 14;
-  const radiusTickFontSize = 9;
+  const tickFontSize = 15;
+  const radiusTickFontSize = 11;
 
   // Get profile-specific title
   const getProfileTitle = (profileId: string) => {
@@ -266,9 +266,9 @@ export default function PatientFeasibilityPlot() {
           {hasDataToDisplay ? (
             <ResponsiveContainer width="100%" height="100%">
               <RadarChart
-                outerRadius="70%"
+                outerRadius="85%"
                 data={radarData}
-                margin={{ top: 20, right: 20, left: 20, bottom: 30 }}
+                margin={{ top: 40, right: 40, left: 40, bottom: 60 }}
               >
                 <PolarGrid gridType="polygon" stroke="#e5e7eb" />
                 <PolarAngleAxis

@@ -234,7 +234,7 @@ export default function PatientFeasibilityPlot() {
   };
 
   // Use fixed values for chart dimensions and styling
-  const chartHeight = 800;
+  const chartHeight = 750;
   const titleFontSize = "text-base";
   const subtitleFontSize = "text-sm";
   const tickFontSize = 15;
@@ -303,7 +303,7 @@ export default function PatientFeasibilityPlot() {
                         verticalOffset = 20;
                         break;
                       case 'Quality of Life':
-                        horizontalOffset = 0;
+                        horizontalOffset = -10;
                         verticalOffset = 0;
                         break;
                       default:

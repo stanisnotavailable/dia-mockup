@@ -86,15 +86,15 @@ const PROFILE_SCORING_RULES = {
     [CATEGORIES.LOGISTICS]: { base: 0, add: 1, remove: 1 }         // Will use base score instead
   },
   profile1: {
-    [CATEGORIES.HEALTHCARE]: { base: 55, add: 15, remove: 15 },    // Healthcare Engagement: base 55, ±15
+    [CATEGORIES.HEALTHCARE]: { base: 25, add: 15, remove: 15 },    // Healthcare Engagement: base 25, ±15
     [CATEGORIES.MOTIVATION]: { base: 30, add: 10, remove: 10 },    // Motivation: base 30, ±10
-    [CATEGORIES.QUALITY]: { base: 25, add: 15, remove: 15 },       // Quality of Life: base 25, ±15
+    [CATEGORIES.QUALITY]: { base: 55, add: 15, remove: 15 },       // Quality of Life: base 55, ±15
     [CATEGORIES.LOGISTICS]: { base: 45, add: 10, remove: 10 }      // Logistics Challenge: base 45, ±10
   },
   profile2: {
-    [CATEGORIES.HEALTHCARE]: { base: 60, add: 20, remove: 20 },    // Healthcare Engagement: base 60, ±20
+    [CATEGORIES.HEALTHCARE]: { base: 20, add: 20, remove: 20 },    // Healthcare Engagement: base 20, ±20
     [CATEGORIES.MOTIVATION]: { base: 35, add: 25, remove: 25 },    // Motivation: base 35, ±25
-    [CATEGORIES.QUALITY]: { base: 20, add: 30, remove: 30 },       // Quality of Life: base 20, ±30
+    [CATEGORIES.QUALITY]: { base: 60, add: 30, remove: 30 },       // Quality of Life: base 60, ±30
     [CATEGORIES.LOGISTICS]: { base: 40, add: 25, remove: 25 }      // Logistics Challenge: base 40, ±25
   },
   profile3: {
@@ -401,13 +401,14 @@ const createPredefinedProfileData = (profileId: string): TrialData => {
         "q24", // I had one full appointment to go through the options.
         "q65", // It came up once but wasn't revisited.
         "q26", // I was given time to ask questions after the plan was proposed.
+        "custom2", // I'm not sure if I could ask about other options.
       ],
       "Motivation": [
         "q96", // I'd feel more open to it if my medical team supported the idea.
         "q94", // I'd be interested if it offered better care than I'm getting now.
+        "custom1", // I usually just go to appointments and follow what they say.
       ],
       "Uncategorized": [
-        "custom1", "custom2",
         "q101", "q102", "q103", "q104", "q105", "q106", "q107", "q108", "q109", "q110",
         "q111", "q112", "q113", "q114", "q115", "q116", "q117", "q118", "q119", "q120",
         "q121", "q122", "q123", "q124", "q125", "q126", "q127", "q128", "q129", "q130",
@@ -422,12 +423,14 @@ const createPredefinedProfileData = (profileId: string): TrialData => {
         "q11", // I've just started, so no therapy yet.
         "q37", // I had very few appointments overall.
         "q40", // I don't remember or never tracked it closely.
+        "custom3", // I don't really understand what's going on with my treatment.
       ],
       "Logistics Challenge": [
         "q41", // Less than 30 minutes.
         "q50", // I haven't had to travel for treatment yet.
         "q47", // I live nearby, so travel wasn't a problem.
         "q31", // Just 1 or 2 appointments per month.
+        "custom4", // I'm starting to worry about how I'll manage work.
       ],
       "Healthcare Engagement": [
         "q21", // I didn't really have time to discuss anything.
@@ -441,7 +444,6 @@ const createPredefinedProfileData = (profileId: string): TrialData => {
         "q97", // I wouldn't consider anything beyond my current treatment.
       ],
       "Uncategorized": [
-        "custom3", "custom4",
         "q101", "q102", "q103", "q104", "q105", "q106", "q107", "q108", "q109", "q110",
         "q111", "q112", "q113", "q114", "q115", "q116", "q117", "q118", "q119", "q120",
         "q121", "q122", "q123", "q124", "q125", "q126", "q127", "q128", "q129", "q130",
@@ -461,18 +463,20 @@ const createPredefinedProfileData = (profileId: string): TrialData => {
         "q44", // More than two hours door to door.
         "q45", // I had to stay overnight near the facility.
         "q46", // Travel was exhausting and hard to organize.
+        "custom5", // I have to schedule everything myself and it's exhausting.
       ],
       "Healthcare Engagement": [
         "q64", // Yes, they explained the options clearly.
         "q69", // I looked into trials myself.
         "q66", // I asked about trials, but didn't get much information.
+        "custom6", // I'm constantly coordinating between doctors and pharmacies.
       ],
       "Motivation": [
         "q95", // I'd want to help others in the future by contributing to progress.
         "q91", // I'd want a chance at a cure.
+        "custom7", // I'm trying to stay positive but it's becoming too much.
       ],
       "Uncategorized": [
-        "custom5", "custom6", "custom7",
         "q101", "q102", "q103", "q104", "q105", "q106", "q107", "q108", "q109", "q110",
         "q111", "q112", "q113", "q114", "q115", "q116", "q117", "q118", "q119", "q120",
         "q121", "q122", "q123", "q124", "q125", "q126", "q127", "q128", "q129", "q130",

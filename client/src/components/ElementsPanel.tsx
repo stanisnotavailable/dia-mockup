@@ -110,13 +110,17 @@ export default function ElementsPanel() {
 
   // Item component with drag-and-drop functionality
   const ComplexityItemComponent = ({ item, isDraggable = true }: { item: ComplexityItem, isDraggable?: boolean }) => {
+    // Check if this is one of the special custom insights that should be blue
+    const isCustomInsight = ['custom1', 'custom2', 'custom3', 'custom4', 'custom5', 'custom6', 'custom7'].includes(item.id);
+    const textColorClass = isCustomInsight ? 'text-[#2563EB]' : '';
+
     return (
       <div
         draggable={isDraggable}
         onDragStart={(e) => handleDragStart(e, item)}
         className="bg-gray-100 border-gray-300 py-0.5 px-2 my-0.5 rounded border cursor-move transition-all hover:shadow-md flex items-center justify-between min-touch-target"
       >
-        <div className="font-medium text-xs">{item.name}</div>
+        <div className={`font-medium text-xs ${textColorClass}`}>{item.name}</div>
       </div>
     );
   };

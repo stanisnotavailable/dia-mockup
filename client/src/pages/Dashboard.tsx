@@ -298,10 +298,14 @@ export default function Dashboard() {
                               score: item.score,
                             };
 
+                            // Check if this is one of the special custom insights that should be blue
+                            const isCustomInsight = ['custom1', 'custom2', 'custom3', 'custom4', 'custom5', 'custom6', 'custom7'].includes(item.id);
+                            const textColorClass = isCustomInsight ? 'text-[#2563EB]' : 'text-gray-600';
+
                             return (
                               <div
                                 key={qIdx}
-                                className="text-base text-gray-600 flex items-center justify-between py-1 px-2 rounded cursor-move"
+                                className={`text-base ${textColorClass} flex items-center justify-between py-1 px-2 rounded cursor-move`}
                                 style={{
                                   visibility: profile.id === 'profile0' ? 'hidden' : 'visible',
                                   transition: 'background-color 0.2s ease',
@@ -453,10 +457,14 @@ export default function Dashboard() {
                             score: item.score,
                           };
 
+                          // Check if this is one of the special custom insights that should be blue
+                          const isCustomInsight = ['custom1', 'custom2', 'custom3', 'custom4', 'custom5', 'custom6', 'custom7'].includes(item.id);
+                          const textColorClass = isCustomInsight ? 'text-[#2563EB]' : 'text-gray-600';
+
                           return (
                             <div
                               key={qIdx}
-                              className="text-base text-gray-600 flex items-center justify-between py-1 px-2 rounded cursor-move"
+                              className={`text-base ${textColorClass} flex items-center justify-between py-1 px-2 rounded cursor-move`}
                               style={{
                                 visibility: profile.id === 'profile0' ? 'hidden' : 'visible',
                                 transition: 'background-color 0.2s ease',

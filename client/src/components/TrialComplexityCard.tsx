@@ -189,6 +189,10 @@ export default function TrialComplexityCard() {
       }
     }
 
+    // Check if this is one of the special custom insights that should be blue
+    const isCustomInsight = ['custom1', 'custom2', 'custom3', 'custom4', 'custom5', 'custom6', 'custom7'].includes(item.id);
+    const textColorClass = isCustomInsight ? 'text-[#2563EB]' : '';
+
     return (
       <div
         draggable
@@ -196,7 +200,7 @@ export default function TrialComplexityCard() {
         className={`${itemClass} py-0.5 px-2 my-0.5 rounded border cursor-move transition-all hover:shadow-md flex items-center justify-between min-touch-target`}
         title={multiplierTooltip}
       >
-        <div className="font-medium text-xs flex items-center">
+        <div className={`font-medium text-xs flex items-center ${textColorClass}`}>
           {multiplierIndicator && <span className="mr-1">{multiplierIndicator}</span>}
           {item.name}
           <span className="ml-2 text-gray-500 text-xs">({itemScore})</span>
@@ -397,17 +401,17 @@ export default function TrialComplexityCard() {
             )}
             {currentProfileId === 'profile1' && (
               <>
-                <div>⚡ <strong>Healthcare Engagement</strong>: Base 55, +15 when added, -15 when removed (Medium)</div>
+                <div>⚡ <strong>Healthcare Engagement</strong>: Base 25, +15 when added, -15 when removed (Medium)</div>
                 <div>🔹 <strong>Motivation</strong>: Base 30, +10 when added, -10 when removed (Low)</div>
-                <div>🔥 <strong>Quality of Life</strong>: Base 25, +15 when added, -15 when removed (High)</div>
+                <div>🔥 <strong>Quality of Life</strong>: Base 55, +15 when added, -15 when removed (High)</div>
                 <div>⚡ <strong>Logistics Challenge</strong>: Base 45, +10 when added, -10 when removed (Medium)</div>
               </>
             )}
             {currentProfileId === 'profile2' && (
               <>
-                <div>🔹 <strong>Healthcare Engagement</strong>: Base 60, +20 when added, -20 when removed (Low)</div>
+                <div>🔹 <strong>Healthcare Engagement</strong>: Base 20, +20 when added, -20 when removed (Low)</div>
                 <div>🔹 <strong>Motivation</strong>: Base 35, +25 when added, -25 when removed (Low)</div>
-                <div>⚡ <strong>Quality of Life</strong>: Base 20, +30 when added, -30 when removed (Medium)</div>
+                <div>⚡ <strong>Quality of Life</strong>: Base 60, +30 when added, -30 when removed (Medium)</div>
                 <div>🔹 <strong>Logistics Challenge</strong>: Base 40, +25 when added, -25 when removed (Low)</div>
                 <div>🎯 <strong>Custom Insights</strong>:</div>
                 <div>📝 "I don't really understand...": +30 HC, +20 QoL when added to HC/QoL; -30 HC, -20 QoL when removed</div>

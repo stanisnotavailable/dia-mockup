@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { TrialDataContext, ComplexityItem, CATEGORIES, CategoryType } from "@/contexts/TrialDataContext";
 
 export default function TrialComplexityCard() {
-  const { getCurrentProfile, moveItem, currentProfileId } = useContext(TrialDataContext);
+  const { getCurrentProfile, moveItem, currentProfileId, resetProfile } = useContext(TrialDataContext);
   const [draggedItem, setDraggedItem] = useState<ComplexityItem | null>(null);
   const [draggedOverCategory, setDraggedOverCategory] = useState<string | null>(null);
   const [showUncategorized, setShowUncategorized] = useState<boolean>(true);
@@ -331,17 +331,35 @@ export default function TrialComplexityCard() {
 
         {/* Uncategorized Section */}
         <div className="mt-4">
-          <div className="flex items-center mb-2">
-            <input
-              type="checkbox"
-              id="show-uncategorized"
-              checked={showUncategorized}
-              onChange={(e) => setShowUncategorized(e.target.checked)}
-              className="mr-2 h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-            />
-            <label htmlFor="show-uncategorized" className="text-sm font-medium text-gray-700 cursor-pointer">
-              Show Uncategorized
-            </label>
+          <div className="flex items-center mb-2 gap-4">
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="show-uncategorized"
+                checked={showUncategorized}
+                onChange={(e) => setShowUncategorized(e.target.checked)}
+                className="mr-2 h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              />
+              <label htmlFor="show-uncategorized" className="text-sm font-medium text-gray-700 cursor-pointer">
+                Show Uncategorized
+              </label>
+            </div>
+            <button
+              onClick={() => {
+                // Reset the profile to its default state
+                resetProfile();
+                
+                // Also reset our local base scores state
+                setBaseScoresByProfile(prev => ({
+                  ...prev,
+                  [currentProfileId]: {}
+                }));
+              }}
+              className="text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded border"
+              title="Reset profile to default state"
+            >
+              Baseline
+            </button>
           </div>
 
           {showUncategorized && (

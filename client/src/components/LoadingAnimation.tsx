@@ -65,7 +65,7 @@ export default function LoadingAnimation() {
             Patient Feasibility Dashboard
           </h2>
           <p className="text-gray-600">
-            Please wait while we analyze the trial data
+            Please wait while we analyze the patient data
           </p>
         </div>
 

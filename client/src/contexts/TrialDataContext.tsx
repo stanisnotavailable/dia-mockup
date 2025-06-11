@@ -40,7 +40,7 @@ const typedQuestionsData = questionsData as unknown as QuestionsData;
 // Define the categories for complexity items
 export const CATEGORIES = {
   LOGISTICS: 'Logistics Challenge',
-  MOTIVATION: 'Motivation', 
+  MOTIVATION: 'Motivation',
   HEALTHCARE: 'Healthcare Engagement',
   QUALITY: 'Quality of Life',
   UNCATEGORIZED: 'Uncategorized'
@@ -86,16 +86,16 @@ const PROFILE_SCORING_RULES = {
     [CATEGORIES.LOGISTICS]: { base: 0, add: 1, remove: 1 }         // Will use base score instead
   },
   profile1: {
-    [CATEGORIES.HEALTHCARE]: { base: 25, add: 15, remove: 15 },    // Healthcare Engagement: base 25, ±15
-    [CATEGORIES.MOTIVATION]: { base: 30, add: 10, remove: 10 },    // Motivation: base 30, ±10
-    [CATEGORIES.QUALITY]: { base: 55, add: 15, remove: 15 },       // Quality of Life: base 55, ±15
-    [CATEGORIES.LOGISTICS]: { base: 45, add: 10, remove: 10 }      // Logistics Challenge: base 45, ±10
+    [CATEGORIES.HEALTHCARE]: { base: 40, add: 15, remove: 15 },    // Healthcare Engagement: base 25, ±15
+    [CATEGORIES.LOGISTICS]: { base: 50, add: 10, remove: 10 },   // Logistics Challenge: base 45, ±10
+    [CATEGORIES.QUALITY]: { base: 95, add: 15, remove: 15 },       // Quality of Life: base 55, ±15
+    [CATEGORIES.MOTIVATION]: { base: 15, add: 10, remove: 10 },    // Motivation: base 30, ±10
   },
   profile2: {
-    [CATEGORIES.HEALTHCARE]: { base: 20, add: 20, remove: 20 },    // Healthcare Engagement: base 20, ±20
+    [CATEGORIES.HEALTHCARE]: { base: 30, add: 20, remove: 20 },    // Healthcare Engagement: base 20, ±20
     [CATEGORIES.MOTIVATION]: { base: 35, add: 25, remove: 25 },    // Motivation: base 35, ±25
-    [CATEGORIES.QUALITY]: { base: 60, add: 30, remove: 30 },       // Quality of Life: base 60, ±30
-    [CATEGORIES.LOGISTICS]: { base: 40, add: 25, remove: 25 }      // Logistics Challenge: base 40, ±25
+    [CATEGORIES.QUALITY]: { base: 65, add: 30, remove: 30 },       // Quality of Life: base 60, ±30
+    [CATEGORIES.LOGISTICS]: { base: 35, add: 25, remove: 25 }      // Logistics Challenge: base 40, ±25
   },
   profile3: {
     [CATEGORIES.HEALTHCARE]: { base: 90, add: 5, remove: 5 },      // Healthcare Engagement: base 90, ±5
@@ -624,9 +624,9 @@ const createInitialProfiles = (): Profile[] => {
     const patientDemographic = getDemographicData(profileId);
     const categories = getCategoriesWithScores(profileId, trialData);
 
-    const profileName = profileId === 'profile0' ? 'Profile 0' : 
-                       profileId === 'profile1' ? 'Profile 1' : 
-                       profileId === 'profile2' ? 'Profile 2' : 'Profile 3';
+    const profileName = profileId === 'profile0' ? 'Profile 0' :
+      profileId === 'profile1' ? 'Profile 1' :
+        profileId === 'profile2' ? 'Profile 2' : 'Profile 3';
 
     profiles.push({
       id: profileId,
@@ -766,7 +766,7 @@ export const TrialDataProvider = ({ children }: { children: ReactNode }) => {
               newScore += 20; // +20 to Healthcare Engagement when added to Motivation
               console.log(`${category.name} (Profile ${profile.id}): Custom insight custom1 cross-effect (add to Motivation->HC), +20 = ${newScore}`);
             }
-            
+
             // When removing this insight from Healthcare Engagement or Motivation
             if (category.name === fromCategory && fromCategory !== '') {
               if (fromCategory === 'Healthcare Engagement') {
@@ -820,7 +820,7 @@ export const TrialDataProvider = ({ children }: { children: ReactNode }) => {
               newScore += 20; // +20 to Healthcare Engagement when added to Quality of Life
               console.log(`${category.name} (Profile ${profile.id}): Custom insight custom2 cross-effect (add to QoL->HC), +20 = ${newScore}`);
             }
-            
+
             // When removing this insight from Healthcare Engagement or Quality of Life
             if (category.name === fromCategory && fromCategory !== '') {
               if (fromCategory === 'Healthcare Engagement') {
@@ -888,7 +888,7 @@ export const TrialDataProvider = ({ children }: { children: ReactNode }) => {
               newScore += 30; // +30 to Healthcare Engagement when added to Quality of Life
               console.log(`${category.name} (Profile ${profile.id}): Custom insight custom3 cross-effect (add to QoL->HC), +30 = ${newScore}`);
             }
-            
+
             // When removing this insight from Healthcare Engagement or Quality of Life Impact
             if (category.name === fromCategory && fromCategory !== '') {
               if (fromCategory === 'Healthcare Engagement') {
@@ -942,7 +942,7 @@ export const TrialDataProvider = ({ children }: { children: ReactNode }) => {
               newScore += 20; // +20 to Quality of Life when added to Logistics Challenge
               console.log(`${category.name} (Profile ${profile.id}): Custom insight custom4 cross-effect (add to LC->QoL), +20 = ${newScore}`);
             }
-            
+
             // When removing this insight from Quality of Life Impact or Logistical Challenge
             if (category.name === fromCategory && fromCategory !== '') {
               if (fromCategory === 'Quality of Life') {
@@ -1010,7 +1010,7 @@ export const TrialDataProvider = ({ children }: { children: ReactNode }) => {
               newScore += 15; // +15 to Logistics Challenge when added to Quality of Life
               console.log(`${category.name} (Profile ${profile.id}): Custom insight custom5 cross-effect (add to QoL->LC), +15 = ${newScore}`);
             }
-            
+
             // When removing this insight from Logistical Challenge or Quality of Life Impact
             if (category.name === fromCategory && fromCategory !== '') {
               if (fromCategory === 'Logistics Challenge') {
@@ -1064,7 +1064,7 @@ export const TrialDataProvider = ({ children }: { children: ReactNode }) => {
               newScore += 15; // +15 to Logistics Challenge when added to Healthcare Engagement
               console.log(`${category.name} (Profile ${profile.id}): Custom insight custom6 cross-effect (add to HC->LC), +15 = ${newScore}`);
             }
-            
+
             // When removing this insight from Logistical Challenge or Healthcare Engagement
             if (category.name === fromCategory && fromCategory !== '') {
               if (fromCategory === 'Logistics Challenge') {
@@ -1118,7 +1118,7 @@ export const TrialDataProvider = ({ children }: { children: ReactNode }) => {
               newScore += 10; // +10 to Motivation when added to Quality of Life
               console.log(`${category.name} (Profile ${profile.id}): Custom insight custom7 cross-effect (add to QoL->Motivation), +10 = ${newScore}`);
             }
-            
+
             // When removing this insight from Motivation or Quality of Life Impact
             if (category.name === fromCategory && fromCategory !== '') {
               if (fromCategory === 'Motivation') {

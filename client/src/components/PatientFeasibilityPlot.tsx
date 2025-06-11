@@ -58,14 +58,18 @@ export default function PatientFeasibilityPlot() {
   const getScoreChangeIndicator = (categoryName: string, currentScore: number) => {
     const baseScore = currentBaseScores[categoryName];
     if (baseScore === undefined) return "";
-    
+
     const scoreDiff = currentScore - baseScore;
     const threshold = 0.01; // Minimum difference to show arrows
-    
-    if (scoreDiff > threshold) {
-      return `↗ +${scoreDiff.toFixed(2)}`; // Green up arrow with difference
+
+    if (scoreDiff >= 15) {
+      return `↑↑`; // Double up arrow for large increase
+    } else if (scoreDiff > threshold) {
+      return `↑`; // Single up arrow for small increase
+    } else if (scoreDiff <= -15) {
+      return `↓↓`; // Double down arrow for large decrease
     } else if (scoreDiff < -threshold) {
-      return `↘ ${scoreDiff.toFixed(2)}`; // Red down arrow with difference
+      return `↓`; // Single down arrow for small decrease
     }
     return "";
   };
@@ -104,7 +108,7 @@ export default function PatientFeasibilityPlot() {
         // Convert to flat data structure for the chart
         // For profile1, profile2, and profile3, score is already 0-100, for others multiply by 10 to get 0-100 range
         const chartScore = (profileData.id === 'profile1' || profileData.id === 'profile2' || profileData.id === 'profile3') ? Math.min(score, 100) : Math.min(score * 10, 100);
-        
+
         return {
           category: category,
           score: chartScore,
@@ -124,18 +128,27 @@ export default function PatientFeasibilityPlot() {
       const entry = payload[0];
       const dataPoint = radarData.find(d => d.category === entry.payload.category);
       const color = dataPoint?.color || entry.color;
-      
+
       // Get score change information compared to base
       const categoryName = entry.payload.category;
       const currentScore = (profileData.id === 'profile1' || profileData.id === 'profile2' || profileData.id === 'profile3') ? entry.value : entry.value / 10; // Keep 0-100 for profile1/profile2/profile3, convert back to 0-10 for others
       const baseScore = currentBaseScores[categoryName];
       let scoreChangeText = "";
-      
+
       if (baseScore !== undefined) {
         const scoreDiff = currentScore - baseScore;
         if (Math.abs(scoreDiff) > 0.01) {
           const changeColor = scoreDiff > 0 ? '#10b981' : '#ef4444'; // green or red
-          const arrow = scoreDiff > 0 ? '↗' : '↘';
+          let arrow;
+          if (scoreDiff >= 15) {
+            arrow = '↑↑';
+          } else if (scoreDiff > 0) {
+            arrow = '↑';
+          } else if (scoreDiff <= -15) {
+            arrow = '↓↓';
+          } else {
+            arrow = '↓';
+          }
           scoreChangeText = ` ${arrow} ${scoreDiff > 0 ? '+' : ''}${scoreDiff.toFixed(2)} from base (${baseScore.toFixed(2)})`;
         }
       }
@@ -149,9 +162,9 @@ export default function PatientFeasibilityPlot() {
             />
             <span className="font-medium">{categoryName}: {Math.round(entry.value)}</span>
             {scoreChangeText && (
-              <span 
+              <span
                 className="ml-1 font-bold"
-                style={{ color: scoreChangeText.includes('↗') ? '#10b981' : '#ef4444' }}
+                style={{ color: scoreChangeText.includes('↑') ? '#10b981' : '#ef4444' }}
               >
                 {scoreChangeText}
               </span>
@@ -167,7 +180,7 @@ export default function PatientFeasibilityPlot() {
   const chartHeight = 600;
   const titleFontSize = "text-base";
   const subtitleFontSize = "text-sm";
-  const tickFontSize = 11;
+  const tickFontSize = 14;
   const radiusTickFontSize = 9;
 
   // Get profile-specific title
@@ -207,14 +220,14 @@ export default function PatientFeasibilityPlot() {
                     const { x, y, textAnchor, payload } = props;
                     // Use gray color for all labels instead of category-specific colors
                     const color = '#6b7280'; // gray-500
-                    
+
                     // Get the current score for this category
                     const categoryData = categories.find(cat => cat.name === payload.value);
                     const currentScore = categoryData?.currentScore || 0;
                     const arrow = getScoreChangeIndicator(payload.value, currentScore);
-                    
+
                     // Determine arrow color
-                    const arrowColor = arrow.includes('↗') ? '#10b981' : arrow.includes('↘') ? '#ef4444' : color; // green-500 or red-500
+                    const arrowColor = arrow.includes('↑') ? '#10b981' : arrow.includes('↓') ? '#ef4444' : color; // green-500 or red-500
 
                     return (
                       <g transform={`translate(${x},${y})`}>

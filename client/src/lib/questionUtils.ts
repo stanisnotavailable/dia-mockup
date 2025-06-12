@@ -10,6 +10,10 @@ export interface QuestionData {
   canBeInCategories?: string[];
   cannotBeInCategories?: string[];
   initialProfile?: string[];
+  engagementWeight?: number;
+  logisticsWeight?: number;
+  qolWeight?: number;
+  motivationWeight?: number;
 }
 
 /**
@@ -54,6 +58,46 @@ export const calculateAverageScore = (questionIds: string[]): number => {
 export const getQuestionName = (id: string): string => {
   const question = getQuestionById(id);
   return question?.name || `Unknown Question (${id})`;
+};
+
+/**
+ * Get the weight for a specific category for a question
+ * @param questionId The question ID
+ * @param categoryName The category name (Healthcare Engagement, Logistics Challenge, Quality of Life, Motivation)
+ * @returns The weight value or a default value if not found
+ */
+export const getQuestionWeightForCategory = (questionId: string, categoryName: string): number => {
+  const question = getQuestionById(questionId);
+  if (!question) return 0.5; // Default weight
+  
+  // Map category names to weight properties
+  switch (categoryName) {
+    case 'Healthcare Engagement':
+      return question.engagementWeight ?? 0.5;
+    case 'Logistics Challenge':
+      return question.logisticsWeight ?? 0.5;
+    case 'Quality of Life':
+      return question.qolWeight ?? 0.5;
+    case 'Motivation':
+      return question.motivationWeight ?? 0.5;
+    default:
+      return 0.5; // Default weight for unknown categories
+  }
+};
+
+/**
+ * Get all weights for a question
+ * @param questionId The question ID
+ * @returns Object containing all weight values
+ */
+export const getQuestionWeights = (questionId: string) => {
+  const question = getQuestionById(questionId);
+  return {
+    engagementWeight: question?.engagementWeight ?? 0.5,
+    logisticsWeight: question?.logisticsWeight ?? 0.5,
+    qolWeight: question?.qolWeight ?? 0.5,
+    motivationWeight: question?.motivationWeight ?? 0.5
+  };
 };
 
 /**

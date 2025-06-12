@@ -162,7 +162,6 @@ export default function Dashboard() {
 
                   const actualCategoryName = categoryMapping[categoryName as keyof typeof categoryMapping];
                   const categoryItems = trialData.complexityItems[actualCategoryName as keyof typeof trialData.complexityItems] || [];
-
                   // Define colors for each category
                   const colors = {
                     "Logistical Challenge":

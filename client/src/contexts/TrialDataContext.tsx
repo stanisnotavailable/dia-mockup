@@ -2,7 +2,7 @@ import { createContext, useState, useEffect, ReactNode } from 'react';
 
 // Import questions data from JSON file
 import questionsData from '@/data/questions.json';
-import { getQuestionById, getQuestionName, getQuestionScore, calculateAverageScore, canQuestionBeInCategory } from '@/lib/questionUtils';
+import { getQuestionById, getQuestionName, getQuestionScore, calculateAverageScore, canQuestionBeInCategory, getQuestionWeightForCategory, getQuestionWeights } from '@/lib/questionUtils';
 
 // Define types for JSON structure
 interface QuestionItem {
@@ -106,20 +106,20 @@ const PROFILE_SCORING_RULES = {
 } as const;
 
 // Keep the old SCORING_RULES for backward compatibility (fallback)
-const SCORING_RULES = {
-  Low: {
-    add: 0.5,
-    remove: 0.5
-  },
-  Medium: {
-    add: 1.25,
-    remove: 0.5
-  },
-  High: {
-    add: 1.75,
-    remove: 1.75
-  }
-} as const;
+// const SCORING_RULES = {
+//   Low: {
+//     add: 0.5,
+//     remove: 0.5
+//   },
+//   Medium: {
+//     add: 1.25,
+//     remove: 0.5
+//   },
+//   High: {
+//     add: 1.75,
+//     remove: 1.75
+//   }
+// } as const;
 
 // Define the type for a complexity element item
 export interface ComplexityItem {
@@ -847,16 +847,39 @@ export const TrialDataProvider = ({ children }: { children: ReactNode }) => {
               console.log(`${category.name} (Profile ${profile.id}): Custom insight custom2 cross-effect (remove from QoL->HC), -20 = ${newScore}`);
             }
           }
-          // Default logic for other insights in profile1
+          // Default logic for other insights in profile1 using weights
           else {
-            if (category.name === targetCategory && targetCategory !== '') {
-              // Add to target category
-              newScore += addAmount;
-              console.log(`${category.name} (Profile ${profile.id}): Added insight, +${addAmount} = ${newScore}`);
-            } else if (category.name === fromCategory && fromCategory !== '') {
-              // Subtract from source category
-              newScore -= removeAmount;
-              console.log(`${category.name} (Profile ${profile.id}): Removed insight, -${removeAmount} = ${newScore}`);
+            // Use weight-based scoring for insights that have weight properties
+            const weights = getQuestionWeights(item.id);
+            const hasWeights = weights.engagementWeight !== 0.5 || weights.logisticsWeight !== 0.5 || 
+                             weights.qolWeight !== 0.5 || weights.motivationWeight !== 0.5;
+
+            if (hasWeights) {
+              // Calculate weight-based score change using profile rules
+              const weightForCategory = getQuestionWeightForCategory(item.id, category.name);
+
+              if (category.name === targetCategory && targetCategory !== '') {
+                // Add to target category: score + (profileRules.add * weight)
+                const weightedAddAmount = addAmount * weightForCategory;
+                newScore += weightedAddAmount;
+                console.log(`${category.name} (Profile ${profile.id}): Added insight (weighted), +${weightedAddAmount.toFixed(1)} (${addAmount} * ${weightForCategory}) = ${newScore}`);
+              } else if (category.name === fromCategory && fromCategory !== '') {
+                // Subtract from source category: score - (profileRules.remove * weight)
+                const weightedRemoveAmount = removeAmount * weightForCategory;
+                newScore -= weightedRemoveAmount;
+                console.log(`${category.name} (Profile ${profile.id}): Removed insight (weighted), -${weightedRemoveAmount.toFixed(1)} (${removeAmount} * ${weightForCategory}) = ${newScore}`);
+              }
+            } else {
+              // Fallback to default logic for insights without weights
+              if (category.name === targetCategory && targetCategory !== '') {
+                // Add to target category
+                newScore += addAmount;
+                console.log(`${category.name} (Profile ${profile.id}): Added insight, +${addAmount} = ${newScore}`);
+              } else if (category.name === fromCategory && fromCategory !== '') {
+                // Subtract from source category
+                newScore -= removeAmount;
+                console.log(`${category.name} (Profile ${profile.id}): Removed insight, -${removeAmount} = ${newScore}`);
+              }
             }
           }
         } else if (profile.id === 'profile2') {
@@ -969,16 +992,39 @@ export const TrialDataProvider = ({ children }: { children: ReactNode }) => {
               console.log(`${category.name} (Profile ${profile.id}): Custom insight custom4 cross-effect (remove from LC->QoL), -20 = ${newScore}`);
             }
           }
-          // Default logic for other insights in profile2
+          // Default logic for other insights in profile2 using weights
           else {
-            if (category.name === targetCategory && targetCategory !== '') {
-              // Add to target category
-              newScore += addAmount;
-              console.log(`${category.name} (Profile ${profile.id}): Added insight, +${addAmount} = ${newScore}`);
-            } else if (category.name === fromCategory && fromCategory !== '') {
-              // Subtract from source category
-              newScore -= removeAmount;
-              console.log(`${category.name} (Profile ${profile.id}): Removed insight, -${removeAmount} = ${newScore}`);
+            // Use weight-based scoring for insights that have weight properties
+            const weights = getQuestionWeights(item.id);
+            const hasWeights = weights.engagementWeight !== 0.5 || weights.logisticsWeight !== 0.5 || 
+                             weights.qolWeight !== 0.5 || weights.motivationWeight !== 0.5;
+
+            if (hasWeights) {
+              // Calculate weight-based score change using profile rules
+              const weightForCategory = getQuestionWeightForCategory(item.id, category.name);
+
+              if (category.name === targetCategory && targetCategory !== '') {
+                // Add to target category: score + (profileRules.add * weight)
+                const weightedAddAmount = addAmount * weightForCategory;
+                newScore += weightedAddAmount;
+                console.log(`${category.name} (Profile ${profile.id}): Added insight (weighted), +${weightedAddAmount.toFixed(1)} (${addAmount} * ${weightForCategory}) = ${newScore}`);
+              } else if (category.name === fromCategory && fromCategory !== '') {
+                // Subtract from source category: score - (profileRules.remove * weight)
+                const weightedRemoveAmount = removeAmount * weightForCategory;
+                newScore -= weightedRemoveAmount;
+                console.log(`${category.name} (Profile ${profile.id}): Removed insight (weighted), -${weightedRemoveAmount.toFixed(1)} (${removeAmount} * ${weightForCategory}) = ${newScore}`);
+              }
+            } else {
+              // Fallback to default logic for insights without weights
+              if (category.name === targetCategory && targetCategory !== '') {
+                // Add to target category
+                newScore += addAmount;
+                console.log(`${category.name} (Profile ${profile.id}): Added insight, +${addAmount} = ${newScore}`);
+              } else if (category.name === fromCategory && fromCategory !== '') {
+                // Subtract from source category
+                newScore -= removeAmount;
+                console.log(`${category.name} (Profile ${profile.id}): Removed insight, -${removeAmount} = ${newScore}`);
+              }
             }
           }
         } else if (profile.id === 'profile3') {
@@ -1145,8 +1191,64 @@ export const TrialDataProvider = ({ children }: { children: ReactNode }) => {
               console.log(`${category.name} (Profile ${profile.id}): Custom insight custom7 cross-effect (remove from QoL->Motivation), -10 = ${newScore}`);
             }
           }
-          // Default logic for other insights in profile3
+          // Default logic for other insights in profile3 using weights
           else {
+            // Use weight-based scoring for insights that have weight properties
+            const weights = getQuestionWeights(item.id);
+            const hasWeights = weights.engagementWeight !== 0.5 || weights.logisticsWeight !== 0.5 || 
+                             weights.qolWeight !== 0.5 || weights.motivationWeight !== 0.5;
+
+            if (hasWeights) {
+              // Calculate weight-based score change using profile rules
+              const weightForCategory = getQuestionWeightForCategory(item.id, category.name);
+
+              if (category.name === targetCategory && targetCategory !== '') {
+                // Add to target category: score + (profileRules.add * weight)
+                const weightedAddAmount = addAmount * weightForCategory;
+                newScore += weightedAddAmount;
+                console.log(`${category.name} (Profile ${profile.id}): Added insight (weighted), +${weightedAddAmount.toFixed(1)} (${addAmount} * ${weightForCategory}) = ${newScore}`);
+              } else if (category.name === fromCategory && fromCategory !== '') {
+                // Subtract from source category: score - (profileRules.remove * weight)
+                const weightedRemoveAmount = removeAmount * weightForCategory;
+                newScore -= weightedRemoveAmount;
+                console.log(`${category.name} (Profile ${profile.id}): Removed insight (weighted), -${weightedRemoveAmount.toFixed(1)} (${removeAmount} * ${weightForCategory}) = ${newScore}`);
+              }
+            } else {
+              // Fallback to default logic for insights without weights
+              if (category.name === targetCategory && targetCategory !== '') {
+                // Add to target category
+                newScore += addAmount;
+                console.log(`${category.name} (Profile ${profile.id}): Added insight, +${addAmount} = ${newScore}`);
+              } else if (category.name === fromCategory && fromCategory !== '') {
+                // Subtract from source category
+                newScore -= removeAmount;
+                console.log(`${category.name} (Profile ${profile.id}): Removed insight, -${removeAmount} = ${newScore}`);
+              }
+            }
+          }
+        } else {
+          // Default logic for other profiles using weights
+          const weights = getQuestionWeights(item.id);
+          const hasWeights = weights.engagementWeight !== 0.5 || weights.logisticsWeight !== 0.5 || 
+                           weights.qolWeight !== 0.5 || weights.motivationWeight !== 0.5;
+
+          if (hasWeights) {
+            // Calculate weight-based score change using profile rules
+            const weightForCategory = getQuestionWeightForCategory(item.id, category.name);
+
+            if (category.name === targetCategory && targetCategory !== '') {
+              // Add to target category: score + (profileRules.add * weight)
+              const weightedAddAmount = addAmount * weightForCategory;
+              newScore += weightedAddAmount;
+              console.log(`${category.name} (Profile ${profile.id}): Added insight (weighted), +${weightedAddAmount.toFixed(1)} (${addAmount} * ${weightForCategory}) = ${newScore}`);
+            } else if (category.name === fromCategory && fromCategory !== '') {
+              // Subtract from source category: score - (profileRules.remove * weight)
+              const weightedRemoveAmount = removeAmount * weightForCategory;
+              newScore -= weightedRemoveAmount;
+              console.log(`${category.name} (Profile ${profile.id}): Removed insight (weighted), -${weightedRemoveAmount.toFixed(1)} (${removeAmount} * ${weightForCategory}) = ${newScore}`);
+            }
+          } else {
+            // Fallback to default logic for insights without weights
             if (category.name === targetCategory && targetCategory !== '') {
               // Add to target category
               newScore += addAmount;
@@ -1156,17 +1258,6 @@ export const TrialDataProvider = ({ children }: { children: ReactNode }) => {
               newScore -= removeAmount;
               console.log(`${category.name} (Profile ${profile.id}): Removed insight, -${removeAmount} = ${newScore}`);
             }
-          }
-        } else {
-          // Default logic for other profiles
-          if (category.name === targetCategory && targetCategory !== '') {
-            // Add to target category
-            newScore += addAmount;
-            console.log(`${category.name} (Profile ${profile.id}): Added insight, +${addAmount} = ${newScore}`);
-          } else if (category.name === fromCategory && fromCategory !== '') {
-            // Subtract from source category
-            newScore -= removeAmount;
-            console.log(`${category.name} (Profile ${profile.id}): Removed insight, -${removeAmount} = ${newScore}`);
           }
         }
       } else {

@@ -6,7 +6,11 @@
       "score": 1.0,
       "canBeInCategories": ["Healthcare Engagement"],
       "cannotBeInCategories": ["QoL Impact", "Logistical Challenge"],
-      "initialProfile": ["profile2"]
+      "initialProfile": ["profile2"],
+      "engagementWeight": 0.4,
+      "logisticsWeight": 0.3,
+      "qolWeight": 0.6,
+      "motivationWeight": 0.3
     },
     {
       "id": "q2",
@@ -86,7 +90,11 @@
       "score": 1.0,
       "canBeInCategories": ["Healthcare Engagement"],
       "cannotBeInCategories": ["QoL Impact", "Motivation"],
-      "initialProfile": ["profile2"]
+      "initialProfile": ["profile2"],
+      "engagementWeight": 0.4,
+      "logisticsWeight": 0.3,
+      "qolWeight": 0.6,
+      "motivationWeight": 0.3
     },
     {
       "id": "q12",
@@ -94,7 +102,11 @@
       "score": 1.0,
       "canBeInCategories": ["QoL Impact"],
       "cannotBeInCategories": ["Motivation"],
-      "initialProfile": ["profile1"]
+      "initialProfile": ["profile1"],
+      "engagementWeight": 0.3,
+      "logisticsWeight": 0.4,
+      "qolWeight": 0.6,
+      "motivationWeight": 0.3
     },
     {
       "id": "q13",
@@ -102,7 +114,11 @@
       "score": 1.0,
       "canBeInCategories": ["QoL Impact", "Logistical Challenge"],
       "cannotBeInCategories": ["Motivation"],
-      "initialProfile": ["profile1"]
+      "initialProfile": ["profile1"],
+      "engagementWeight": 0.3,
+      "logisticsWeight": 0.4,
+      "qolWeight": 0.6,
+      "motivationWeight": 0.3
     },
     {
       "id": "q14",
@@ -110,7 +126,11 @@
       "score": 1.0,
       "canBeInCategories": ["QoL Impact"],
       "cannotBeInCategories": ["Motivation"],
-      "initialProfile": ["profile1"]
+      "initialProfile": ["profile1"],
+      "engagementWeight": 0.3,
+      "logisticsWeight": 0.4,
+      "qolWeight": 0.6,
+      "motivationWeight": 0.3
     },
     {
       "id": "q15",
@@ -166,7 +186,11 @@
       "score": 1.0,
       "canBeInCategories": ["Healthcare Engagement"],
       "cannotBeInCategories": ["QoL Impact", "Logistical Challenge"],
-      "initialProfile": ["profile2"]
+      "initialProfile": ["profile2"],
+      "engagementWeight": 0.7,
+      "logisticsWeight": 0.3,
+      "qolWeight": 0.3,
+      "motivationWeight": 0.2
     },
     {
       "id": "q22",
@@ -190,7 +214,11 @@
       "score": 1.0,
       "canBeInCategories": ["Healthcare Engagement"],
       "cannotBeInCategories": ["Motivation"],
-      "initialProfile": ["profile1"]
+      "initialProfile": ["profile1"],
+      "engagementWeight": 0.9,
+      "logisticsWeight": 0.3,
+      "qolWeight": 0.2,
+      "motivationWeight": 0.2
     },
     {
       "id": "q25",
@@ -206,7 +234,11 @@
       "score": 1.0,
       "canBeInCategories": ["Healthcare Engagement"],
       "cannotBeInCategories": ["Logistical Challenge"],
-      "initialProfile": ["profile1"]
+      "initialProfile": ["profile1"],
+      "engagementWeight": 0.9,
+      "logisticsWeight": 0.3,
+      "qolWeight": 0.2,
+      "motivationWeight": 0.2
     },
     {
       "id": "q27",
@@ -214,7 +246,11 @@
       "score": 1.0,
       "canBeInCategories": ["Healthcare Engagement"],
       "cannotBeInCategories": ["QoL Impact"],
-      "initialProfile": ["profile2"]
+      "initialProfile": ["profile2"],
+      "engagementWeight": 0.7,
+      "logisticsWeight": 0.3,
+      "qolWeight": 0.3,
+      "motivationWeight": 0.2
     },
     {
       "id": "q28",
@@ -230,7 +266,11 @@
       "score": 1.0,
       "canBeInCategories": ["Healthcare Engagement"],
       "cannotBeInCategories": ["Motivation"],
-      "initialProfile": ["profile2"]
+      "initialProfile": ["profile2"],
+      "engagementWeight": 0.7,
+      "logisticsWeight": 0.3,
+      "qolWeight": 0.3,
+      "motivationWeight": 0.2
     },
     {
       "id": "q30",
@@ -246,7 +286,11 @@
       "score": 1.0,
       "canBeInCategories": ["Logistical Challenge"],
       "cannotBeInCategories": ["Motivation"],
-      "initialProfile": ["profile2"]
+      "initialProfile": ["profile2"],
+      "engagementWeight": 0.3,
+      "logisticsWeight": 0.5,
+      "qolWeight": 0.3,
+      "motivationWeight": 0.2
     },
     {
       "id": "q32",
@@ -254,7 +298,11 @@
       "score": 1.0,
       "canBeInCategories": ["Logistical Challenge"],
       "cannotBeInCategories": ["Motivation"],
-      "initialProfile": ["profile2"]
+      "initialProfile": ["profile2"],
+      "engagementWeight": 0.2,
+      "logisticsWeight": 0.5,
+      "qolWeight": 0.4,
+      "motivationWeight": 0.2
     },
     {
       "id": "q33",
@@ -262,7 +310,11 @@
       "score": 1.0,
       "canBeInCategories": ["Logistical Challenge"],
       "cannotBeInCategories": ["Motivation"],
-      "initialProfile": ["profile1"]
+      "initialProfile": ["profile1"],
+      "engagementWeight": 0.2,
+      "logisticsWeight": 0.5,
+      "qolWeight": 0.4,
+      "motivationWeight": 0.2
     },
     {
       "id": "q34",
@@ -270,7 +322,11 @@
       "score": 1.0,
       "canBeInCategories": ["Logistical Challenge", "Healthcare Engagement"],
       "cannotBeInCategories": [],
-      "initialProfile": ["profile1"]
+      "initialProfile": ["profile1"],
+      "engagementWeight": 0.4,
+      "logisticsWeight": 0.9,
+      "qolWeight": 0.6,
+      "motivationWeight": 0.5
     },
     {
       "id": "q35",
@@ -278,7 +334,11 @@
       "score": 1.0,
       "canBeInCategories": ["Logistical Challenge"],
       "cannotBeInCategories": ["Motivation"],
-      "initialProfile": ["profile1"]
+      "initialProfile": ["profile1"],
+      "engagementWeight": 0.4,
+      "logisticsWeight": 0.9,
+      "qolWeight": 0.6,
+      "motivationWeight": 0.5
     },
     {
       "id": "q36",
@@ -294,7 +354,11 @@
       "score": 1.0,
       "canBeInCategories": ["Logistical Challenge"],
       "cannotBeInCategories": ["QoL Impact"],
-      "initialProfile": ["profile3"]
+      "initialProfile": ["profile3"],
+      "engagementWeight": 0.4,
+      "logisticsWeight": 0.3,
+      "qolWeight": 0.6,
+      "motivationWeight": 0.3
     },
     {
       "id": "q38",
@@ -318,7 +382,11 @@
       "score": 1.0,
       "canBeInCategories": ["Healthcare Engagement"],
       "cannotBeInCategories": ["Logistical Challenge"],
-      "initialProfile": ["profile2"]
+      "initialProfile": ["profile2"],
+      "engagementWeight": 0.4,
+      "logisticsWeight": 0.3,
+      "qolWeight": 0.6,
+      "motivationWeight": 0.3
     },
     {
       "id": "q41",
@@ -326,7 +394,11 @@
       "score": 1.0,
       "canBeInCategories": ["Logistical Challenge"],
       "cannotBeInCategories": ["QoL Impact"],
-      "initialProfile": ["profile3"]
+      "initialProfile": ["profile3"],
+      "engagementWeight": 0.3,
+      "logisticsWeight": 0.5,
+      "qolWeight": 0.3,
+      "motivationWeight": 0.2
     },
     {
       "id": "q42",
@@ -334,7 +406,11 @@
       "score": 1.0,
       "canBeInCategories": ["Logistical Challenge"],
       "cannotBeInCategories": ["Motivation"],
-      "initialProfile": ["profile1"]
+      "initialProfile": ["profile1"],
+      "engagementWeight": 0.2,
+      "logisticsWeight": 0.5,
+      "qolWeight": 0.4,
+      "motivationWeight": 0.2
     },
     {
       "id": "q43",
@@ -350,7 +426,11 @@
       "score": 1.0,
       "canBeInCategories": ["Logistical Challenge"],
       "cannotBeInCategories": ["Motivation"],
-      "initialProfile": ["profile1"]
+      "initialProfile": ["profile1"],
+      "engagementWeight": 0.4,
+      "logisticsWeight": 0.9,
+      "qolWeight": 0.6,
+      "motivationWeight": 0.5
     },
     {
       "id": "q45",
@@ -358,7 +438,11 @@
       "score": 1.0,
       "canBeInCategories": ["Logistical Challenge", "QoL Impact"],
       "cannotBeInCategories": ["Healthcare Engagement"],
-      "initialProfile": ["profile1"]
+      "initialProfile": ["profile1"],
+      "engagementWeight": 0.4,
+      "logisticsWeight": 0.9,
+      "qolWeight": 0.6,
+      "motivationWeight": 0.5
     },
     {
       "id": "q46",
@@ -366,7 +450,11 @@
       "score": 1.0,
       "canBeInCategories": ["Logistical Challenge", "QoL Impact"],
       "cannotBeInCategories": ["Healthcare Engagement"],
-      "initialProfile": ["profile1"]
+      "initialProfile": ["profile1"],
+      "engagementWeight": 0.4,
+      "logisticsWeight": 0.9,
+      "qolWeight": 0.6,
+      "motivationWeight": 0.5
     },
     {
       "id": "q47",
@@ -374,7 +462,11 @@
       "score": 1.0,
       "canBeInCategories": ["Logistical Challenge"],
       "cannotBeInCategories": ["QoL Impact"],
-      "initialProfile": ["profile2"]
+      "initialProfile": ["profile2"],
+      "engagementWeight": 0.3,
+      "logisticsWeight": 0.5,
+      "qolWeight": 0.3,
+      "motivationWeight": 0.2
     },
     {
       "id": "q48",
@@ -382,7 +474,11 @@
       "score": 1.0,
       "canBeInCategories": ["Logistical Challenge"],
       "cannotBeInCategories": ["Motivation"],
-      "initialProfile": ["profile2"]
+      "initialProfile": ["profile2"],
+      "engagementWeight": 0.2,
+      "logisticsWeight": 0.5,
+      "qolWeight": 0.4,
+      "motivationWeight": 0.2
     },
     {
       "id": "q49",
@@ -398,7 +494,11 @@
       "score": 1.0,
       "canBeInCategories": ["Healthcare Engagement"],
       "cannotBeInCategories": ["QoL Impact"],
-      "initialProfile": ["profile2"]
+      "initialProfile": ["profile2"],
+      "engagementWeight": 0.3,
+      "logisticsWeight": 0.5,
+      "qolWeight": 0.3,
+      "motivationWeight": 0.2
     },
     {
       "id": "q51",
@@ -430,7 +530,11 @@
       "score": 1.0,
       "canBeInCategories": ["Logistical Challenge"],
       "cannotBeInCategories": ["Motivation"],
-      "initialProfile": ["profile1"]
+      "initialProfile": ["profile1"],
+      "engagementWeight": 0.2,
+      "logisticsWeight": 0.5,
+      "qolWeight": 0.4,
+      "motivationWeight": 0.2
     },
     {
       "id": "q55",
@@ -486,7 +590,11 @@
       "score": 1.0,
       "canBeInCategories": ["Healthcare Engagement"],
       "cannotBeInCategories": ["Motivation"],
-      "initialProfile": ["profile2"]
+      "initialProfile": ["profile2"],
+      "engagementWeight": 0.7,
+      "logisticsWeight": 0.3,
+      "qolWeight": 0.3,
+      "motivationWeight": 0.2
     },
     {
       "id": "q62",
@@ -494,7 +602,11 @@
       "score": 1.0,
       "canBeInCategories": ["Healthcare Engagement"],
       "cannotBeInCategories": ["Motivation"],
-      "initialProfile": ["profile2"]
+      "initialProfile": ["profile2"],
+      "engagementWeight": 0.7,
+      "logisticsWeight": 0.3,
+      "qolWeight": 0.3,
+      "motivationWeight": 0.2
     },
     {
       "id": "q63",
@@ -510,7 +622,11 @@
       "score": 1.0,
       "canBeInCategories": ["Healthcare Engagement"],
       "cannotBeInCategories": ["Logistical Challenge"],
-      "initialProfile": ["profile1"]
+      "initialProfile": ["profile1"],
+      "engagementWeight": 0.8,
+      "logisticsWeight": 0.4,
+      "qolWeight": 0.4,
+      "motivationWeight": 0.6
     },
     {
       "id": "q65",
@@ -518,7 +634,11 @@
       "score": 1.0,
       "canBeInCategories": ["Healthcare Engagement"],
       "cannotBeInCategories": ["Logistical Challenge"],
-      "initialProfile": ["profile1"]
+      "initialProfile": ["profile1"],
+      "engagementWeight": 0.9,
+      "logisticsWeight": 0.3,
+      "qolWeight": 0.2,
+      "motivationWeight": 0.2
     },
     {
       "id": "q66",
@@ -526,7 +646,11 @@
       "score": 1.0,
       "canBeInCategories": ["Healthcare Engagement"],
       "cannotBeInCategories": ["Motivation"],
-      "initialProfile": ["profile2"]
+      "initialProfile": ["profile2"],
+      "engagementWeight": 0.8,
+      "logisticsWeight": 0.4,
+      "qolWeight": 0.4,
+      "motivationWeight": 0.6
     },
     {
       "id": "q67",
@@ -550,7 +674,11 @@
       "score": 1.0,
       "canBeInCategories": ["Healthcare Engagement", "Motivation"],
       "cannotBeInCategories": ["QoL Impact"],
-      "initialProfile": ["profile3"]
+      "initialProfile": ["profile3"],
+      "engagementWeight": 0.8,
+      "logisticsWeight": 0.4,
+      "qolWeight": 0.4,
+      "motivationWeight": 0.6
     },
     {
       "id": "q70",
@@ -558,7 +686,11 @@
       "score": 1.0,
       "canBeInCategories": ["Healthcare Engagement"],
       "cannotBeInCategories": ["Motivation"],
-      "initialProfile": ["profile2"]
+      "initialProfile": ["profile2"],
+      "engagementWeight": 0.7,
+      "logisticsWeight": 0.3,
+      "qolWeight": 0.3,
+      "motivationWeight": 0.2
     },
     {
       "id": "q71",
@@ -566,7 +698,11 @@
       "score": 1.0,
       "canBeInCategories": ["QoL Impact"],
       "cannotBeInCategories": ["Motivation"],
-      "initialProfile": ["profile2"]
+      "initialProfile": ["profile2"],
+      "engagementWeight": 0.4,
+      "logisticsWeight": 0.3,
+      "qolWeight": 0.6,
+      "motivationWeight": 0.3
     },
     {
       "id": "q72",
@@ -582,7 +718,11 @@
       "score": 1.0,
       "canBeInCategories": ["QoL Impact"],
       "cannotBeInCategories": ["Motivation"],
-      "initialProfile": ["profile3"]
+      "initialProfile": ["profile3"],
+      "engagementWeight": 0.3,
+      "logisticsWeight": 0.4,
+      "qolWeight": 0.6,
+      "motivationWeight": 0.3
     },
     {
       "id": "q74",
@@ -590,7 +730,11 @@
       "score": 1.0,
       "canBeInCategories": ["QoL Impact"],
       "cannotBeInCategories": ["Motivation"],
-      "initialProfile": ["profile3"]
+      "initialProfile": ["profile3"],
+      "engagementWeight": 0.3,
+      "logisticsWeight": 0.4,
+      "qolWeight": 0.6,
+      "motivationWeight": 0.3
     },
     {
       "id": "q75",
@@ -654,7 +798,11 @@
       "score": 1.0,
       "canBeInCategories": ["QoL Impact"],
       "cannotBeInCategories": ["Motivation"],
-      "initialProfile": ["profile3"]
+      "initialProfile": ["profile3"],
+      "engagementWeight": 0.3,
+      "logisticsWeight": 0.4,
+      "qolWeight": 0.6,
+      "motivationWeight": 0.3
     },
     {
       "id": "q83",
@@ -662,7 +810,11 @@
       "score": 1.0,
       "canBeInCategories": ["QoL Impact"],
       "cannotBeInCategories": ["Motivation"],
-      "initialProfile": ["profile3"]
+      "initialProfile": ["profile3"],
+      "engagementWeight": 0.5,
+      "logisticsWeight": 0.6,
+      "qolWeight": 0.9,
+      "motivationWeight": 0.6
     },
     {
       "id": "q84",
@@ -670,7 +822,11 @@
       "score": 1.0,
       "canBeInCategories": ["QoL Impact"],
       "cannotBeInCategories": ["Motivation"],
-      "initialProfile": ["profile3"]
+      "initialProfile": ["profile3"],
+      "engagementWeight": 0.5,
+      "logisticsWeight": 0.6,
+      "qolWeight": 0.9,
+      "motivationWeight": 0.6
     },
     {
       "id": "q85",
@@ -686,7 +842,11 @@
       "score": 1.0,
       "canBeInCategories": ["QoL Impact"],
       "cannotBeInCategories": ["Healthcare Engagement"],
-      "initialProfile": ["profile3"]
+      "initialProfile": ["profile3"],
+      "engagementWeight": 0.3,
+      "logisticsWeight": 0.4,
+      "qolWeight": 0.6,
+      "motivationWeight": 0.3
     },
     {
       "id": "q87",
@@ -694,7 +854,11 @@
       "score": 1.0,
       "canBeInCategories": ["QoL Impact"],
       "cannotBeInCategories": ["Motivation"],
-      "initialProfile": ["profile3"]
+      "initialProfile": ["profile3"],
+      "engagementWeight": 0.5,
+      "logisticsWeight": 0.6,
+      "qolWeight": 0.9,
+      "motivationWeight": 0.6
     },
     {
       "id": "q88",
@@ -710,7 +874,11 @@
       "score": 1.0,
       "canBeInCategories": ["QoL Impact"],
       "cannotBeInCategories": ["Motivation"],
-      "initialProfile": ["profile3"]
+      "initialProfile": ["profile3"],
+      "engagementWeight": 0.5,
+      "logisticsWeight": 0.6,
+      "qolWeight": 0.9,
+      "motivationWeight": 0.6
     },
     {
       "id": "q90",
@@ -718,7 +886,11 @@
       "score": 1.0,
       "canBeInCategories": ["Healthcare Engagement"],
       "cannotBeInCategories": ["Motivation"],
-      "initialProfile": ["profile2"]
+      "initialProfile": ["profile2"],
+      "engagementWeight": 0.4,
+      "logisticsWeight": 0.3,
+      "qolWeight": 0.6,
+      "motivationWeight": 0.3
     },
     {
       "id": "q91",
@@ -726,7 +898,11 @@
       "score": 1.0,
       "canBeInCategories": ["Motivation"],
       "cannotBeInCategories": ["Logistical Challenge"],
-      "initialProfile": ["profile3"]
+      "initialProfile": ["profile3"],
+      "engagementWeight": 0.6,
+      "logisticsWeight": 0.4,
+      "qolWeight": 0.6,
+      "motivationWeight": 0.8
     },
     {
       "id": "q92",
@@ -750,7 +926,11 @@
       "score": 1.0,
       "canBeInCategories": ["Motivation"],
       "cannotBeInCategories": ["Logistical Challenge"],
-      "initialProfile": ["profile3"]
+      "initialProfile": ["profile3"],
+      "engagementWeight": 0.2,
+      "logisticsWeight": 0.2,
+      "qolWeight": 0.3,
+      "motivationWeight": 0.4
     },
     {
       "id": "q95",
@@ -758,7 +938,11 @@
       "score": 1.0,
       "canBeInCategories": ["Motivation"],
       "cannotBeInCategories": ["Logistical Challenge"],
-      "initialProfile": ["profile3"]
+      "initialProfile": ["profile3"],
+      "engagementWeight": 0.6,
+      "logisticsWeight": 0.4,
+      "qolWeight": 0.6,
+      "motivationWeight": 0.8
     },
     {
       "id": "q96",
@@ -766,7 +950,11 @@
       "score": 1.0,
       "canBeInCategories": ["Motivation", "Healthcare Engagement"],
       "cannotBeInCategories": ["Logistical Challenge"],
-      "initialProfile": ["profile3"]
+      "initialProfile": ["profile3"],
+      "engagementWeight": 0.2,
+      "logisticsWeight": 0.2,
+      "qolWeight": 0.3,
+      "motivationWeight": 0.4
     },
     {
       "id": "q97",
@@ -774,7 +962,11 @@
       "score": 1.0,
       "canBeInCategories": ["Motivation"],
       "cannotBeInCategories": ["Logistical Challenge"],
-      "initialProfile": ["profile2"]
+      "initialProfile": ["profile2"],
+      "engagementWeight": 0.2,
+      "logisticsWeight": 0.2,
+      "qolWeight": 0.2,
+      "motivationWeight": 0.3
     },
     {
       "id": "q98",
@@ -1286,7 +1478,11 @@
       "score": 1.0,
       "canBeInCategories": ["Healthcare Engagement", "Motivation"],
       "cannotBeInCategories": [],
-      "initialProfile": ["profile1"]
+      "initialProfile": ["profile1"],
+      "engagementWeight": 0.2,
+      "logisticsWeight": 0.2,
+      "qolWeight": 0.3,
+      "motivationWeight": 0.4
     },
     {
       "id": "custom2",
@@ -1294,7 +1490,11 @@
       "score": 1.0,
       "canBeInCategories": ["Healthcare Engagement", "Quality of Life"],
       "cannotBeInCategories": [],
-      "initialProfile": ["profile1"]
+      "initialProfile": ["profile1"],
+      "engagementWeight": 0.9,
+      "logisticsWeight": 0.3,
+      "qolWeight": 0.2,
+      "motivationWeight": 0.2
     },
     {
       "id": "custom3",
@@ -1302,7 +1502,11 @@
       "score": 1.0,
       "canBeInCategories": ["Healthcare Engagement", "Quality of Life Impact"],
       "cannotBeInCategories": [],
-      "initialProfile": ["profile2"]
+      "initialProfile": ["profile2"],
+      "engagementWeight": 0.4,
+      "logisticsWeight": 0.3,
+      "qolWeight": 0.6,
+      "motivationWeight": 0.3
     },
     {
       "id": "custom4",
@@ -1310,7 +1514,11 @@
       "score": 1.0,
       "canBeInCategories": ["Quality of Life Impact", "Logistical Challenge"],
       "cannotBeInCategories": [],
-      "initialProfile": ["profile2"]
+      "initialProfile": ["profile2"],
+      "engagementWeight": 0.3,
+      "logisticsWeight": 0.5,
+      "qolWeight": 0.3,
+      "motivationWeight": 0.2
     },
     {
       "id": "custom5",
@@ -1318,7 +1526,11 @@
       "score": 1.0,
       "canBeInCategories": ["Logistical Challenge", "Quality of Life Impact"],
       "cannotBeInCategories": [],
-      "initialProfile": ["profile3"]
+      "initialProfile": ["profile3"],
+      "engagementWeight": 0.4,
+      "logisticsWeight": 0.9,
+      "qolWeight": 0.6,
+      "motivationWeight": 0.5
     },
     {
       "id": "custom6",
@@ -1326,7 +1538,11 @@
       "score": 1.0,
       "canBeInCategories": ["Logistical Challenge", "Healthcare Engagement"],
       "cannotBeInCategories": [],
-      "initialProfile": ["profile3"]
+      "initialProfile": ["profile3"],
+      "engagementWeight": 0.8,
+      "logisticsWeight": 0.4,
+      "qolWeight": 0.4,
+      "motivationWeight": 0.6
     },
     {
       "id": "custom7",
@@ -1334,7 +1550,11 @@
       "score": 1.0,
       "canBeInCategories": ["Motivation", "Quality of Life Impact"],
       "cannotBeInCategories": [],
-      "initialProfile": ["profile3"]
+      "initialProfile": ["profile3"],
+      "engagementWeight": 0.6,
+      "logisticsWeight": 0.4,
+      "qolWeight": 0.6,
+      "motivationWeight": 0.8
     }
   ],
   "profile1": {

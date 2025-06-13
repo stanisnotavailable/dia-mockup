@@ -87,20 +87,20 @@ const PROFILE_SCORING_RULES = {
   },
   profile1: {
     [CATEGORIES.HEALTHCARE]: { base: 40, add: 25, remove: 10 },    // Healthcare Engagement: most sensitive
-    [CATEGORIES.LOGISTICS]: { base: 50, add: 5, remove: 5 },     // Logistics Challenge: default sensitivity
-    [CATEGORIES.QUALITY]: { base: 95, add: 5, remove: 5 },       // Quality of Life: default sensitivity
+    [CATEGORIES.LOGISTICS]: { base: 50, add: 2.5, remove: 2.5 },     // Logistics Challenge: default sensitivity
+    [CATEGORIES.QUALITY]: { base: 95, add: 2.5, remove: 2.5 },       // Quality of Life: default sensitivity
     [CATEGORIES.MOTIVATION]: { base: 15, add: 1, remove: 1 },      // Motivation: least sensitive
   },
   profile2: {
     [CATEGORIES.HEALTHCARE]: { base: 30, add: 25, remove: 10 },    // Healthcare Engagement: most sensitive
-    [CATEGORIES.MOTIVATION]: { base: 35, add: 5, remove: 5 },    // Motivation: default sensitivity
+    [CATEGORIES.MOTIVATION]: { base: 35, add: 2.5, remove: 2.5 },    // Motivation: default sensitivity
     [CATEGORIES.QUALITY]: { base: 65, add: 1, remove: 1 },         // Quality of Life: least sensitive
-    [CATEGORIES.LOGISTICS]: { base: 35, add: 5, remove: 5 }      // Logistics Challenge: default sensitivity
+    [CATEGORIES.LOGISTICS]: { base: 35, add: 2.5, remove: 2.5 }      // Logistics Challenge: default sensitivity
   },
   profile3: {
-    [CATEGORIES.HEALTHCARE]: { base: 90, add: 5, remove: 5 },      // Healthcare Engagement: default sensitivity
+    [CATEGORIES.HEALTHCARE]: { base: 90, add: 2.5, remove: 2.5 },      // Healthcare Engagement: default sensitivity
     [CATEGORIES.MOTIVATION]: { base: 90, add: 1, remove: 1 },      // Motivation: least sensitive
-    [CATEGORIES.QUALITY]: { base: 95, add: 5, remove: 5 },       // Quality of Life: default sensitivity
+    [CATEGORIES.QUALITY]: { base: 95, add: 2.5, remove: 2.5 },       // Quality of Life: default sensitivity
     [CATEGORIES.LOGISTICS]: { base: 85, add: 25, remove: 25 }      // Logistics Challenge: most sensitive
   }
 } as const;

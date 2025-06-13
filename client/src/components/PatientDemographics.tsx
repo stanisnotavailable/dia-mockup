@@ -201,6 +201,18 @@ const COUNTRY_NAMES: { [key: string]: string } = {
   'FJ': 'Fiji',
 };
 
+interface LegendItem {
+  label: string;
+  percentage: number;
+  color: string;
+  countryCode?: string;
+}
+
+interface LegendSection {
+  title: string;
+  items: LegendItem[];
+}
+
 export default function PatientDemographics() {
   const { getCurrentProfile, lastDataChangeTimestamp, currentProfileId } = useContext(TrialDataContext);
   const [isGeneratingAi, setIsGeneratingAi] = useState(false);
@@ -208,7 +220,7 @@ export default function PatientDemographics() {
   const [lastUpdateTimestamp, setLastUpdateTimestamp] = useState<number>(0);
 
   const profile = getCurrentProfile();
-  const patientDemographic = profile.patientDemographic;
+  const { patientDemographic } = profile;
 
   // Check if current profile is profile0 to conditionally hide sections
   const isProfile0 = currentProfileId === 'profile0';
@@ -235,70 +247,61 @@ export default function PatientDemographics() {
 
   // Helper function to get country name from country code
   const getCountryName = (countryCode: string): string => {
-    return COUNTRY_NAMES[countryCode.toUpperCase()] || countryCode;
+    const countryNames: { [key: string]: string } = {
+      'US': 'USA',
+      'DE': 'Germany',
+      // Add more country codes as needed
+    };
+    return countryNames[countryCode] || countryCode;
   };
 
   // Helper function to get country flag component or styles
   const getCountryFlag = (countryCode: string, countryName: string): JSX.Element => {
-    return <FlagIcon countryCode={countryCode} countryName={countryName} />;
+    return (
+      <div className="flex items-center gap-2">
+        <FlagIcon countryCode={countryCode} countryName={countryName} />
+        <span>{countryName}</span>
+      </div>
+    );
   };
 
   // Helper function to get legend data based on profile
-  const getLegendData = () => {
-    switch (currentProfileId) {
-      case 'profile0':
-        return [
-          { name: "Healthcare Engagement", level: "High", visual: "full" },
-          { name: "Logistical Challenge", level: "Low", visual: "empty" },
-          { name: "Quality of Life Impact", level: "Low", visual: "empty" },
-          { name: "Motivation", level: "Medium", visual: "half" }
-        ];
-      case 'profile1':
-        return [
-          { name: "Healthcare Engagement", level: "Medium", visual: "half" },
-          { name: "Logistical Challenge", level: "Medium", visual: "half" },
-          { name: "Quality of Life Impact", level: "High", visual: "full" },
-          { name: "Motivation", level: "Low", visual: "empty" }
-        ];
-      case 'profile2':
-        return [
-          { name: "Healthcare Engagement", level: "Low", visual: "empty" },
-          { name: "Logistical Challenge", level: "Low", visual: "empty" },
-          { name: "Quality of Life Impact", level: "Medium", visual: "half" },
-          { name: "Motivation", level: "Low", visual: "empty" }
-        ];
-      case 'profile3':
-        return [
-          { name: "Healthcare Engagement", level: "High", visual: "full" },
-          { name: "Logistical Challenge", level: "High", visual: "full" },
-          { name: "Quality of Life Impact", level: "High", visual: "full" },
-          { name: "Motivation", level: "High", visual: "full" }
-        ];
-      default:
-        return [
-          { name: "Healthcare Engagement", level: "Medium", visual: "half" },
-          { name: "Logistical Challenge", level: "Medium", visual: "half" },
-          { name: "Quality of Life Impact", level: "High", visual: "full" },
-          { name: "Motivation", level: "Low", visual: "empty" }
-        ];
-    }
+  const getLegendData = (): LegendSection[] => {
+    const roleData = patientDemographic.role || [];
+    const originData = patientDemographic.origin || [];
+
+    return [
+      {
+        title: 'Role Distribution',
+        items: roleData.map(item => ({
+          label: item.role_name,
+          percentage: item.percentage,
+          color: '#4F46E5' // Indigo color for roles
+        }))
+      },
+      {
+        title: 'Country Distribution',
+        items: originData.map(item => ({
+          label: getCountryName(item.country),
+          percentage: item.percentage,
+          color: item.country === 'DE' ? '#000000' : '#3C3B6E', // Black for Germany, Blue for USA
+          countryCode: item.country
+        }))
+      }
+    ];
   };
 
   // Helper function to get visual indicator based on level
   const getVisualIndicator = (visual: string) => {
     switch (visual) {
-      case "full":
-        return <div className="w-3 h-3 rounded-full bg-gray-700 mr-2"></div>;
-      case "half":
-        return (
-          <div className="w-3 h-3 rounded-full mr-2 relative bg-gray-300">
-            <div className="w-1.5 h-3 bg-gray-700 rounded-l-full"></div>
-          </div>
-        );
-      case "empty":
-        return <div className="w-3 h-3 rounded-full border border-gray-700 bg-white mr-2"></div>;
+      case 'high':
+        return <div className="w-2 h-2 rounded-full bg-green-500" />;
+      case 'medium':
+        return <div className="w-2 h-2 rounded-full bg-yellow-500" />;
+      case 'low':
+        return <div className="w-2 h-2 rounded-full bg-red-500" />;
       default:
-        return <div className="w-3 h-3 rounded-full border border-gray-700 bg-white mr-2"></div>;
+        return null;
     }
   };
 
@@ -343,109 +346,83 @@ export default function PatientDemographics() {
         <div className={`font-medium ${titleFontSize} mb-0.5`}>Origin</div>
         <div className={`${contentFontSize} text-gray-500 mb-2`}>Patient geographic distribution</div>
 
-        <div>
-          <div className="flex flex-row justify-between">
-            <div>
-              <div className={`text-gray-500 ${labelFontSize} mb-0.5`}>Age Range</div>
-              {isProfile0 && <div className="font-medium">&infin; - &infin;</div>}
-              <div className="font-medium" style={{ visibility: isProfile0 ? 'hidden' : 'visible' }}>{patientDemographic.age}</div>
-            </div>
-
-
-            <div className="col-span-2">
-              <div className={`text-gray-500 ${labelFontSize} mb-0.5`}>Countries</div>
-              <div className="font-medium space-compact">
-                {patientDemographic.origin && patientDemographic.origin.map((item, index) => {
-                  const countryName = getCountryName(item.country);
-                  const flagComponent = getCountryFlag(item.country, countryName);
-
-                  return (
-                    <div key={index} className="flex justify-between" >
-                      <span className="flex items-center">
-                        {flagComponent}
-                        <span style={{ marginRight: '8px' }}>{countryName}:</span>
-                      </span>
-                      <div className="flex items-center">
-                        <span className={`mr-1 ${labelFontSize}`}>{item.percentage}%</span>
-                        <div className={`w-16 bg-gray-200 rounded-full ${barHeight}`}>
-                          <div
-                            className={`bg-blue-600 ${barHeight} rounded-full`}
-                            style={{ width: `${item.percentage}%` }}
-                          ></div>
-                        </div>
+        <div className="space-y-6">
+          {getLegendData().map((section, index) => (
+            <div key={index} className="space-y-3">
+              <h3 className="text-sm font-medium text-gray-700">{section.title}</h3>
+              <div className="space-y-2">
+                {section.items.map((item, itemIndex) => (
+                  <div key={itemIndex} className="flex items-center gap-2">
+                    <div className="flex-1">
+                      <div className={`flex ${section.title === 'Role Distribution' ? 'justify-start gap-2' : 'justify-between'} text-sm mb-1`}>
+                        <span className="text-gray-600 flex items-center gap-2">
+                          {section.title === 'Country Distribution' && item.countryCode && (
+                            <FlagIcon
+                              countryCode={item.countryCode}
+                              countryName={item.label}
+                            />
+                          )}
+                          {item.label}
+                        </span>
+                        <span className="text-gray-900 font-medium">{item.percentage}%</span>
                       </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-
-          {/* Legend Section */}
-          <div className="mt-4 mb-2">
-            <div className={`text-gray-500 ${labelFontSize} mb-2`}>Legend</div>
-            <div className="border border-gray-300 rounded-md overflow-hidden">
-              <table className="w-full text-xs">
-                <thead>
-                  <tr className="bg-gray-50">
-                    <th className="text-left py-2 px-3 font-medium border-b border-r border-gray-300">Trait</th>
-                    <th className="text-left py-2 px-3 font-medium border-b border-gray-300">Score</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {getLegendData().map((item, index) => (
-                    <tr key={item.name} className={index < getLegendData().length - 1 ? "border-b border-gray-300" : ""}>
-                      <td className="py-2 px-3 border-r border-gray-300">{item.name}</td>
-                      <td className="py-2 px-3 flex items-center">
-                        {getVisualIndicator(item.visual)}
-                        <span>({item.level})</span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          {/* AI Summary Section with Dark Background and High Contrast */}
-          <div className="col-span-3 mt-4 pt-2 border-t border-gray-100 relative">
-            <div className="flex items-center mb-3">
-              <div className={`text-gray-500 text-base flex items-center`}>
-                <span className="mr-1">AI Summary</span>
-                <span className="text-blue-500 text-xs">✨</span>
-              </div>
-            </div>
-
-            <div>
-              {/* Show the thinking animation only during initial generation */}
-              {isGeneratingAi && !aiSummary && (
-                <div className="px-3 py-2">
-                  <AiSummaryAnimation isGenerating={true} darkMode={true} />
-                </div>
-              )}
-
-              <div
-                className="font-normal text-base rounded-md overflow-hidden"
-                style={{ backgroundColor: "#EDF3FD", minHeight: "120px" }}
-              >
-                {/* Fancy AI border animation */}
-                <div className="relative">
-                  <AiPulseAnimation isGenerating={isGeneratingAi} darkMode={true} />
-                  <div className="relative z-10 p-3">
-                    <div className="font-regular overflow-y-auto" style={{ maxHeight: "350px", color: "#1A1A2E", visibility: isProfile0 ? 'hidden' : 'visible' }}>
-                      {aiSummary ? (
-                        <TypingAnimation
-                          text={aiSummary}
-                          isGenerating={isGeneratingAi}
-                          speed={40}  // Much slower typing speed
-                          initialDelay={400}  // Longer initial delay
-                          thinkingPauses={true}  // Enable random pauses while typing
-                          darkMode={true}  // Enable dark mode styling
-                        />
-                      ) : (
-                        <span className="text-gray-200">Analyzing patient data to generate insights...</span>
+                      {section.title === 'Country Distribution' && (
+                        <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                          <div
+                            className="h-full rounded-full transition-all duration-300"
+                            style={{
+                              width: `${item.percentage}%`,
+                              backgroundColor: "#2563EB"
+                            }}
+                          />
+                        </div>
                       )}
                     </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* AI Summary Section with Dark Background and High Contrast */}
+        <div className="col-span-3 mt-4 pt-2 border-t border-gray-100 relative">
+          <div className="flex items-center mb-3">
+            <div className={`text-gray-500 text-base flex items-center`}>
+              <span className="mr-1">AI Summary</span>
+              <span className="text-blue-500 text-xs">✨</span>
+            </div>
+          </div>
+
+          <div>
+            {/* Show the thinking animation only during initial generation */}
+            {isGeneratingAi && !aiSummary && (
+              <div className="px-3 py-2">
+                <AiSummaryAnimation isGenerating={true} darkMode={true} />
+              </div>
+            )}
+
+            <div
+              className="font-normal text-base rounded-md overflow-hidden"
+              style={{ backgroundColor: "#EDF3FD", minHeight: "120px" }}
+            >
+              {/* Fancy AI border animation */}
+              <div className="relative">
+                <AiPulseAnimation isGenerating={isGeneratingAi} darkMode={true} />
+                <div className="relative z-10 p-3">
+                  <div className="font-regular overflow-y-auto" style={{ maxHeight: "350px", color: "#1A1A2E", visibility: isProfile0 ? 'hidden' : 'visible' }}>
+                    {aiSummary ? (
+                      <TypingAnimation
+                        text={aiSummary}
+                        isGenerating={isGeneratingAi}
+                        speed={40}  // Much slower typing speed
+                        initialDelay={400}  // Longer initial delay
+                        thinkingPauses={true}  // Enable random pauses while typing
+                        darkMode={true}  // Enable dark mode styling
+                      />
+                    ) : (
+                      <span className="text-gray-200">Analyzing patient data to generate insights...</span>
+                    )}
                   </div>
                 </div>
               </div>

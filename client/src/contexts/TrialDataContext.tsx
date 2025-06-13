@@ -86,21 +86,21 @@ const PROFILE_SCORING_RULES = {
     [CATEGORIES.LOGISTICS]: { base: 0, add: 1, remove: 1 }         // Will use base score instead
   },
   profile1: {
-    [CATEGORIES.HEALTHCARE]: { base: 40, add: 25, remove: 25 },    // Healthcare Engagement: most sensitive
-    [CATEGORIES.LOGISTICS]: { base: 50, add: 10, remove: 10 },     // Logistics Challenge: default sensitivity
-    [CATEGORIES.QUALITY]: { base: 95, add: 15, remove: 15 },       // Quality of Life: default sensitivity
-    [CATEGORIES.MOTIVATION]: { base: 15, add: 5, remove: 5 },      // Motivation: least sensitive
+    [CATEGORIES.HEALTHCARE]: { base: 40, add: 25, remove: 10 },    // Healthcare Engagement: most sensitive
+    [CATEGORIES.LOGISTICS]: { base: 50, add: 5, remove: 5 },     // Logistics Challenge: default sensitivity
+    [CATEGORIES.QUALITY]: { base: 95, add: 5, remove: 5 },       // Quality of Life: default sensitivity
+    [CATEGORIES.MOTIVATION]: { base: 15, add: 1, remove: 1 },      // Motivation: least sensitive
   },
   profile2: {
-    [CATEGORIES.HEALTHCARE]: { base: 30, add: 25, remove: 25 },    // Healthcare Engagement: most sensitive
-    [CATEGORIES.MOTIVATION]: { base: 35, add: 15, remove: 15 },    // Motivation: default sensitivity
-    [CATEGORIES.QUALITY]: { base: 65, add: 5, remove: 5 },         // Quality of Life: least sensitive
-    [CATEGORIES.LOGISTICS]: { base: 35, add: 15, remove: 15 }      // Logistics Challenge: default sensitivity
+    [CATEGORIES.HEALTHCARE]: { base: 30, add: 25, remove: 10 },    // Healthcare Engagement: most sensitive
+    [CATEGORIES.MOTIVATION]: { base: 35, add: 5, remove: 5 },    // Motivation: default sensitivity
+    [CATEGORIES.QUALITY]: { base: 65, add: 1, remove: 1 },         // Quality of Life: least sensitive
+    [CATEGORIES.LOGISTICS]: { base: 35, add: 5, remove: 5 }      // Logistics Challenge: default sensitivity
   },
   profile3: {
     [CATEGORIES.HEALTHCARE]: { base: 90, add: 5, remove: 5 },      // Healthcare Engagement: default sensitivity
-    [CATEGORIES.MOTIVATION]: { base: 90, add: 5, remove: 5 },      // Motivation: least sensitive
-    [CATEGORIES.QUALITY]: { base: 95, add: 10, remove: 10 },       // Quality of Life: default sensitivity
+    [CATEGORIES.MOTIVATION]: { base: 90, add: 1, remove: 1 },      // Motivation: least sensitive
+    [CATEGORIES.QUALITY]: { base: 95, add: 5, remove: 5 },       // Quality of Life: default sensitivity
     [CATEGORIES.LOGISTICS]: { base: 85, add: 25, remove: 25 }      // Logistics Challenge: most sensitive
   }
 } as const;
@@ -528,29 +528,53 @@ const createPredefinedProfileData = (profileId: string): TrialData => {
 
 // Get demographic data from the JSON file
 const getDemographicData = (profileId: string): PatientDemographic => {
-  const profileData = typedQuestionsData[profileId as keyof typeof typedQuestionsData] as ProfileData | undefined;
+  // Define profile-specific demographic data
+  const profileDemographics = {
+    profile1: {
+      age: '',
+      origin: [
+        { country: 'DE', percentage: 35.3 },
+        { country: 'US', percentage: 64.7 }
+      ],
+      role: [
+        { role_name: 'Veteran', percentage: 39 }
+      ]
+    },
+    profile2: {
+      age: '',
+      origin: [
+        { country: 'DE', percentage: 43.2 },
+        { country: 'US', percentage: 56.8 }
+      ],
+      role: [
+        { role_name: 'Newcomer', percentage: 34 }
+      ]
+    },
+    profile3: {
+      age: '',
+      origin: [
+        { country: 'DE', percentage: 21.3 },
+        { country: 'US', percentage: 78.7 }
+      ],
+      role: [
+        { role_name: 'Advocate', percentage: 27 }
+      ]
+    },
+    profile0: {
+      age: '',
+      origin: [],
+      role: []
+    }
+  };
 
-  if (profileData && profileData.profile_details) {
-    return {
-      age: profileData.profile_details.age,
-      origin: profileData.profile_details.origin,
-      role: profileData.profile_details.role,
-      // Optional fields with default values
-      gender: '',
-      ethnicity: '',
-      location: '',
-      medicalHistory: [],
-      weight: 0,
-      height: 0,
-      compliance: 0
-    };
-  }
-
-  // Fallback empty demographic data
+  // Return the profile-specific data or fallback to empty data
   return {
-    age: '',
-    origin: [],
-    role: [],
+    ...profileDemographics[profileId as keyof typeof profileDemographics] || {
+      age: '',
+      origin: [],
+      role: []
+    },
+    // Optional fields with default values
     gender: '',
     ethnicity: '',
     location: '',
